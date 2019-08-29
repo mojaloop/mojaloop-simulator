@@ -1,0 +1,110 @@
+openapi: 3.0.0
+info:
+  version: '0.1'
+  title: Mojaloop simulator Test API
+  description: Control the simulator
+  license:
+    name: UNLICENSED
+paths:
+  /scenarios:
+    post:
+      description: Send test scenarios
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Scenario'
+      responses:
+        '200':
+          description: The test was successful
+        '500':
+          description: An error occured processing the request
+        "400":
+          description: Test file is has errors
+  /repository/parties:
+    post:
+      description: Create a party
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Party'
+      responses:
+        '204':
+          description: The party was created
+        '400':
+          description: The request was malformed
+        '500':
+          description: An error occured processing the request
+
+components:
+  schemas:
+    Scenario:
+      title: Scenario
+      type: object
+      description: An outbound transfer scenario
+      required:
+        - name
+        - operation
+        - body
+      properties:
+        name:
+          type: string
+        operation:
+          $ref: '#/components/schemas/ScenarioOperation'
+        body:
+          type: object
+          description: This object should be either a POST /transfers or PUT /transfers request body as per the SDK outbound API specification
+        params:
+          $ref: '#/components/schemas/ScenarioOperationParameters'
+    ScenarioOperation:
+      title: Scenario Operation
+      type: string
+      description: The operation to perform as part of a scenario
+      enum:
+      - postTransfers
+      - putTransfers
+    ScenarioOperationParameters:
+      type: object
+      description: Parameters to pass into the scenario operation
+      required:
+        - transferId
+      properties:
+        transferId:
+          type: string
+          description: Transfer ID e.g. in the case of putTransfers operation this is the ID of the transfer to complete
+    Party:
+      title: Party
+      type: object
+      description: A party
+      required:
+        - displayName
+        - firstName
+        - middleName
+        - lastName
+        - dateOfBirth
+        - idType
+        - idValue
+      properties:
+        displayName:
+          type: string
+        firstName:
+          type: string
+        middleName:
+          type: string
+        lastName:
+          type: string
+        dateOfBirth:
+          type: string
+        idType:
+          type: string
+          enum:
+          - MSISDN
+          - ACCOUNT_NO
+        idValue:
+          type: string
+          minLength: 1
+          maxLength: 128
+

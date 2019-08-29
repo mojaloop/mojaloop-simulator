@@ -1,0 +1,166 @@
+# CircleCI v2 Config
+version: 2
+
+defaults_working_directory: &defaults_working_directory
+  working_directory: /home/circleci/project
+
+defaults_docker_node: &defaults_docker_node
+  docker:
+    - image: circleci/node:lts
+
+defaults_docker_helm_kube: &defaults_docker_helm_kube
+  docker:
+    - image: hypnoglow/kubernetes-helm
+
+defaults_build_docker_login: &defaults_build_docker_login
+  name: Login to Docker Hub
+  command: |
+    docker login -u $DOCKER_USER -p $DOCKER_PASS $DOCKER_ORG
+defaults_build_docker_test: &defaults_build_docker_test
+  name: Build Docker test image
+  command: |
+    echo "Building Docker image: test"
+    docker build --pull --build-arg SSH_KEY="$(echo $ML_LIB_DEPLOY_KEY_B64_ENC | base64 -d)" -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:test .
+defaults_build_docker_build: &defaults_build_docker_build
+  name: Build Docker $CIRCLE_TAG image
+  command: |
+    echo "Building Docker image: $CIRCLE_TAG"
+    docker build --pull --build-arg SSH_KEY="$(echo $ML_LIB_DEPLOY_KEY_B64_ENC | base64 -d)" -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG .
+defaults_build_docker_build_release: &defaults_build_docker_build_release
+  name: Build Docker $RELEASE_TAG image
+  command: |
+    echo "Building Docker image: $RELEASE_TAG"
+    docker build --pull --build-arg SSH_KEY="$(echo $ML_LIB_DEPLOY_KEY_B64_ENC | base64 -d)" -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG .
+defaults_build_docker_publish: &defaults_build_docker_publish
+  name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
+  command: |
+    echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
+    docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
+defaults_build_docker_publish_release: &defaults_build_docker_publish_release
+  name: Publish Docker image $RELEASE_TAG tag to Docker Hub
+  command: |
+    echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
+    docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+defaults_deploy_configure_helm: &defaults_deploy_configure_helm
+  name: Configure Helm
+  command: |
+    helm init --client-only
+jobs:
+  test_unit:
+    <<: *defaults_working_directory
+    <<: *defaults_docker_node
+    steps:
+      - checkout # Checkout will use the ssh key configured for the repo in CircleCI
+      - add_ssh_keys: # Add the deploy key for mojaloop-lib. Must be done _after_ checkout
+          fingerprints:
+            - "3d:6c:86:87:ff:89:a2:b6:70:0b:fc:4f:66:09:d6:eb"
+      - run:
+          name: trust-github-com
+          command: echo -e -n '# github.com:22 SSH-2.0-babeld-93408c70\n|1|Hdu9jSY+Ci+49zq1qOzxnHUXZsk=|8/Nxz2QV6U2bQxlAEUvNAv/wbRQ= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+      - run:
+          name: update-npm
+          command: 'sudo npm install -g npm@latest'
+      - run:
+          name: install-npm-dependencies
+          command: cd src && npm install
+      - run:
+          name: lint
+          command: cd src && npm run lint
+      - run:
+          name: test
+          command: cd src && npm test
+  build_docker:
+    machine: true
+    # <<: *default_env
+    steps:
+      - checkout
+      - run:
+          <<: *defaults_build_docker_login
+      - run:
+          <<: *defaults_build_docker_test
+  build_and_publish_docker:
+    machine: true
+    # <<: *default_env
+    steps:
+      - checkout
+      - run:
+          name: setup environment vars for LATEST release
+          command: |
+            echo 'export RELEASE_TAG=$RELEASE_TAG_PROD' >> $BASH_ENV
+      - run:
+          <<: *defaults_build_docker_login
+      - run:
+          <<: *defaults_build_docker_build
+      - run:
+          <<: *defaults_build_docker_build_release
+      - run:
+          <<: *defaults_build_docker_publish
+      - run:
+          <<: *defaults_build_docker_publish_release
+  build_helm:
+    docker:
+      - image: hypnoglow/kubernetes-helm:2.9.1
+    steps:
+      - checkout
+      - run:
+          name: package helm chart
+          command: cd helm && helm package $CIRCLE_PROJECT_REPONAME
+  build_and_publish_helm:
+  # TODO: The URL at the end https://mojaloop.jfrog.io/mojaloop/helm/$CIRCLE_PROJECT_REPONAME-$CIRCLE_TAG.tgz" needs to be updated to a correct value
+    docker:
+      - image: hypnoglow/kubernetes-helm:2.9.1
+    steps:
+      - checkout
+      - run:
+          name: update values.yaml file with $CIRCLE_TAG that matches docker version
+          command: |
+            cd helm/$CIRCLE_PROJECT_REPONAME && sed -i.bak "s/tag.*/tag\: $CIRCLE_TAG/" values.yaml
+      - run:
+          name: Update Chart.yaml version with the verison that matches $CIRCLE_TAG
+          command: |
+            cd helm/$CIRCLE_PROJECT_REPONAME && sed -i.bak "s/version.*/version\: $CIRCLE_TAG/" Chart.yaml
+      - run:
+          name: package helm chart
+          command: cd helm && helm package --version $CIRCLE_TAG $CIRCLE_PROJECT_REPONAME
+      - run:
+          name: upload to helm repo
+          command: cd helm && curl -u$DOCKER_USER:$DOCKER_PASS -T $CIRCLE_PROJECT_REPONAME-$CIRCLE_TAG.tgz "https://mojaloop.jfrog.io/mojaloop/helm/$CIRCLE_PROJECT_REPONAME-$CIRCLE_TAG.tgz"
+      
+workflows:
+  version: 2
+  test_docker_helm:
+    jobs:
+      - test_unit:
+          context: org-global
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+      - build_docker:
+          context: org-global
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+      # - build_helm:
+      #     context: org-global
+      #     filters:
+      #       tags:
+      #         only: /v[0-9]+(\.[0-9]+)*/
+      - build_and_publish_docker:
+          context: org-global
+          requires:
+            - test_unit
+            - build_docker
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
+      # - build_and_publish_helm:
+      #     context: org-global
+      #     requires:
+      #       - build_and_publish_docker
+      #     filters:
+      #       tags:
+      #         only: /v[0-9]+(\.[0-9]+)*/
+      #       branches:
+      #         ignore: /.*/

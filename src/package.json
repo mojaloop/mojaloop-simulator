@@ -1,0 +1,47 @@
+{
+  "name": "mojaloop-simulator",
+  "description": "A canonical test example implementation of the parties, transfers and quotes resources of the Mojaloop API",
+  "version": "7.4.0",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "author": "Matt Kingston, ModusBox Inc.",
+  "contributors": [
+    "Matt Kingston <matt.kingston@modusbox.com>",
+    "ModusBox",
+    "Mowali"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mojaloop/mojaloop-simulator.git"
+  },
+  "bugs": "http://github.com/mojaloop/mojaloop-simulator/issues",
+  "dependencies": {
+    "@internal/log": "file:lib/log",
+    "@internal/randomphrase": "file:lib/randomphrase",
+    "@internal/router": "file:lib/router",
+    "@internal/rules-engine": "file:lib/rules-engine",
+    "@internal/validate": "file:lib/validate",
+    "ajv": "^6.7.0",
+    "chance": "^1.0.18",
+    "dotenv": "^7.0.0",
+    "joi": "^14.3.1",
+    "koa": "^2.6.2",
+    "koa-body": "^4.0.6",
+    "mustache": "^3.0.1",
+    "node-fetch": "^2.6.0",
+    "sqlite": "^3.0.3",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "ava": "^1.4.1",
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.17.1",
+    "uuid": "^3.3.2"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "ava -c 1"
+  }
+}
