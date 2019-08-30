@@ -37,13 +37,66 @@ const supportedOperations = {
 const createParty = async (ctx) => {
     if (!Object.prototype.hasOwnProperty.call(ctx.request.body, 'idValue')) {
         ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
-        ctx.response.status = 400;
+        ctx.response.status = 500;
         return;
     }
 
     try {
         await ctx.state.model.party.create(ctx.request.body);
         ctx.response.body = '';
+        ctx.response.status = 204;
+        return;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.ID_NOT_UNIQUE;
+        ctx.response.status = 500;
+    }
+};
+
+const readParties = async (ctx) => {
+    try {
+        const res = await ctx.state.model.party.getAll();
+        if (!res) {
+            ctx.response.body = '';
+            ctx.response.status = 404;
+            return;
+        }
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.response.body = '';
+        ctx.response.status = 500;
+    }
+};
+
+const updateParty = async (ctx) => {
+    const { idValue, idType } = ctx.state.path.params;
+    const model = ctx.request.body;
+    if (!idValue || !idType) {
+        ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
+        ctx.response.status = 400;
+        return;
+    }
+
+    try {
+        await ctx.state.model.party.update(idType, idValue, model);
+        ctx.response.status = 204;
+        return;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.ID_NOT_UNIQUE;
+        ctx.response.status = 500;
+    }
+};
+
+const deleteParty = async (ctx) => {
+    const { idValue, idType } = ctx.state.path.params;
+    if (!idValue || !idType) {
+        ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
+        ctx.response.status = 500;
+        return;
+    }
+
+    try {
+        await ctx.state.model.party.delete(idType, idValue);
         ctx.response.status = 204;
         return;
     } catch (err) {
@@ -87,6 +140,7 @@ const handleOps = async (logger, model, ops) => {
 
             if (op.operation === supportedOperations.POST_TRANSFERS) {
                 const response = await model.postTransfers(renderedBody);
+                console.log(response);
                 acc[op.name] = { result: response };
             }
 
@@ -134,13 +188,17 @@ const handleScenarios = async (ctx) => {
     }
 };
 
-
 const map = {
     '/scenarios': {
         post: handleScenarios,
     },
     '/repository/parties': {
+        get: readParties,
         post: createParty,
+    },
+    '/repository/parties/{idType}/{idValue}': {
+        put: updateParty,
+        delete: deleteParty,
     },
 };
 

@@ -40,6 +40,7 @@ const postTransfers = async (body) => {
         body: JSON.stringify(body),
         headers: { 'Content-Type': 'application/json' },
     });
+    console.log('<<<<', res);
 
     return res.json();
 };
