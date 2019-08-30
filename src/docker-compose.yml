@@ -1,6 +1,6 @@
 version: '3'
 services:
- redis:
+ redis-sim:
    image: "redis:5.0.4-alpine"
  sim:
    image: "mojaloop-simulator-backend"
@@ -11,12 +11,32 @@ services:
      - "3001:3001"
      - "3003:3003"
    depends_on:
-     - scheme-adapter
- scheme-adapter:
+     - scheme-adapter-sim
+ scheme-adapter-sim:
    image: "mojaloop/sdk-scheme-adapter:latest"
-   env_file: ./scheme-adapter.env
+   env_file: ./scheme-adapter-sim.env
    ports:
-     - "3500:3000"
-     - "3501:4000"
+     - "4000:4000"
+     - "4001:4001"
    depends_on:
-     - redis
+     - redis-sim 
+ redis-dfsp:
+   image: "redis:5.0.4-alpine"
+ scheme-adapter-dfsp:
+   image: "mojaloop/sdk-scheme-adapter:latest"
+   env_file: ./scheme-adapter-dfsp.env
+   ports:
+     - "5000:4000"
+     - "5001:4001"
+   depends_on:
+     - redis-dfsp
+ sdk-mock-dfsp-backend:
+   image: "mojaloop/sdk-mock-dfsp-backend:latest"
+   env_file: ../../mojaloop-sdk-mock-dfsp-backend/src/backend.env
+   ports:
+     - "6000:3000"
+     - "6002:3002"
+     - "6003:3003"
+   depends_on:
+      - scheme-adapter-dfsp
+      
