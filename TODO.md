@@ -136,3 +136,6 @@ about whether this is sensible, because all callbacks are already documented in 
     * Easy
   * Cons:
     * Large amounts of redundant code in the repo
+* Fix literal path reference in docker-compose.yml line 35 -->    env_file: ../../mojaloop-sdk-mock-dfsp-backend/src/backend.env
+  * Don't know how to resolve as the current status references other repository environment settings
+  
