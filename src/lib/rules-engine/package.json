@@ -9,6 +9,6 @@
   "author": "Peres Nimarco, James Bush, ModusBox Inc.",
   "license": "Apache-2.0",
   "dependencies": {
-    "json-rules-engine": "^2.3.6"
+    "json-rules-engine": "2.3.6"
   }
 }

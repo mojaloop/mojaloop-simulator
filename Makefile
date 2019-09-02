@@ -13,6 +13,10 @@ REPO_ROOT:=$(shell git rev-parse --show-toplevel)
 # docker invocation
 DOCKER_BUILD_ARGS=
 
+#Override the docker run command
+# e.g. make run CMD='sh -c "tail -f /dev/null"' to run container without starting the node process
+CMD=
+
 ## NORMAL BUILDS
 # Containing any local modifications or untracked files, if present. If none are present, will
 # produce a clean build.
@@ -26,9 +30,7 @@ push: build
 	docker push ${TAG}
 
 run: build
-	docker run -p 3000:3000 -p 3001:3001 -p 3003:3003 --env-file ./src/.env -it ${TAG} sh -c "tail -f /dev/null"
-	# docker run -p 3000:3000 -p 3001:3001 -p 3003:3003 --env-file ./src/.env ${TAG}
-
+	docker run -p 3000:3000 -p 3001:3001 -p 3003:3003 --env-file ./src/.env --rm -it ${TAG} ${CMD}
 
 ## CLEAN BUILDS
 # Create a build from the current repo HEAD, without modifications or untracked files
