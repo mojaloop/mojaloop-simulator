@@ -32,11 +32,9 @@ services:
      - redis-dfsp
  sdk-mock-dfsp-backend:
    image: "mojaloop/sdk-mock-dfsp-backend:latest"
-   env_file: ../../mojaloop-sdk-mock-dfsp-backend/src/backend.env
+   env_file: ./mock-backend.env
    ports:
      - "6000:3000"
-     - "6002:3002"
-     - "6003:3003"
    depends_on:
       - scheme-adapter-dfsp
       
