@@ -37,7 +37,7 @@ const supportedOperations = {
 const createParty = async (ctx) => {
     if (!Object.prototype.hasOwnProperty.call(ctx.request.body, 'idValue')) {
         ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
-        ctx.response.status = 500;
+        ctx.response.status = 400;
         return;
     }
 
