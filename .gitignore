@@ -61,3 +61,4 @@ typings/
 
 log.sqlite3
 simulator.log
+**/*.sqlite
