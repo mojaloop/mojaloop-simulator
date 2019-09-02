@@ -20,7 +20,7 @@
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
 
 const test = require('ava');
 
@@ -215,4 +215,41 @@ test('create and delete a transfer', async (t) => {
     await model.transfer.delete(transferId);
     const deleted = await model.transfer.get(transferId);
     t.is(deleted, undefined);
+});
+
+
+test('throws if we try to init the db twice', async (t) => {
+    // Arrange
+    const { model } = t.context;
+
+    // Act
+    const error = await t.throwsAsync(() => model.init(':memory:'));
+
+
+    // Assert
+    t.is(error.message, 'Attempted to initialise database twice', 'Invalid error message.');
+});
+
+test('throws if we try to init the db incorrectly', async (t) => {
+    // Arrange
+    const badModel = new Model();
+
+    // Act
+    const error = await t.throwsAsync(async () => {
+        await badModel.init();
+    });
+
+    // Assert
+    t.is(error.message, 'TypeError: Argument 0 must be a string', 'Invalid error message.');
+});
+
+test('does nothing if trying to close a non existent db', async (t) => {
+    // Arrange
+    const unInitModel = new Model();
+
+    // Act
+    unInitModel.close();
+
+    // Assert
+    t.pass();
 });

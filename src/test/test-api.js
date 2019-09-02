@@ -20,7 +20,7 @@
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
 
 const test = require('ava');
 
@@ -69,7 +69,7 @@ test('should call outbound transfers model and pass on results to next operation
         postTransfers: async () => Promise.resolve({
             transferId: '12345ABCDEF',
         }),
-        putTransfers: async transferId => Promise.resolve({
+        putTransfers: async (transferId) => Promise.resolve({
             transferId,
         }),
     };

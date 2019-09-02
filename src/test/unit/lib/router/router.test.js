@@ -17,47 +17,58 @@
  optionally within square brackets <email>.
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Mowali
+ * Vessels Tech
+ - Lewis Daly <lewis@vesselstech.com>
  --------------
  ******/
 'use strict';
 
-const partyTable = 'party';
-const quoteTable = 'quote';
-const transferTable = 'transfer';
+const test = require('ava');
 
-const createPartyTable = `
-CREATE TABLE IF NOT EXISTS ${partyTable} (
-    displayName TEXT,
-    firstName TEXT,
-    middleName TEXT,
-    lastName TEXT,
-    dateOfBirth TEXT,
-    idType TEXT,
-    idValue TEXT NOT NULL PRIMARY KEY,
-    CHECK(idValue <> '')
-)
-`;
+const router = require('@internal/router');
+const { testLogger } = require('../../TestUtils');
 
-const createQuoteTable = `
-CREATE TABLE IF NOT EXISTS ${quoteTable} (
-    id TEXT NOT NULL PRIMARY KEY,
-    request TEXT,
-    response TEXT,
-    created TIMESTAMP
-    CHECK(id <> '')
-)
-`;
+test('Handles when a route cannot be found with a 404', async (t) => {
+    // Arrange
+    const ctx = {
+        state: {
+            path: { pattern: '*' },
+            logger: testLogger(t),
+        },
+        response: {},
+    };
+    const nextFunction = () => {};
+    const handlerMap = { }; // empty handler
 
-const createTransferTable = `
-CREATE TABLE IF NOT EXISTS ${transferTable} (
-    id TEXT NOT NULL PRIMARY KEY,
-    request TEXT,
-    response TEXT,
-    CHECK(id <> '')
-)
-`;
+    // Act
+    await router(handlerMap)(ctx, nextFunction);
 
-module.exports = {
-    partyTable, quoteTable, createPartyTable, createQuoteTable, createTransferTable, transferTable,
-};
+    // Assert
+    t.is(ctx.response.status, 404, 'Router returned the wrong status');
+});
+
+test('Handles when a route can be found', async (t) => {
+    // Arrange
+    const ctx = {
+        method: 'method1',
+        state: {
+            path: { pattern: '*' },
+            logger: testLogger(t),
+        },
+        response: {},
+    };
+    const nextFunction = () => {};
+
+    // Simple handler that sets the status to 200
+    const handler = async (handlerCtx) => {
+        // eslint-disable-next-line no-param-reassign
+        handlerCtx.response.status = 200;
+    };
+    const handlerMap = { '*': { method1: handler } }; // simple handler
+
+    // Act
+    await router(handlerMap)(ctx, nextFunction);
+
+    // Assert
+    t.is(ctx.response.status, 200, 'Router returned the wrong status');
+});

@@ -20,7 +20,7 @@
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
 
 /* eslint-disable no-unused-vars */
 const test = require('ava');

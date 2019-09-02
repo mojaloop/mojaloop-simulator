@@ -20,7 +20,7 @@
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
 
 const fetch = require('node-fetch');
 require('dotenv').config();

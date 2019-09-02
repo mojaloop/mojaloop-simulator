@@ -21,7 +21,7 @@
  * Modusbox <https://modusbox.com>
  --------------
  ******/
-'use strict'
+'use strict';
 
 /**
  * @file Simulator resources Model

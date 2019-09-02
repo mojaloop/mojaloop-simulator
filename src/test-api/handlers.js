@@ -20,7 +20,7 @@
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
 
 const util = require('util');
 const Mustache = require('mustache');

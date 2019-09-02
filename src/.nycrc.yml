@@ -1,0 +1,17 @@
+temp-directory: './.nyc_output'
+check-coverage: true
+per-file: true
+lines: 85
+statements: 85
+functions: 85
+branches: 85
+all: true
+reporter:
+  - 'text-summary'
+  - 'html'
+exclude:
+  - '**/node_modules/**'
+  - '**/test/**'
+  - '**/test-api/**'
+  - '**/coverage/**'
+  - '**/.eslintrc.js'

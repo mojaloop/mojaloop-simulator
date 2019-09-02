@@ -16,14 +16,17 @@
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
  * Gates Foundation
- 
+
  - Name Surname <name.surname@gatesfoundation.com>
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
 
-const { Logger, Transports } = require('@internal/log');
+// Ignore this file in coverage checks since most of it can't be tested in unit tests
+/* istanbul ignore file */
+
+const { Logger, Transports, getStackOrInspect } = require('@internal/log');
 const Koa = require('koa');
 const koaBody = require('koa-body');
 const randomPhrase = require('@internal/randomphrase');
@@ -84,7 +87,7 @@ const testApi = new Koa();
             await next();
         } catch (err) {
             // eslint-disable-next-line no-console
-            console.log(`Unhandled error in handler chain: ${err.stack || util.inspect(err, { depth: Infinity })}`);
+            console.log(`Unhandled error in handler chain: ${getStackOrInspect(err, { depth: Infinity })}`);
         }
     };
 
