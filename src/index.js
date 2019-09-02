@@ -48,9 +48,9 @@ const Model = require('./models/model');
 
 require('dotenv').config();
 
-const simApiSpec = yaml.load('./simulator/api.yaml');
-const reportApiSpec = yaml.load('./reports/api.yaml');
-const testApiSpec = yaml.load('./test-api/api.yaml');
+const simApiSpec = yaml.load(`${__dirname}/simulator/api.yaml`);
+const reportApiSpec = yaml.load(`${__dirname}/reports/api.yaml`);
+const testApiSpec = yaml.load(`${__dirname}/test-api/api.yaml`);
 
 const simulator = new Koa();
 const report = new Koa();

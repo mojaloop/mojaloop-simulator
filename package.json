@@ -3,7 +3,7 @@
   "description": "A canonical test example implementation of the parties, transfers and quotes resources of the Mojaloop API",
   "version": "7.5.0",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "author": "Matt Kingston, ModusBox Inc.",
   "contributors": [
     "Matt Kingston <matt.kingston@modusbox.com>",
@@ -16,16 +16,17 @@
   },
   "bugs": "http://github.com/mojaloop/mojaloop-simulator/issues",
   "scripts": {
+    "start": "node ./src/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "ava -c 1"
   },
   "dependencies": {
-    "@internal/log": "file:lib/log",
-    "@internal/randomphrase": "file:lib/randomphrase",
-    "@internal/router": "file:lib/router",
-    "@internal/rules-engine": "file:lib/rules-engine",
-    "@internal/validate": "file:lib/validate",
+    "@internal/log": "file:src/lib/log",
+    "@internal/randomphrase": "file:src/lib/randomphrase",
+    "@internal/router": "file:src/lib/router",
+    "@internal/rules-engine": "file:src/lib/rules-engine",
+    "@internal/validate": "file:src/lib/validate",
     "ajv": "6.7.0",
     "chance": "1.0.18",
     "dotenv": "7.0.0",

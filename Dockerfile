@@ -12,9 +12,10 @@ FROM node:10.15.3-alpine
 
 WORKDIR /opt/mojaloop-simulator
 
-COPY --from=intermediate ./package.json /src/package.json
-COPY src /opt/central-ledger/src
-COPY config /opt/central-ledger/config
+COPY src /opt/mojaloop-simulator/src
+COPY config /opt/mojaloop-simulator/config
+COPY --from=intermediate /opt/mojaloop-simulator/package.json ./package.json
+COPY --from=intermediate /opt/mojaloop-simulator/node_modules ./node_modules
 
 EXPOSE 3000 3001 3003
 CMD ["npm", "run", "start"]

@@ -5,7 +5,7 @@
 REV:=$(shell git rev-parse HEAD)
 # It's possible to add --show-untracked=no to the git status command to ignore untracked files
 VER:=${REV}$(shell if [[ `git status --porcelain` ]]; then echo "-local"; fi)
-REPO:=mojaloop-docker-release.jfrog.io
+REPO:=mojaloop
 NAME:=mojaloop-simulator
 TAG:=${REPO}/${NAME}:${VER}
 REPO_ROOT:=$(shell git rev-parse --show-toplevel)
@@ -26,7 +26,8 @@ push: build
 	docker push ${TAG}
 
 run: build
-	docker run -p 3000:3000 -p 3001:3001 -p 3003:3003 --env-file ./src/.env --rm -it ${TAG}
+	docker run -p 3000:3000 -p 3001:3001 -p 3003:3003 --env-file ./src/.env -it ${TAG} sh -c "tail -f /dev/null"
+	# docker run -p 3000:3000 -p 3001:3001 -p 3003:3003 --env-file ./src/.env ${TAG}
 
 
 ## CLEAN BUILDS
