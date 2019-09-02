@@ -1,5 +1,9 @@
-
 # mojaloop simulator
+[![Git Commit](https://img.shields.io/github/last-commit/mojaloop/mojaloop-simulator.svg?style=flat)](https://github.com/mojaloop/mojaloop-simulator/commits/master)
+[![Git Releases](https://img.shields.io/github/release/mojaloop/mojaloop-simulator.svg?style=flat)](https://github.com/mojaloop/mojaloop-simulator/releases)
+[![Docker pulls](https://img.shields.io/docker/pulls/mojaloop/mojaloop-simulator.svg?style=flat)](https://hub.docker.com/r/mojaloop/mojaloop-simulator)
+[![CircleCI](https://circleci.com/gh/mojaloop/mojaloop-simulator.svg?style=svg)](https://circleci.com/gh/mojaloop/mojaloop-simulator)
+
 
 The code in this repo, along with the [Mojaloop SDK Example Scheme Adapter](http://www.github.com/modusbox/mojaloop-sdk-example-scheme-adapter), intends to simulate an exemplary FSP. It is a generic simulator, an implementation of the FSPIOP spec. It is intended to be used both locally, by prospective scheme participants to validate their FSPIOP implementations, and hosted in a cloud to validate a switch implementation. The objective of these use cases is to ease DFSP backend development and integration with the Mojaloop switch.
 
