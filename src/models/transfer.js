@@ -36,64 +36,64 @@ require('dotenv').config();
  * Data model for transfer.
  */
 module.exports = class Transfer {
-    constructor(db) {
-        this.db = db;
-    }
+  constructor(db) {
+    this.db = db;
+  }
 
-    /**
-    * Retrieves a transfer
-    *
-    * @async
-    * @param {String} transferId  The transfer id.
-    * @returns {Promise<Object>}  Transfer object.
-    */
-    async get(transferId) {
-        const res = await this.db.get(`SELECT * FROM ${transferTable} WHERE id = ?`, [transferId]);
-        return res;
-    }
+  /**
+  * Retrieves a transfer
+  *
+  * @async
+  * @param {String} transferId  The transfer id.
+  * @returns {Promise<Object>}  Transfer object.
+  */
+  async get(transferId) {
+    const res = await this.db.get(`SELECT * FROM ${transferTable} WHERE id = ?`, [transferId]);
+    return res;
+  }
 
-    /**
-    * Creates a transfer.
-    *
-    * @async
-    * @param {Object} transferRequest  The transfer request object.
-    * @returns {Promise<Object>}       Transfer response.
-    */
-    async create(transferRequest) {
-        const { transferId } = transferRequest;
-        const response = { transferId };
-        const reqStr = JSON.stringify(transferRequest);
-        const resStr = JSON.stringify(response);
+  /**
+  * Creates a transfer.
+  *
+  * @async
+  * @param {Object} transferRequest  The transfer request object.
+  * @returns {Promise<Object>}       Transfer response.
+  */
+  async create(transferRequest) {
+    const { transferId } = transferRequest;
+    const response = { transferId };
+    const reqStr = JSON.stringify(transferRequest);
+    const resStr = JSON.stringify(response);
 
-        await this.db.get(`INSERT INTO ${transferTable} (id, request, response) VALUES (?, ?, ?)`, [transferId, reqStr, resStr]);
-        return response;
-    }
+    await this.db.get(`INSERT INTO ${transferTable} (id, request, response) VALUES (?, ?, ?)`, [transferId, reqStr, resStr]);
+    return response;
+  }
 
-    /**
-    * Updates a transfer
-    *
-    * @param {String} transferId       The current transfer id.
-    * @param {Object} TansferRequest   The new transfer object.
-    */
-    async update(currentTransferId, transferRequest) {
-        const { homeTransactionId: newTransferId } = transferRequest;
-        const response = { newTransferId };
-        const reqStr = JSON.stringify(transferRequest);
-        const resStr = JSON.stringify(response);
+  /**
+  * Updates a transfer
+  *
+  * @param {String} transferId       The current transfer id.
+  * @param {Object} TansferRequest   The new transfer object.
+  */
+  async update(currentTransferId, transferRequest) {
+    const { homeTransactionId: newTransferId } = transferRequest;
+    const response = { newTransferId };
+    const reqStr = JSON.stringify(transferRequest);
+    const resStr = JSON.stringify(response);
 
-        await this.db.run(`
+    await this.db.run(`
             UPDATE ${transferTable}
             SET id = ?, request = ?, response = ?
             WHERE id = ?`, [newTransferId, reqStr, resStr, currentTransferId]);
-    }
+  }
 
-    /**
-    * Deletes a transfer.
-    *
-    * @async
-    * @param {String} transferId The transfer id.
-    */
-    async delete(transferId) {
-        await this.db.run(`DELETE FROM ${transferTable} WHERE id = ?`, [transferId]);
-    }
+  /**
+  * Deletes a transfer.
+  *
+  * @async
+  * @param {String} transferId The transfer id.
+  */
+  async delete(transferId) {
+    await this.db.run(`DELETE FROM ${transferTable} WHERE id = ?`, [transferId]);
+  }
 };

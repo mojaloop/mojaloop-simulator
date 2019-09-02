@@ -27,54 +27,54 @@ const { Engine } = require('json-rules-engine');
 
 
 class RulesEngine {
-    constructor(config) {
-        this.config = config;
-        this.logger = config.logger || console;
-        this.engine = new Engine();
-        // eslint-disable-next-line no-underscore-dangle
-        this._addCustomOperators();
-    }
+  constructor(config) {
+    this.config = config;
+    this.logger = config.logger || console;
+    this.engine = new Engine();
+    // eslint-disable-next-line no-underscore-dangle
+    this._addCustomOperators();
+  }
 
-    _addCustomOperators() {
-        this.engine.addOperator('numberStringLessThanInclusive', (a, b) => Number(a) <= b);
-        this.engine.addOperator('numberStringGreaterThanInclusive', (a, b) => Number(a) >= b);
-    }
+  _addCustomOperators() {
+    this.engine.addOperator('numberStringLessThanInclusive', (a, b) => Number(a) <= b);
+    this.engine.addOperator('numberStringGreaterThanInclusive', (a, b) => Number(a) >= b);
+  }
 
 
-    /**
-     * Loads an array of rules into the engine
-     *
-     * @param {object[]} rules - an array of rules to load into the engine
-     * @returns {undefined}
-     */
-    loadRules(rules) {
-        try {
-            rules.forEach((r) => { this.engine.addRule(r); });
-            this.logger.log(`Rules loaded: ${util.inspect(rules, { depth: 20 })}`);
-        } catch (err) {
-            this.logger.log(`Error loading rules: ${err.stack || util.inspect(err)}`);
-            throw err;
-        }
+  /**
+   * Loads an array of rules into the engine
+   *
+   * @param {object[]} rules - an array of rules to load into the engine
+   * @returns {undefined}
+   */
+  loadRules(rules) {
+    try {
+      rules.forEach((r) => { this.engine.addRule(r); });
+      this.logger.log(`Rules loaded: ${util.inspect(rules, { depth: 20 })}`);
+    } catch (err) {
+      this.logger.log(`Error loading rules: ${err.stack || util.inspect(err)}`);
+      throw err;
     }
+  }
 
-    /**
-     * Runs the engine to evaluate facts
-     *
-     * @async
-     * @param {Object} facts facts to evalute
-     * @returns {Promise.<Object>} response
-     */
-    async evaluate(facts) {
-        return new Promise((resolve, reject) => {
-            this.logger.log(`Rule engine evaluating facts: ${util.inspect(facts)}`);
-            this.engine
-                .run(facts)
-                .then((events) => {
-                    this.logger.log(`Rule engine returning events: ${util.inspect(events)}`);
-                    return resolve(events.length === 0 ? null : events.map(e => e.params));
-                }).catch(reject);
-        });
-    }
+  /**
+   * Runs the engine to evaluate facts
+   *
+   * @async
+   * @param {Object} facts facts to evalute
+   * @returns {Promise.<Object>} response
+   */
+  async evaluate(facts) {
+    return new Promise((resolve, reject) => {
+      this.logger.log(`Rule engine evaluating facts: ${util.inspect(facts)}`);
+      this.engine
+        .run(facts)
+        .then((events) => {
+          this.logger.log(`Rule engine returning events: ${util.inspect(events)}`);
+          return resolve(events.length === 0 ? null : events.map(e => e.params));
+        }).catch(reject);
+    });
+  }
 }
 
 

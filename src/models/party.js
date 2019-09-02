@@ -37,70 +37,70 @@ const { partyTable } = require('./constants');
  * Creates, updates and deletes parties.
  */
 module.exports = class Party {
-    constructor(db) {
-        this.db = db;
-    }
+  constructor(db) {
+    this.db = db;
+  }
 
-    /**
-    * Retrieves a Party.
-    *
-    * @async
-    * @param {String} idType     The party idType.
-    * @param {String} idValue    The party idValue.
-    * @returns {Promise<Object>} Party object.
-    */
-    async get(idType, idValue) {
-        const res = await this.db.get(`SELECT * FROM ${partyTable} WHERE idType = ? AND idValue = ?`, [idType, idValue]);
-        return res;
-    }
+  /**
+  * Retrieves a Party.
+  *
+  * @async
+  * @param {String} idType     The party idType.
+  * @param {String} idValue    The party idValue.
+  * @returns {Promise<Object>} Party object.
+  */
+  async get(idType, idValue) {
+    const res = await this.db.get(`SELECT * FROM ${partyTable} WHERE idType = ? AND idValue = ?`, [idType, idValue]);
+    return res;
+  }
 
 
-    /**
-    * Creates a Party.
-    *
-    * @async
-    * @param {Object} party      The Party object.
-    * @returns {Promise<Object>} Party object.
-    */
-    async create(party) {
-        const {
-            displayName, firstName, middleName, lastName, dateOfBirth, idType, idValue,
-        } = party;
-        await this.db.get(`
+  /**
+  * Creates a Party.
+  *
+  * @async
+  * @param {Object} party      The Party object.
+  * @returns {Promise<Object>} Party object.
+  */
+  async create(party) {
+    const {
+      displayName, firstName, middleName, lastName, dateOfBirth, idType, idValue,
+    } = party;
+    await this.db.get(`
   INSERT INTO ${partyTable} (displayName, firstName, middleName, lastName, dateOfBirth, idType, idValue)
   VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [displayName, firstName, middleName, lastName, dateOfBirth, idType, idValue]);
-    }
+      [displayName, firstName, middleName, lastName, dateOfBirth, idType, idValue]);
+  }
 
 
-    /**
-    * Updates a party
-    *
-    * @param {String} idValue  The party idValue to update.
-    * @param {Object} newParty The new Party object.
-    */
-    async update(idValue, newParty) {
-        const entries = Object.entries(newParty)
-            .filter(([, v]) => v !== undefined); // get rid of undefined values
-        const vals = [...entries.reduce((pv, [, v]) => [...pv, v], []), idValue]; // recombine array
-        const query = entries
-            .map(([k]) => `${k} = ?`) // turn each key, e.g. displayName into 'displayName = ?'
-            .join(', '); // join each of the above with a comma
-        await this.db.run(`
+  /**
+  * Updates a party
+  *
+  * @param {String} idValue  The party idValue to update.
+  * @param {Object} newParty The new Party object.
+  */
+  async update(idValue, newParty) {
+    const entries = Object.entries(newParty)
+      .filter(([, v]) => v !== undefined); // get rid of undefined values
+    const vals = [...entries.reduce((pv, [, v]) => [...pv, v], []), idValue]; // recombine array
+    const query = entries
+      .map(([k]) => `${k} = ?`) // turn each key, e.g. displayName into 'displayName = ?'
+      .join(', '); // join each of the above with a comma
+    await this.db.run(`
             UPDATE ${partyTable}
             SET ${query}
             WHERE idValue = ?`,
-        vals);
-    }
+      vals);
+  }
 
 
-    /**
-    * Deletes a Party.
-    *
-    * @param {String} idType  The party idType.
-    * @param {String} idValue The party idValue.
-    */
-    async delete(idType, idValue) {
-        await this.db.run(`DELETE FROM ${partyTable} WHERE idType = ? AND idValue = ?`, [idType, idValue]);
-    }
+  /**
+  * Deletes a Party.
+  *
+  * @param {String} idType  The party idType.
+  * @param {String} idValue The party idValue.
+  */
+  async delete(idType, idValue) {
+    await this.db.run(`DELETE FROM ${partyTable} WHERE idType = ? AND idValue = ?`, [idType, idValue]);
+  }
 };

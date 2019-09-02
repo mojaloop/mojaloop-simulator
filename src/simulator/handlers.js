@@ -28,95 +28,95 @@ const { ApiErrorCodes } = require('../models/errors.js');
 
 
 const getParticipantsByTypeAndId = async (ctx) => {
-    try {
-        const { idValue, idType } = ctx.state.path.params;
-        const res = await ctx.state.model.party.get(idType, idValue);
-        if (!res) {
-            ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
-            ctx.response.status = 404;
-            return;
-        }
-        ctx.response.body = { fspId: process.env.DFSP_ID };
-        ctx.response.status = 200;
-    } catch (err) {
-        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
-        ctx.response.status = 500;
+  try {
+    const { idValue, idType } = ctx.state.path.params;
+    const res = await ctx.state.model.party.get(idType, idValue);
+    if (!res) {
+      ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
+      ctx.response.status = 404;
+      return;
     }
+    ctx.response.body = { fspId: process.env.DFSP_ID };
+    ctx.response.status = 200;
+  } catch (err) {
+    ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+    ctx.response.status = 500;
+  }
 };
 
 
 const getPartiesByTypeAndId = async (ctx) => {
-    // TODO: check that the provided type was MSISDN? Or just encode that in the API spec..
-    try {
-        const { idValue, idType } = ctx.state.path.params;
-        const res = await ctx.state.model.party.get(idType, idValue);
-        if (!res) {
-            ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
-            ctx.response.status = 404;
-            return;
-        }
-        ctx.response.body = res;
-        ctx.response.status = 200;
-    } catch (err) {
-        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
-        ctx.response.status = 500;
+  // TODO: check that the provided type was MSISDN? Or just encode that in the API spec..
+  try {
+    const { idValue, idType } = ctx.state.path.params;
+    const res = await ctx.state.model.party.get(idType, idValue);
+    if (!res) {
+      ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
+      ctx.response.status = 404;
+      return;
     }
+    ctx.response.body = res;
+    ctx.response.status = 200;
+  } catch (err) {
+    ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+    ctx.response.status = 500;
+  }
 };
 
 
 const postTransfers = async (ctx) => {
-    try {
-        const res = await ctx.state.model.transfer.create(ctx.request.body);
-        ctx.state.logger.log(`postTransfers is returning body: ${util.inspect(res)}`);
-        ctx.response.body = res;
-        ctx.response.status = 200;
-    } catch (err) {
-        ctx.state.logger.log(`Error in postTransfers: ${err.stack || util.inspect(err)}`);
-        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
-        ctx.response.status = 500;
-    }
+  try {
+    const res = await ctx.state.model.transfer.create(ctx.request.body);
+    ctx.state.logger.log(`postTransfers is returning body: ${util.inspect(res)}`);
+    ctx.response.body = res;
+    ctx.response.status = 200;
+  } catch (err) {
+    ctx.state.logger.log(`Error in postTransfers: ${err.stack || util.inspect(err)}`);
+    ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+    ctx.response.status = 500;
+  }
 };
 
 
 const postQuotes = async (ctx) => {
-    try {
-        const res = await ctx.state.model.quote.create(ctx.request.body);
-        ctx.state.logger.log(`postQuotes is returning body: ${util.inspect(res)}`);
-        ctx.response.body = res;
-        ctx.response.status = 200;
-    } catch (err) {
-        ctx.state.logger.log(`Error in postQuotes: ${err.stack || util.inspect(err)}`);
-        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
-        ctx.response.status = 500;
-    }
+  try {
+    const res = await ctx.state.model.quote.create(ctx.request.body);
+    ctx.state.logger.log(`postQuotes is returning body: ${util.inspect(res)}`);
+    ctx.response.body = res;
+    ctx.response.status = 200;
+  } catch (err) {
+    ctx.state.logger.log(`Error in postQuotes: ${err.stack || util.inspect(err)}`);
+    ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+    ctx.response.status = 500;
+  }
 };
 
 
 const healthCheck = async (ctx) => {
-    ctx.response.status = 200;
-    ctx.response.body = '';
+  ctx.response.status = 200;
+  ctx.response.body = '';
 };
 
 
 const map = {
-    '/': {
-        get: healthCheck,
-    },
-    '/participants/{idType}/{idValue}': {
-        get: getParticipantsByTypeAndId,
-    },
-    '/parties/{idType}/{idValue}': {
-        get: getPartiesByTypeAndId,
-    },
-    '/quoterequests': {
-        post: postQuotes,
-    },
-    '/transfers': {
-        post: postTransfers,
-    },
+  '/': {
+    get: healthCheck,
+  },
+  '/participants/{idType}/{idValue}': {
+    get: getParticipantsByTypeAndId,
+  },
+  '/parties/{idType}/{idValue}': {
+    get: getPartiesByTypeAndId,
+  },
+  '/quoterequests': {
+    post: postQuotes,
+  },
+  '/transfers': {
+    post: postTransfers,
+  },
 };
 
 
 module.exports = {
-    map,
+  map,
 };

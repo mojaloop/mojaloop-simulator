@@ -35,13 +35,13 @@ const { OUTBOUND_ENDPOINT } = process.env;
  * @returns {Promise.<Object>}     response
  */
 const postTransfers = async (body) => {
-    const res = await fetch(`${OUTBOUND_ENDPOINT}/transfers`, {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-    });
+  const res = await fetch(`${OUTBOUND_ENDPOINT}/transfers`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: { 'Content-Type': 'application/json' },
+  });
 
-    return res.json();
+  return res.json();
 };
 
 
@@ -52,13 +52,13 @@ const postTransfers = async (body) => {
  * @returns {Promise.<Object>}     response
  */
 const putTransfers = async (transferId, body) => {
-    const res = await fetch(`${OUTBOUND_ENDPOINT}/transfers/${transferId}`, {
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'PUT',
-    });
+  const res = await fetch(`${OUTBOUND_ENDPOINT}/transfers/${transferId}`, {
+    body: JSON.stringify(body),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'PUT',
+  });
 
-    return res.json();
+  return res.json();
 };
 
 module.exports = { postTransfers, putTransfers };

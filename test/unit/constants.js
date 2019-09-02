@@ -37,107 +37,107 @@ const amountType = 'SEND';
 const transactionType = 'TRANSFER';
 
 const party = {
-    displayName: randName,
-    firstName: randName.split(' ')[0] || '',
-    middleName: randName.split(' ')[1] || '',
-    lastName: randName.split(' ')[2] || '',
-    dateOfBirth: '1970-01-01T00:00:00.000Z',
-    idType,
-    idValue,
+  displayName: randName,
+  firstName: randName.split(' ')[0] || '',
+  middleName: randName.split(' ')[1] || '',
+  lastName: randName.split(' ')[2] || '',
+  dateOfBirth: '1970-01-01T00:00:00.000Z',
+  idType,
+  idValue,
 };
 
 const quote = {
-    quoteId: idValue,
-    transactionId: uuid(),
-    to: {
-        idType: 'MSISDN',
-        idValue: '0012345',
-    },
-    from: {
-        idType: 'MSISDN',
-        idValue: '0067890',
-    },
-    amountType: 'SEND',
-    amount: '100',
-    currency: 'USD',
-    feesAmount: '0.5',
-    feesCurrency: 'USD',
-    transactionType: 'TRANSFER',
-    initiator: 'PAYER',
-    initiatorType: 'CONSUMER',
+  quoteId: idValue,
+  transactionId: uuid(),
+  to: {
+    idType: 'MSISDN',
+    idValue: '0012345',
+  },
+  from: {
+    idType: 'MSISDN',
+    idValue: '0067890',
+  },
+  amountType: 'SEND',
+  amount: '100',
+  currency: 'USD',
+  feesAmount: '0.5',
+  feesCurrency: 'USD',
+  transactionType: 'TRANSFER',
+  initiator: 'PAYER',
+  initiatorType: 'CONSUMER',
 };
 
 const transfer = {
-    transferId,
-    quote: {
-        quoteId: idValue,
-        transactionId: randName,
-        transferAmount: amount,
-        transferAmountCurrency: currency,
-    },
-    from: {
-        idType,
-        idValue,
-    },
-    to: {
-        idType,
-        idValue: '67890',
-    },
-    amountType,
-    currency,
-    amount,
-    transactionType,
+  transferId,
+  quote: {
+    quoteId: idValue,
+    transactionId: randName,
+    transferAmount: amount,
+    transferAmountCurrency: currency,
+  },
+  from: {
+    idType,
+    idValue,
+  },
+  to: {
+    idType,
+    idValue: '67890',
+  },
+  amountType,
+  currency,
+  amount,
+  transactionType,
 };
 
 const newQuote = {
-    quoteId: uuid(),
-    transactionId: uuid(),
-    to: {
-        idType: 'MSISDN',
-        idValue: '0012345',
-    },
-    from: {
-        idType: 'MSISDN',
-        idValue: '0067890',
-    },
-    amountType: 'SEND',
-    amount: '100',
-    currency: 'USD',
-    feesAmount: '0.5',
-    feesCurrency: 'USD',
-    transactionType: 'TRANSFER',
-    initiator: 'PAYER',
-    initiatorType: 'CONSUMER',
+  quoteId: uuid(),
+  transactionId: uuid(),
+  to: {
+    idType: 'MSISDN',
+    idValue: '0012345',
+  },
+  from: {
+    idType: 'MSISDN',
+    idValue: '0067890',
+  },
+  amountType: 'SEND',
+  amount: '100',
+  currency: 'USD',
+  feesAmount: '0.5',
+  feesCurrency: 'USD',
+  transactionType: 'TRANSFER',
+  initiator: 'PAYER',
+  initiatorType: 'CONSUMER',
 };
 
 const newTransfer = {
-    transferId: uuid(),
-    quote: {
-        quoteId: idValue,
-        transactionId: randName,
-        transferAmount: amount,
-        transferAmountCurrency: currency,
-    },
-    from: {
-        idType,
-        idValue,
-    },
-    to: {
-        idType,
-        idValue: '67890',
-    },
-    amountType,
-    currency,
-    amount,
-    transactionType,
+  transferId: uuid(),
+  quote: {
+    quoteId: idValue,
+    transactionId: randName,
+    transferAmount: amount,
+    transferAmountCurrency: currency,
+  },
+  from: {
+    idType,
+    idValue,
+  },
+  to: {
+    idType,
+    idValue: '67890',
+  },
+  amountType,
+  currency,
+  amount,
+  transactionType,
 };
 
 
 test('constants', async (t) => {
-    // to avoid test warnings
-    t.pass();
+  // to avoid test warnings
+  t.pass();
 });
 
 module.exports = {
-    transfer, quote, party, newQuote, newTransfer, idType, idValue, transferId,
+  transfer, quote, party, newQuote, newTransfer, idType, idValue, transferId,
 };

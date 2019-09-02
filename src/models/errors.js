@@ -23,22 +23,22 @@
 'use strict'
 
 const ApiErrorCodes = {
-    MISSING_ID_VALUE: { statusCode: '3102', message: 'ID not supplied' },
-    ID_NOT_UNIQUE: { statusCode: '2000', message: 'ID is already registered' },
-    UNKNOWN_ERROR: { statusCode: '2000', message: 'ID not supplied' },
-    ID_NOT_FOUND: { statusCode: '3200', message: 'ID not found' },
-    SERVER_ERROR: { statusCode: '2000', message: 'Server error' },
+  MISSING_ID_VALUE: { statusCode: '3102', message: 'ID not supplied' },
+  ID_NOT_UNIQUE: { statusCode: '2000', message: 'ID is already registered' },
+  UNKNOWN_ERROR: { statusCode: '2000', message: 'ID not supplied' },
+  ID_NOT_FOUND: { statusCode: '3200', message: 'ID not found' },
+  SERVER_ERROR: { statusCode: '2000', message: 'Server error' },
 
-    // reporting errors
-    REPORT_NOT_FOUND: { statusCode: '6000', message: 'Report not found' },
-    REPORT_EMPTY: { statusCode: '6001', message: 'Report has no content' },
-    REPORT_ERROR: { statusCode: '6002', message: 'There was an error while finding Report' },
+  // reporting errors
+  REPORT_NOT_FOUND: { statusCode: '6000', message: 'Report not found' },
+  REPORT_EMPTY: { statusCode: '6001', message: 'Report has no content' },
+  REPORT_ERROR: { statusCode: '6002', message: 'There was an error while finding Report' },
 
-    // test api errors
-    OP_NOT_SET: { statusCode: '7000', message: 'Scenario operation isn\'t specified' },
-    OPS_ERROR: { statusCode: '7001', message: 'There was an error while processing operations' },
-    EXECUTION_ERROR: { statusCode: '7002', message: 'An error occured while executing the scenarios' },
-    VALIDATION_ERROR: { statusCode: '7003', message: 'Request was malformed' },
+  // test api errors
+  OP_NOT_SET: { statusCode: '7000', message: 'Scenario operation isn\'t specified' },
+  OPS_ERROR: { statusCode: '7001', message: 'There was an error while processing operations' },
+  EXECUTION_ERROR: { statusCode: '7002', message: 'An error occured while executing the scenarios' },
+  VALIDATION_ERROR: { statusCode: '7003', message: 'Request was malformed' },
 };
 
 

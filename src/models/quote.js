@@ -38,80 +38,80 @@ require('dotenv').config();
  * Data model for quotes.
  */
 module.exports = class Quote {
-    constructor(db) {
-        this.db = db;
-    }
+  constructor(db) {
+    this.db = db;
+  }
 
-    /**
-   * Gets a Quote with the provided quoteId
-   *
-   * @async
-   * @param {String} quoteId     The quote Id.
-   * @returns {Promise<Object>}  Quote object.
-   */
-    async get(quoteId) {
-        const res = await this.db.get(`SELECT * FROM ${quoteTable} WHERE id = ?`, [quoteId]);
-        return res;
-    }
+  /**
+ * Gets a Quote with the provided quoteId
+ *
+ * @async
+ * @param {String} quoteId     The quote Id.
+ * @returns {Promise<Object>}  Quote object.
+ */
+  async get(quoteId) {
+    const res = await this.db.get(`SELECT * FROM ${quoteTable} WHERE id = ?`, [quoteId]);
+    return res;
+  }
 
-    /**
-   * Creates a quote.
-   *
-   * @async
-   * @param {Object} quoteRequest     The quote request object.
-   * @returns {Promise<Object>}       The Quote response.
-   */
-    async create(quoteRequest) {
-        const {
-            quoteId,
-            transactionId,
-            amount,
-            currency,
-        } = quoteRequest;
-        const fee = Math.floor(Number(amount) * Number(process.env.FEE_MULTIPLIER)).toString();
-        const response = {
-            quoteId,
-            transactionId,
-            transferAmount: amount,
-            transferAmountCurrency: currency,
-            payeeFspFeeAmount: fee,
-            payeeFspFeeAmountCurrency: currency,
-            payeeFspCommissionAmount: fee,
-            payeeFspCommissionAmountCurrency: currency,
-        };
-        const reqStr = JSON.stringify(quoteRequest);
-        const resStr = JSON.stringify(response);
-        const created = new Date().toISOString().slice(0, 19);
+  /**
+ * Creates a quote.
+ *
+ * @async
+ * @param {Object} quoteRequest     The quote request object.
+ * @returns {Promise<Object>}       The Quote response.
+ */
+  async create(quoteRequest) {
+    const {
+      quoteId,
+      transactionId,
+      amount,
+      currency,
+    } = quoteRequest;
+    const fee = Math.floor(Number(amount) * Number(process.env.FEE_MULTIPLIER)).toString();
+    const response = {
+      quoteId,
+      transactionId,
+      transferAmount: amount,
+      transferAmountCurrency: currency,
+      payeeFspFeeAmount: fee,
+      payeeFspFeeAmountCurrency: currency,
+      payeeFspCommissionAmount: fee,
+      payeeFspCommissionAmountCurrency: currency,
+    };
+    const reqStr = JSON.stringify(quoteRequest);
+    const resStr = JSON.stringify(response);
+    const created = new Date().toISOString().slice(0, 19);
 
-        await this.db.get(`INSERT INTO ${quoteTable} (id, request, response, created) VALUES (?, ?, ?, ?)`, [quoteId, reqStr, resStr, created]);
-        return response;
-    }
+    await this.db.get(`INSERT INTO ${quoteTable} (id, request, response, created) VALUES (?, ?, ?, ?)`, [quoteId, reqStr, resStr, created]);
+    return response;
+  }
 
-    /**
-   * Updates a quote
-   *
-   * @param {String} currentOuoteId    The quote id to update.
-   * @param {Object} newQuoteRequest   The new Quote object.
-   */
-    async update(currentOuoteId, newQuoteRequest) {
-        const { quoteId, amount, currency } = newQuoteRequest;
-        const response = { transferAmount: amount, transferAmountCurrency: currency };
-        const reqStr = JSON.stringify(newQuoteRequest);
-        const resStr = JSON.stringify(response);
+  /**
+ * Updates a quote
+ *
+ * @param {String} currentOuoteId    The quote id to update.
+ * @param {Object} newQuoteRequest   The new Quote object.
+ */
+  async update(currentOuoteId, newQuoteRequest) {
+    const { quoteId, amount, currency } = newQuoteRequest;
+    const response = { transferAmount: amount, transferAmountCurrency: currency };
+    const reqStr = JSON.stringify(newQuoteRequest);
+    const resStr = JSON.stringify(response);
 
-        await this.db.run(`
+    await this.db.run(`
             UPDATE ${quoteTable}
             SET id = ?, request = ?, response = ?
             WHERE id = ?`, [quoteId, reqStr, resStr, currentOuoteId]);
-    }
+  }
 
-    /**
-     * Deletes a Quote.
-     *
-     * @async
-     * @param {String} quoteId The quote id.
-     */
-    async delete(quoteId) {
-        await this.db.run(`DELETE FROM ${quoteTable} WHERE id = ?`, [quoteId]);
-    }
+  /**
+   * Deletes a Quote.
+   *
+   * @async
+   * @param {String} quoteId The quote id.
+   */
+  async delete(quoteId) {
+    await this.db.run(`DELETE FROM ${quoteTable} WHERE id = ?`, [quoteId]);
+  }
 };

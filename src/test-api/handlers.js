@@ -29,27 +29,27 @@ const { postTransfers, putTransfers } = require('./client');
 const { ApiErrorCodes } = require('../models/errors');
 
 const supportedOperations = {
-    POST_TRANSFERS: 'postTransfers',
-    PUT_TRANSFERS: 'putTransfers',
+  POST_TRANSFERS: 'postTransfers',
+  PUT_TRANSFERS: 'putTransfers',
 };
 
 
 const createParty = async (ctx) => {
-    if (!Object.prototype.hasOwnProperty.call(ctx.request.body, 'idValue')) {
-        ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
-        ctx.response.status = 400;
-        return;
-    }
+  if (!Object.prototype.hasOwnProperty.call(ctx.request.body, 'idValue')) {
+    ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
+    ctx.response.status = 400;
+    return;
+  }
 
-    try {
-        await ctx.state.model.party.create(ctx.request.body);
-        ctx.response.body = '';
-        ctx.response.status = 204;
-        return;
-    } catch (err) {
-        ctx.response.body = ApiErrorCodes.ID_NOT_UNIQUE;
-        ctx.response.status = 500;
-    }
+  try {
+    await ctx.state.model.party.create(ctx.request.body);
+    ctx.response.body = '';
+    ctx.response.status = 204;
+    return;
+  } catch (err) {
+    ctx.response.body = ApiErrorCodes.ID_NOT_UNIQUE;
+    ctx.response.status = 500;
+  }
 };
 
 
@@ -60,92 +60,92 @@ const createParty = async (ctx) => {
  * @returns {Promise.<Array>} results
  */
 const handleOps = async (logger, model, ops) => {
-    if (!Array.isArray(ops)) {
-        throw new Error(ApiErrorCodes.OPS_ERROR.message);
-    }
+  if (!Array.isArray(ops)) {
+    throw new Error(ApiErrorCodes.OPS_ERROR.message);
+  }
 
-    // run operations in series and reduce to a result
+  // run operations in series and reduce to a result
 
-    const result = await ops.reduce(async (accPromise, op) => {
-        const acc = await accPromise;
+  const result = await ops.reduce(async (accPromise, op) => {
+    const acc = await accPromise;
 
-        try {
-            if (!Object.values(supportedOperations).includes(op.operation)) {
-                acc[op.name] = { error: 'unsupported operation' };
-            }
+    try {
+      if (!Object.values(supportedOperations).includes(op.operation)) {
+        acc[op.name] = { error: 'unsupported operation' };
+      }
 
-            // render the op body as a template with input being the current value of acc.
-            // this allows the user to use the results of ops as inputs into following
-            // ops.
-            let renderedParams = {};
+      // render the op body as a template with input being the current value of acc.
+      // this allows the user to use the results of ops as inputs into following
+      // ops.
+      let renderedParams = {};
 
-            if (op.params) {
-                renderedParams = JSON.parse(Mustache.render(JSON.stringify(op.params), acc));
-            }
+      if (op.params) {
+        renderedParams = JSON.parse(Mustache.render(JSON.stringify(op.params), acc));
+      }
 
-            const renderedBody = JSON.parse(Mustache.render(JSON.stringify(op.body), acc));
+      const renderedBody = JSON.parse(Mustache.render(JSON.stringify(op.body), acc));
 
-            if (op.operation === supportedOperations.POST_TRANSFERS) {
-                const response = await model.postTransfers(renderedBody);
-                acc[op.name] = { result: response };
-            }
+      if (op.operation === supportedOperations.POST_TRANSFERS) {
+        const response = await model.postTransfers(renderedBody);
+        acc[op.name] = { result: response };
+      }
 
-            if (op.operation === supportedOperations.PUT_TRANSFERS) {
-                if (!renderedParams.transferId) {
-                    throw new Error(`Scenario ${op.name} does not have required transferId param for putTransfers operation`);
-                }
-
-                const response = await model.putTransfers(renderedParams.transferId, renderedBody);
-                acc[op.name] = { result: response };
-            }
-        } catch (error) {
-            acc[op.name] = { error };
+      if (op.operation === supportedOperations.PUT_TRANSFERS) {
+        if (!renderedParams.transferId) {
+          throw new Error(`Scenario ${op.name} does not have required transferId param for putTransfers operation`);
         }
 
-        logger.log(`Operation ${op.name} result: ${util.inspect(acc[op.name])}`);
-        return acc;
-    }, Promise.resolve({}));
+        const response = await model.putTransfers(renderedParams.transferId, renderedBody);
+        acc[op.name] = { result: response };
+      }
+    } catch (error) {
+      acc[op.name] = { error };
+    }
 
-    return result;
+    logger.log(`Operation ${op.name} result: ${util.inspect(acc[op.name])}`);
+    return acc;
+  }, Promise.resolve({}));
+
+  return result;
 };
 
 
 const handleScenarios = async (ctx) => {
-    try {
-        const res = await handleOps(ctx.state.logger, {
-            postTransfers,
-            putTransfers,
-        }, ctx.request.body);
+  try {
+    const res = await handleOps(ctx.state.logger, {
+      postTransfers,
+      putTransfers,
+    }, ctx.request.body);
 
-        ctx.state.logger.log(`Scenario operations returned: ${util.inspect(res)}`);
-        if (res) {
-            ctx.response.body = res;
-            ctx.response.status = 200;
-            return;
-        }
-        ctx.response.body = ApiErrorCodes.OP_NOT_SET;
-        ctx.response.status = 400;
-        return;
-    } catch (err) {
-        const e = { ...ApiErrorCodes.EXECUTION_ERROR };
-        e.cause = err;
-        ctx.response.body = e;
-        ctx.response.status = 500;
+    ctx.state.logger.log(`Scenario operations returned: ${util.inspect(res)}`);
+    if (res) {
+      ctx.response.body = res;
+      ctx.response.status = 200;
+      return;
     }
+    ctx.response.body = ApiErrorCodes.OP_NOT_SET;
+    ctx.response.status = 400;
+    return;
+  } catch (err) {
+    const e = { ...ApiErrorCodes.EXECUTION_ERROR };
+    e.cause = err;
+    ctx.response.body = e;
+    ctx.response.status = 500;
+  }
 };
 
 
 const map = {
-    '/scenarios': {
-        post: handleScenarios,
-    },
-    '/repository/parties': {
-        post: createParty,
-    },
+  '/scenarios': {
+    post: handleScenarios,
+  },
+  '/repository/parties': {
+    post: createParty,
+  },
 };
 
 
 module.exports = {
-    map,
-    handleOps, // export for testing purposes
+  map,
+  handleOps, // export for testing purposes
 };

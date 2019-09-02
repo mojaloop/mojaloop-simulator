@@ -68,129 +68,129 @@ const contextSym = Symbol('Logger context symbol');
 
 // TODO: Is `key` necessary input to the replaceOutput function?
 const replaceOutput = (key, value) => {
-    if (value instanceof Error) {
-        return Object
-            .getOwnPropertyNames(value)
-            .reduce((acc, objectKey) => ({ ...acc, [objectKey]: value[objectKey] }), {});
-    }
-    if (value instanceof RegExp) {
-        return value.toString();
-    }
-    if (value instanceof Function) {
-        return `[Function: ${value.name || 'anonymous'}]`;
-    }
-    return value;
+  if (value instanceof Error) {
+    return Object
+      .getOwnPropertyNames(value)
+      .reduce((acc, objectKey) => ({ ...acc, [objectKey]: value[objectKey] }), {});
+  }
+  if (value instanceof RegExp) {
+    return value.toString();
+  }
+  if (value instanceof Function) {
+    return `[Function: ${value.name || 'anonymous'}]`;
+  }
+  return value;
 };
 
 class Logger {
-    // space
-    //   String | Number
-    //   The default formatting to be supplied to the JSON.stringify method. Examples include the
-    //   string '\t' to indent with a tab and the number 4 to indent with four spaces. The default,
-    //   undefined, will not break lines.
-    //   See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Parameters
-    // printTimestamp
-    //   Boolean
-    //   Whether to print a timestamp.
-    // timestampFmt
-    //   Function
-    //   A function that accepts a Date object and produces a timestamp string.
-    // transports
-    //   Array of functions
-    //   Each function will be supplied with arguments (String msg, Date timestamp) for each log
-    //   event.
-    // context
-    //   Object
-    //   Context data to preload in the logger. Example: { path: '/users', method: 'GET' }
-    //   This logger and all loggers derived from it (with the push method) will print this context
-    //   If any reserved keys exist in the new object, an error will be thrown.
-    constructor({
-        context = {},
-        space,
-        printTimestamp = true,
-        timestampFmt = ts => ts.toISOString(),
-        transports = [],
-    } = {}) {
-        this.opts = {};
-        this.configure({ space, printTimestamp, timestampFmt });
-        if (this.opts.printTimestamp && 'timestamp' in context) {
-            throw new Error('\'timestamp\' is a reserved logger key when providing \'timestamp: true\' to the constructor');
-        }
-        if ('msg' in context) {
-            throw new Error('\'msg\' is a reserved logger key');
-        }
-        this.opts.transports = transports;
-        this[contextSym] = context;
+  // space
+  //   String | Number
+  //   The default formatting to be supplied to the JSON.stringify method. Examples include the
+  //   string '\t' to indent with a tab and the number 4 to indent with four spaces. The default,
+  //   undefined, will not break lines.
+  //   See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Parameters
+  // printTimestamp
+  //   Boolean
+  //   Whether to print a timestamp.
+  // timestampFmt
+  //   Function
+  //   A function that accepts a Date object and produces a timestamp string.
+  // transports
+  //   Array of functions
+  //   Each function will be supplied with arguments (String msg, Date timestamp) for each log
+  //   event.
+  // context
+  //   Object
+  //   Context data to preload in the logger. Example: { path: '/users', method: 'GET' }
+  //   This logger and all loggers derived from it (with the push method) will print this context
+  //   If any reserved keys exist in the new object, an error will be thrown.
+  constructor({
+    context = {},
+    space,
+    printTimestamp = true,
+    timestampFmt = ts => ts.toISOString(),
+    transports = [],
+  } = {}) {
+    this.opts = {};
+    this.configure({ space, printTimestamp, timestampFmt });
+    if (this.opts.printTimestamp && 'timestamp' in context) {
+      throw new Error('\'timestamp\' is a reserved logger key when providing \'timestamp: true\' to the constructor');
     }
+    if ('msg' in context) {
+      throw new Error('\'msg\' is a reserved logger key');
+    }
+    this.opts.transports = transports;
+    this[contextSym] = context;
+  }
 
-    // Update logger configuration.
-    // opts
-    //   Object. May contain any of .space, .printTimestamp, .timestampFmt
-    //   See constructor comment for details
-    configure(opts) {
+  // Update logger configuration.
+  // opts
+  //   Object. May contain any of .space, .printTimestamp, .timestampFmt
+  //   See constructor comment for details
+  configure(opts) {
     // TODO: check whether printTimestamp has gone from false to true, and whether the
     // timestamp key exists in our context
     // TODO: should we check whether a timestamp format function has been provided, but
     // printtimestamp has been set to false?
-        this.opts = { ...this.opts, ...opts };
-    }
+    this.opts = { ...this.opts, ...opts };
+  }
 
-    // space
-    //   String | Number
-    //   The default formatting to be supplied to the JSON.stringify method. Examples include the
-    //   string '\t' to indent with a tab and the number 4 to indent with four spaces. The default,
-    //   undefined, will not break lines.
-    setSpace(space) {
-        this.space = space;
-    }
+  // space
+  //   String | Number
+  //   The default formatting to be supplied to the JSON.stringify method. Examples include the
+  //   string '\t' to indent with a tab and the number 4 to indent with four spaces. The default,
+  //   undefined, will not break lines.
+  setSpace(space) {
+    this.space = space;
+  }
 
-    // Create a new logger with the same context as the current logger, and additionally any
-    // supplied context.
-    // context
-    //   An object to log. Example: { path: '/users', method: 'GET' }
-    //   If a key in this object already exists in this logger, an error will be thrown.
-    push(context) {
-        if (!context) {
-            return new Logger({ ...this.opts, context: this[contextSym] });
-        }
-        // Check none of the new context replaces any of the old context
-        if (Object.keys(context)
-            .findIndex(k => Object.keys(this[contextSym])
-                .findIndex(l => l === k) !== -1) !== -1) {
-            throw new Error('Key already exists in logger');
-        }
-        return new Logger({ ...this.opts, context: { ...this[contextSym], ...context } });
+  // Create a new logger with the same context as the current logger, and additionally any
+  // supplied context.
+  // context
+  //   An object to log. Example: { path: '/users', method: 'GET' }
+  //   If a key in this object already exists in this logger, an error will be thrown.
+  push(context) {
+    if (!context) {
+      return new Logger({ ...this.opts, context: this[contextSym] });
     }
+    // Check none of the new context replaces any of the old context
+    if (Object.keys(context)
+      .findIndex(k => Object.keys(this[contextSym])
+        .findIndex(l => l === k) !== -1) !== -1) {
+      throw new Error('Key already exists in logger');
+    }
+    return new Logger({ ...this.opts, context: { ...this[contextSym], ...context } });
+  }
 
-    // Log to transports.
-    // args
-    //   Any type is acceptable. All arguments will be passed to util.format, then printed as the
-    //   'msg' property of the logged item.
-    async log(...args) {
+  // Log to transports.
+  // args
+  //   Any type is acceptable. All arguments will be passed to util.format, then printed as the
+  //   'msg' property of the logged item.
+  async log(...args) {
     // NOTE: if printing large strings, JSON.stringify will block the event loop. This, and
     // solutions, are discussed here:
     // https://nodejs.org/en/docs/guides/dont-block-the-event-loop/.
     // At the time of writing, this was considered unlikely to be a problem, as this
     // implementation did not have any performance requirements
-        const msg = args.length > 0 ? util.format(...args) : undefined;
-        const ts = new Date();
-        let output;
-        if (this.opts.printTimestamp) {
-            output = JSON.stringify({
-                ...this[contextSym],
-                msg,
-                timestamp: this.opts.timestampFmt(ts),
-            }, replaceOutput, this.opts.space);
-        } else {
-            // TODO: Define replaceErrors
-            // eslint-disable-next-line no-undef
-            output = JSON.stringify({ ...this[contextSym], msg }, replaceErrors, this.opts.space);
-        }
-        await Promise.all(this.opts.transports.map(t => t(output, ts)));
+    const msg = args.length > 0 ? util.format(...args) : undefined;
+    const ts = new Date();
+    let output;
+    if (this.opts.printTimestamp) {
+      output = JSON.stringify({
+        ...this[contextSym],
+        msg,
+        timestamp: this.opts.timestampFmt(ts),
+      }, replaceOutput, this.opts.space);
+    } else {
+      // TODO: Define replaceErrors
+      // eslint-disable-next-line no-undef
+      output = JSON.stringify({ ...this[contextSym], msg }, replaceErrors, this.opts.space);
     }
+    await Promise.all(this.opts.transports.map(t => t(output, ts)));
+  }
 }
 
 module.exports = {
-    Logger,
-    Transports,
+  Logger,
+  Transports,
 };

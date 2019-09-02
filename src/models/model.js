@@ -43,47 +43,47 @@ const { createPartyTable, createTransferTable, createQuoteTable } = require('./c
  * Initialises both Party and Participant models
  */
 module.exports = class Model {
-    constructor() {
-        this.db = null;
-        this.party = null;
-        this.quote = null;
-        this.transfer = null;
+  constructor() {
+    this.db = null;
+    this.party = null;
+    this.quote = null;
+    this.transfer = null;
+  }
+
+  /**
+ * Closes db object.
+ *
+ * @async
+ */
+  async close() {
+    if (this.db) {
+      await this.db.close();
+    }
+  }
+
+  /**
+ * Initialises db.
+ *
+ * @async
+ * @param {String} databaseFilepath SqliteDB file path
+ * @throws {Error}
+ */
+  async init(databaseFilepath) {
+    if (this.db) {
+      throw new Error('Attempted to initialise database twice');
     }
 
-    /**
-   * Closes db object.
-   *
-   * @async
-   */
-    async close() {
-        if (this.db) {
-            await this.db.close();
-        }
+    try {
+      this.db = await sqlite.open(databaseFilepath);
+      await this.db.run(createPartyTable);
+      await this.db.run(createQuoteTable);
+      await this.db.run(createTransferTable);
+
+      this.party = new Party(this.db);
+      this.quote = new Quote(this.db);
+      this.transfer = new Transfer(this.db);
+    } catch (err) {
+      throw new Error(err);
     }
-
-    /**
-   * Initialises db.
-   *
-   * @async
-   * @param {String} databaseFilepath SqliteDB file path
-   * @throws {Error}
-   */
-    async init(databaseFilepath) {
-        if (this.db) {
-            throw new Error('Attempted to initialise database twice');
-        }
-
-        try {
-            this.db = await sqlite.open(databaseFilepath);
-            await this.db.run(createPartyTable);
-            await this.db.run(createQuoteTable);
-            await this.db.run(createTransferTable);
-
-            this.party = new Party(this.db);
-            this.quote = new Quote(this.db);
-            this.transfer = new Transfer(this.db);
-        } catch (err) {
-            throw new Error(err);
-        }
-    }
+  }
 };

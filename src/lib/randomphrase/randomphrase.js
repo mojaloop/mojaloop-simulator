@@ -26,8 +26,8 @@ const words = require('./words.json');
 
 const randomEl = arr => arr[Math.floor(Math.random() * arr.length)];
 module.exports = (separator = '-') => [
-    randomEl(words.adjectives),
-    randomEl(words.nouns),
-    randomEl(words.adjectives),
-    randomEl(words.nouns),
+  randomEl(words.adjectives),
+  randomEl(words.nouns),
+  randomEl(words.adjectives),
+  randomEl(words.nouns),
 ].join(separator);

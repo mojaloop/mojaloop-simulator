@@ -27,69 +27,69 @@ const test = require('ava');
 const handlers = require('../test-api/handlers');
 
 const testOps = [{
-    name: 'scenario1',
-    operation: 'postTransfers',
-    body: {
-        from: {
-            displayName: 'James Bush',
-            idType: 'MSISDN',
-            idValue: '447710066017',
-        },
-        to: {
-            idType: 'MSISDN',
-            idValue: '447710066018',
-        },
-        amountType: 'SEND',
-        currency: 'USD',
-        amount: '100',
-        transactionType: 'TRANSFER',
-        note: 'test payment',
-        homeTransactionId: '123ABC',
+  name: 'scenario1',
+  operation: 'postTransfers',
+  body: {
+    from: {
+      displayName: 'James Bush',
+      idType: 'MSISDN',
+      idValue: '447710066017',
     },
+    to: {
+      idType: 'MSISDN',
+      idValue: '447710066018',
+    },
+    amountType: 'SEND',
+    currency: 'USD',
+    amount: '100',
+    transactionType: 'TRANSFER',
+    note: 'test payment',
+    homeTransactionId: '123ABC',
+  },
 }, {
-    name: 'scenario2',
-    operation: 'putTransfers',
-    params: {
-        transferId: '{{scenario1.result.transferId}}',
-    },
-    body: {
-        acceptQuote: true,
-    },
+  name: 'scenario2',
+  operation: 'putTransfers',
+  params: {
+    transferId: '{{scenario1.result.transferId}}',
+  },
+  body: {
+    acceptQuote: true,
+  },
 }];
 
 
 test.beforeEach(async (t) => {
-    // eslint-disable-next-line no-param-reassign
-    t.context = { state: { logger: console }, response: {} };
+  // eslint-disable-next-line no-param-reassign
+  t.context = { state: { logger: console }, response: {} };
 });
 
 
 test('should call outbound transfers model and pass on results to next operation', async (t) => {
-    const model = {
-        postTransfers: async () => Promise.resolve({
-            transferId: '12345ABCDEF',
-        }),
-        putTransfers: async transferId => Promise.resolve({
-            transferId,
-        }),
-    };
+  const model = {
+    postTransfers: async () => Promise.resolve({
+      transferId: '12345ABCDEF',
+    }),
+    putTransfers: async transferId => Promise.resolve({
+      transferId,
+    }),
+  };
 
-    const result = await handlers.handleOps(console, model, testOps);
+  const result = await handlers.handleOps(console, model, testOps);
 
-    t.truthy(result.scenario1);
-    t.truthy(result.scenario2);
-    t.truthy(result.scenario1.result);
-    t.truthy(result.scenario2.result);
+  t.truthy(result.scenario1);
+  t.truthy(result.scenario2);
+  t.truthy(result.scenario1.result);
+  t.truthy(result.scenario2.result);
 
-    t.is(result.scenario1.result.transferId, '12345ABCDEF');
-    t.is(result.scenario2.result.transferId, '12345ABCDEF');
+  t.is(result.scenario1.result.transferId, '12345ABCDEF');
+  t.is(result.scenario2.result.transferId, '12345ABCDEF');
 });
 
 
 test('should return 500 when sending a non valid ops', async (t) => {
-    // eslint-disable-next-line no-param-reassign
-    t.context.request = { body: { hello: 'world' } };
-    await handlers.map['/scenarios'].post(t.context);
-    t.truthy(t.context.response.body);
-    t.is(t.context.response.status, 500);
+  // eslint-disable-next-line no-param-reassign
+  t.context.request = { body: { hello: 'world' } };
+  await handlers.map['/scenarios'].post(t.context);
+  t.truthy(t.context.response.body);
+  t.is(t.context.response.status, 500);
 });
