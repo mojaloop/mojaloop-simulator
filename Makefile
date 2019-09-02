@@ -30,7 +30,7 @@ push: build
 	docker push ${TAG}
 
 run: build
-	docker run -p 3000:3000 -p 3001:3001 -p 3003:3003 --env-file ./src/.env --rm -it ${TAG} ${CMD}
+	docker run -p 3000:3000 -p 3001:3001 -p 3003:3003 --rm -it ${TAG} ${CMD}
 
 ## CLEAN BUILDS
 # Create a build from the current repo HEAD, without modifications or untracked files
@@ -44,7 +44,7 @@ push_clean: build_clean
 push_clean_all: push_clean
 
 run_clean: build_clean
-	docker run -p 3000:3000 -p 3001:3001 -p 3003:3003 --env-file ./src/.env --rm -it ${TAG}
+	docker run -p 3000:3000 -p 3001:3001 -p 3003:3003 --rm -it ${TAG}
 
 # Copy the repo to a temp directory, hard reset to HEAD, remove all untracked files in the repo and
 # any submodules.
