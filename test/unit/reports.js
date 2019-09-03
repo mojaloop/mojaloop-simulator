@@ -27,10 +27,11 @@ const test = require('ava');
 const { stringify } = require('querystring');
 const uuid = require('uuid/v1');
 
+const { quote } = require(`./constants`);
+
 const src = '../../src'
 const { map } = require(`${src}/reports/handlers`);
 const Model = require(`${src}/models/model`);
-const { quote } = require(`${src}/constants`);
 const Config = require(`${src}/config`);
 
 const model = new Model();

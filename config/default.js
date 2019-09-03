@@ -1,15 +1,15 @@
 const config = {
   tls: {
     /* Enable server-only TLS; i.e. serve on HTTPS instead of HTTP. */
-    enabled: true,
+    enabled: false,
     mutualTLS: {
       /*
       Enable mutual TLS authentication. Useful when the simulator is not running in a Mojaloop
       environment, i.e. when you're running it locally against your own implementation.
       */
-      enabled: false
-    }
-  }
+      enabled: false,
+    },
+  },
   
   
   /* Location of   certs and key required for TLS */
@@ -42,7 +42,7 @@ const config = {
 
   DFSP_ID: 'golden',
   FEE_MULTIPLIER: 0.05,
-  RULES_FILE: './ rules.json'
+  RULES_FILE: './ rules.json',
 
   /* Ports for each api server to listen on */
   SIMULATOR_PORT: 3000,

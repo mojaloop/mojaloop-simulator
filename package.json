@@ -19,7 +19,7 @@
     "start": "node ./src/index.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "test": "ava -c 1"
+    "test:unit": "ava -c 1"
   },
   "dependencies": {
     "@internal/log": "file:src/lib/log",
@@ -35,7 +35,7 @@
     "koa-body": "4.0.6",
     "mustache": "3.0.1",
     "node-fetch": "2.6.0",
-    "rc": "^1.2.8",
+    "rc": "1.2.8",
     "sqlite": "3.0.3",
     "yamljs": "0.3.0"
   },

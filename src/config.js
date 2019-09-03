@@ -33,9 +33,9 @@ module.exports = {
       enabled: RC.tls.mutualTLS.enabled,
     },
     creds: {
-      ca: fs.readFileSync(RC.CA_CERT_PATH),
-      cert: fs.readFileSync(RC.SERVER_CERT_PATH),
-      key: fs.readFileSync(RC.SERVER_KEY_PAT),
+      ca: RC.tls.enabled && fs.readFileSync(RC.CA_CERT_PATH),
+      cert: RC.tls.enabled && fs.readFileSync(RC.SERVER_CERT_PATH),
+      key: RC.tls.enabled && fs.readFileSync(RC.SERVER_KEY_PAT),
     },
   },
   LOG_INDENT: RC.LOG_INDENT,
