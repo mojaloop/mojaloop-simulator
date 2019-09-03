@@ -35,16 +35,16 @@ const https = require('https');
 
 const RulesEngine = require('@internal/rules-engine');
 
-// eslint-disable-next-line import/no-dynamic-require
-const rules = require(Config.RULES_FILE);
 
 const simHandlers = require('./simulator/handlers');
 const reportHandlers = require('./reports/handlers');
 const testApiHandlers = require('./test-api/handlers');
 
-// const { setConfig, getConfig } = require('./config.js');
 const Model = require('./models/model');
 const Config = require('./config')
+
+// eslint-disable-next-line import/no-dynamic-require
+const rules = require(Config.RULES_FILE);
 
 
 // require('dotenv').config();
@@ -65,9 +65,9 @@ const testApi = new Koa();
     Transports.consoleDir(),
     Transports.sqlite(Config.SQLITE_LOG_FILE),
   ]);
-  const simLogger = new Logger({ context: { app: 'simulator' }, Config.LOG_INDENT, transports });
-  const reportLogger = new Logger({ context: { app: 'report' }, Config.LOG_INDENT, transports });
-  const testApiLogger = new Logger({ context: { app: 'test-api' }, Config.LOG_INDENT, transports });
+  const simLogger = new Logger({ context: { app: 'simulator' }, space: Config.LOG_INDENT, transports });
+  const reportLogger = new Logger({ context: { app: 'report' }, space: Config.LOG_INDENT, transports });
+  const testApiLogger = new Logger({ context: { app: 'test-api' }, space: Config.LOG_INDENT, transports });
 
 
   const rulesEngine = new RulesEngine({ logger: simLogger });
