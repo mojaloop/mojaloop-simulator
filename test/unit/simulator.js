@@ -24,8 +24,9 @@
 
 const test = require('ava');
 
-const Model = require('../models/model');
-const { map } = require('../simulator/handlers');
+const src = '../../src'
+const Model = require(`${src}/models/model`);
+const { map } = require(`${src}/simulator/handlers`);
 const {
   transfer, quote, party, idType, idValue,
 } = require('./constants');

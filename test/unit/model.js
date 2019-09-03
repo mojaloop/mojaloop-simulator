@@ -24,7 +24,8 @@
 
 const test = require('ava');
 
-const Model = require('../models/model');
+const src = '../../src'
+const Model = require(`${src}/models/model`);
 const {
   transfer, quote, party, newQuote, newTransfer, idType, idValue, transferId,
 } = require('./constants');

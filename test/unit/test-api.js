@@ -24,7 +24,8 @@
 
 const test = require('ava');
 
-const handlers = require('../test-api/handlers');
+const src = '../../src'
+const handlers = require(`${src}/test-api/handlers`);
 
 const testOps = [{
   name: 'scenario1',
