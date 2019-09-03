@@ -27,10 +27,11 @@ const test = require('ava');
 const { stringify } = require('querystring');
 const uuid = require('uuid/v1');
 
-const { map } = require('../reports/handlers');
-const Model = require('../models/model');
-const { quote } = require('./constants');
-require('dotenv').config();
+const src = '../../src'
+const { map } = require(`${src}/reports/handlers`);
+const Model = require(`${src}/models/model`);
+const { quote } = require(`${src}/constants`);
+const Config = require(`${src}/config`);
 
 const model = new Model();
 const end = new Date();
@@ -39,7 +40,7 @@ const validQuerystring = stringify({ START_DATE_TIME: '2019-05-20T21:20:56', END
 const nonFindableQuerystring = stringify({ START_DATE_TIME: '2019-05-19T21:20:00', END_DATE_TIME: '2019-05-20T21:20:56' });
 
 test.before(async (t) => {
-  await model.init(process.env.MODEL_DATABASE);
+  await model.init(Config.MODEL_DATABASE);
   Array.from({ length: 10 }).forEach(async (x, i) => {
     quote.quoteId = uuid();
     await model.quote.create(quote);

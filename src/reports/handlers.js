@@ -26,6 +26,7 @@ const { parse } = require('querystring');
 const sqlite = require('sqlite');
 const util = require('util');
 
+const Config = require('../config');
 const { ApiErrorCodes } = require('../models/errors');
 const { quoteTable } = require('../models/constants');
 
@@ -53,8 +54,8 @@ const parseQuotes = (quotes) => {
       } = quoteReq;
 
       responses.push({
-        senderDFSPId: process.env.DFSP_ID,
-        senderDFSPName: process.env.DFSP_ID,
+        senderDFSPId: Config.DFSP_ID,
+        senderDFSPName: Config.DFSP_ID,
         receiverDFSPId: '',
         receiverDFSPName: '',
         hubTxnID: transactionId,
@@ -93,7 +94,7 @@ const getReport = async (ctx) => {
       ctx.response.status = 400;
       return;
     }
-    const db = await sqlite.open(process.env.MODEL_DATABASE);
+    const db = await sqlite.open(Config.MODEL_DATABASE);
 
     const quotes = await db.all(`SELECT request, response, created FROM ${quoteTable} where created >= '${START_DATE_TIME}' AND created < '${END_DATE_TIME}'`);
     if (quotes.length === 0) {

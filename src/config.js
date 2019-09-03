@@ -24,64 +24,6 @@
 'use strict'
 
 const fs = require('fs');
-
-// // A promise wrapper around fs.readFile
-// // Redundant on node 10 and above, use require('fs').promises instead
-// async function readFile(...args) {
-//     const p = new Promise((resolve, reject) => {
-//         fs.readFile(...args, (err, data) => {
-//             if (err) {
-//                 reject(err);
-//             }
-//             resolve(data);
-//         });
-//     });
-//     return p;
-// }
-
-
-// // TODO: implement toString, toJSON toAnythingElse methods on config so that secrets can't be
-// // printed
-// const config = {
-//     tls: {
-//         enabled: true,
-//         mutualTLS: { enabled: false },
-//         creds: { // copied directly into https opts; check usage before modifying
-//             ca: null,
-//             cert: null,
-//             key: null,
-//         },
-//     },
-// };
-
-
-// const setConfig = async (cfg) => {
-//     config.tls.mutualTLS.enabled = cfg.MUTUAL_TLS_ENABLED.toLowerCase() !== 'false';
-//     config.tls.enabled = cfg.HTTPS_ENABLED !== 'false';
-//     // Getting secrets from files instead of environment variables reduces the likelihood of
-//     // accidental leakage. Nobody dumps
-//     if (config.tls.mutualTLS.enabled && !config.tls.enabled) {
-//         throw new Error('Mutual TLS enabled, but HTTPS disabled');
-//     }
-//     if (config.tls.mutualTLS.enabled || config.tls.enabled) {
-//         [config.tls.creds.ca, config.tls.creds.cert, config.tls.creds.key] = await Promise.all([
-//             readFile(cfg.CA_CERT_PATH),
-//             readFile(cfg.SERVER_CERT_PATH),
-//             readFile(cfg.SERVER_KEY_PATH),
-//         ]);
-//     }
-// };
-
-
-// const getConfig = () => config;
-
-
-// module.exports = {
-//     getConfig,
-//     setConfig,
-// };
-
-
 const RC = require('rc')('ML_SIM', require('../config/default.js'))
 
 module.exports = {
@@ -90,7 +32,7 @@ module.exports = {
     mutualTLS: { 
       enabled: RC.tls.mutualTLS.enabled,
     },
-    creds: { // copied directly into https opts; check usage before modifying
+    creds: {
       ca: fs.readFileSync(RC.CA_CERT_PATH),
       cert: fs.readFileSync(RC.SERVER_CERT_PATH),
       key: fs.readFileSync(RC.SERVER_KEY_PAT),
@@ -103,4 +45,7 @@ module.exports = {
   DFSP_ID: RC.DFSP_ID,
   FEE_MULTIPLIER: RC.FEE_MULTIPLIER,
   RULES_FILE: RC.RULES_FILE,
+  SIMULATOR_PORT: RC.SIMULATOR_PORT,
+  REPORT_PORT: RC.REPORT_PORT,
+  TEST_API_PORT: RC.TEST_API_PORT,
 }

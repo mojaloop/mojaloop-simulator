@@ -43,6 +43,11 @@ const config = {
   DFSP_ID: 'golden',
   FEE_MULTIPLIER: 0.05,
   RULES_FILE: './ rules.json'
+
+  /* Ports for each api server to listen on */
+  SIMULATOR_PORT: 3000,
+  REPORT_PORT: 3002,
+  TEST_API_PORT: 3003,
 }
 
 module.exports = config

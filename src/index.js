@@ -36,7 +36,7 @@ const https = require('https');
 const RulesEngine = require('@internal/rules-engine');
 
 // eslint-disable-next-line import/no-dynamic-require
-const rules = require(process.env.RULES_FILE);
+const rules = require(Config.RULES_FILE);
 
 const simHandlers = require('./simulator/handlers');
 const reportHandlers = require('./reports/handlers');
@@ -44,7 +44,7 @@ const testApiHandlers = require('./test-api/handlers');
 
 // const { setConfig, getConfig } = require('./config.js');
 const Model = require('./models/model');
-const conf = require('./config')
+const Config = require('./config')
 
 
 // require('dotenv').config();
@@ -58,18 +58,16 @@ const report = new Koa();
 const testApi = new Koa();
 
 (async function start() {
-  // Set up the config from the environment
-  // await setConfig(process.env);
 
   // Set up a logger for each running server
-  const space = Number(process.env.LOG_INDENT);
+  const space = Number(Config.LOG_INDENT);
   const transports = await Promise.all([
     Transports.consoleDir(),
-    Transports.sqlite(process.env.SQLITE_LOG_FILE),
+    Transports.sqlite(Config.SQLITE_LOG_FILE),
   ]);
-  const simLogger = new Logger({ context: { app: 'simulator' }, space, transports });
-  const reportLogger = new Logger({ context: { app: 'report' }, space, transports });
-  const testApiLogger = new Logger({ context: { app: 'test-api' }, space, transports });
+  const simLogger = new Logger({ context: { app: 'simulator' }, Config.LOG_INDENT, transports });
+  const reportLogger = new Logger({ context: { app: 'report' }, Config.LOG_INDENT, transports });
+  const testApiLogger = new Logger({ context: { app: 'test-api' }, Config.LOG_INDENT, transports });
 
 
   const rulesEngine = new RulesEngine({ logger: simLogger });
@@ -77,7 +75,7 @@ const testApi = new Koa();
 
   // Initialise the model
   const model = new Model();
-  await model.init(process.env.MODEL_DATABASE);
+  await model.init(Config.MODEL_DATABASE);
 
   // Log raw to console as a last resort- if the logging framework crashes
   const failSafe = async (ctx, next) => {
@@ -252,25 +250,24 @@ const testApi = new Koa();
 
   // If config specifies TLS, start an HTTPS server; otherwise HTTP
   let simServer;
-  // const conf = getConfig();
-  const simulatorPort = 3000;
-  const reportPort = 3002;
-  const testApiPort = 3003;
+  const simulatorPort = Config.SIMULATOR_PORT;
+  const reportPort = Config.REPORT_PORT;
+  const testApiPort = Config.TEST_API_PORT;
 
-  if (conf.tls.mutualTLS.enabled || conf.tls.enabled) {
-    if (!(conf.tls.creds.ca && conf.tls.creds.cert && conf.tls.creds.key)) {
+  if (Config.tls.mutualTLS.enabled || Config.tls.enabled) {
+    if (!(Config.tls.creds.ca && Config.tls.creds.cert && Config.tls.creds.key)) {
       throw new Error(
         'Incompatible parameters.\n'
-        + `Mutual TLS enabled: ${conf.tls.mutualTLS.enabled}.\n`
-        + `HTTPS enabled: ${conf.tls.enabled}.\n`
-        + `Server key present: ${conf.tls.creds.key !== null}.\n`
-        + `CA cert present: ${conf.tls.creds.ca !== null}.\n`
-        + `Server cert present: ${conf.tls.creds.cert !== null}`,
+        + `Mutual TLS enabled: ${Config.tls.mutualTLS.enabled}.\n`
+        + `HTTPS enabled: ${Config.tls.enabled}.\n`
+        + `Server key present: ${Config.tls.creds.key !== null}.\n`
+        + `CA cert present: ${Config.tls.creds.ca !== null}.\n`
+        + `Server cert present: ${Config.tls.creds.cert !== null}`,
       );
     }
     const httpsOpts = {
-      ...conf.tls.creds,
-      requestCert: conf.tls.mutualTLS.enabled,
+      ...Config.tls.creds,
+      requestCert: Config.tls.mutualTLS.enabled,
       rejectUnauthorized: true, // no effect if requestCert is not true
     };
     simServer = https.createServer(httpsOpts, simulator.callback()).listen(simulatorPort);

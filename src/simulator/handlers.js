@@ -23,7 +23,8 @@
 'use strict'
 
 const util = require('util');
-require('dotenv').config();
+const Config = require('../config');
+
 const { ApiErrorCodes } = require('../models/errors.js');
 
 
@@ -36,7 +37,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
       ctx.response.status = 404;
       return;
     }
-    ctx.response.body = { fspId: process.env.DFSP_ID };
+    ctx.response.body = { fspId: Config.DFSP_ID };
     ctx.response.status = 200;
   } catch (err) {
     ctx.response.body = ApiErrorCodes.SERVER_ERROR;

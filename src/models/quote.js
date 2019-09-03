@@ -23,11 +23,13 @@
  ******/
 'use strict'
 
+const Config = require('../config')
 /**
  * @file Simulator resources Quote model
  * @description Defines the quote model structure and operations within the simulator.
  */
 const { quoteTable } = require('./constants');
+
 
 // eslint-disable-next-line import/no-unresolved
 require('dotenv').config();
@@ -68,7 +70,7 @@ module.exports = class Quote {
       amount,
       currency,
     } = quoteRequest;
-    const fee = Math.floor(Number(amount) * Number(process.env.FEE_MULTIPLIER)).toString();
+    const fee = Math.floor(Number(amount) * Number(Config.FEE_MULTIPLIER)).toString();
     const response = {
       quoteId,
       transactionId,

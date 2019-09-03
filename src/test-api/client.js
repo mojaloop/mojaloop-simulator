@@ -23,9 +23,8 @@
 'use strict'
 
 const fetch = require('node-fetch');
-require('dotenv').config();
 
-const { OUTBOUND_ENDPOINT } = process.env;
+const { OUTBOUND_ENDPOINT } = require('../config')
 
 
 /**
