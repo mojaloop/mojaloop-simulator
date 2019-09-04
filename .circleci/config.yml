@@ -434,7 +434,7 @@ jobs:
 
   test-build:
     machine: true
-    <<: *default_env
+    # <<: *default_env
     steps:
       - run:
           <<: *defaults_custom_checkout
