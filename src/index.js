@@ -1,6 +1,3 @@
-process.env.OUTBOUND_ENDPOINT = 'http://localhost:4001';
-console.log(process.env.OUTBOUND_ENDPOINT);
-
 /*****
  License
  --------------
