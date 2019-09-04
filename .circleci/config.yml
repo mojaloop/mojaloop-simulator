@@ -282,6 +282,9 @@ jobs:
           keys:
             - dependency-cache-{{ checksum "package.json" }}
       - run:
+          name: Run install again for nested package.json files
+          command: npm install
+      - run:
           name: Execute code coverage check
           command: npm -s run test:coverage-check
       - store_artifacts:
