@@ -140,7 +140,6 @@ const handleOps = async (logger, model, ops) => {
 
             if (op.operation === supportedOperations.POST_TRANSFERS) {
                 const response = await model.postTransfers(renderedBody);
-                console.log(response);
                 acc[op.name] = { result: response };
             }
 
