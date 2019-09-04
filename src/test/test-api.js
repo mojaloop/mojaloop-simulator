@@ -95,10 +95,10 @@ test('should return 204 when updating a party', async (t) => {
     t.is(t.context.response.status, 204);
 });
 
-test('should return 200 when deleting a party', async (t) => {
+test('should return 204 when deleting a party', async (t) => {
     const { idType, idValue } = party;
     // eslint-disable-next-line no-param-reassign
-    t.context.state.path ={ params: { idType, idValue } };
+    t.context.state.path = { params: { idType, idValue } };
     await handlers.map['/repository/parties/{idType}/{idValue}'].delete(t.context);
     t.falsy(t.context.response.body);
     t.is(t.context.response.status, 204);
