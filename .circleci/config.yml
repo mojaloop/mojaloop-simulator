@@ -295,7 +295,7 @@ jobs:
       - run:
           name: Copy code coverage to SonarQube
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ];
+            if [ "${CIRCLE_BRANCH}" == "feature/898-add-ci-cd" ];
             then
                 echo "Sending lcov.info to SonarQube..."
                 aws s3 cp coverage/lcov.info $AWS_S3_DIR_SONARQUBE/$CIRCLE_PROJECT_REPONAME/lcov.info
