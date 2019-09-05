@@ -21,6 +21,7 @@
     "@internal/router": "file:lib/router",
     "@internal/rules-engine": "file:lib/rules-engine",
     "@internal/validate": "file:lib/validate",
+    "@koa/cors": "^2.2.3",
     "ajv": "^6.7.0",
     "chance": "^1.0.18",
     "dotenv": "^7.0.0",

@@ -54,6 +54,17 @@ module.exports = class Party {
         return res;
     }
 
+    /**
+    * Retrieves all Parties.
+    *
+    * @async
+    * @returns {Promise<Object>} Party object.
+    */
+    async getAll() {
+        const res = await this.db.all(`SELECT * FROM ${partyTable} `);
+        return res;
+    }
+
 
     /**
     * Creates a Party.
@@ -79,17 +90,17 @@ module.exports = class Party {
     * @param {String} idValue  The party idValue to update.
     * @param {Object} newParty The new Party object.
     */
-    async update(idValue, newParty) {
+    async update(idType, idValue, newParty) {
         const entries = Object.entries(newParty)
             .filter(([, v]) => v !== undefined); // get rid of undefined values
-        const vals = [...entries.reduce((pv, [, v]) => [...pv, v], []), idValue]; // recombine array
+        const vals = [...entries.reduce((pv, [, v]) => [...pv, v], []), idType, idValue]; // recombine array
         const query = entries
             .map(([k]) => `${k} = ?`) // turn each key, e.g. displayName into 'displayName = ?'
             .join(', '); // join each of the above with a comma
         await this.db.run(`
             UPDATE ${partyTable}
             SET ${query}
-            WHERE idValue = ?`,
+            WHERE idType = ? AND idValue = ?`,
         vals);
     }
 

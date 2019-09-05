@@ -74,7 +74,7 @@ test('create and update a party', async (t) => {
     };
     await model.party.create(party);
     const orig = await model.party.get(idType, idValue);
-    await model.party.update(idValue, newParty);
+    await model.party.update(idType, idValue, newParty);
     const changed = await model.party.get(idType, idValue);
     t.notDeepEqual({ orig }, { changed });
 });

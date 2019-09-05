@@ -38,6 +38,44 @@ paths:
           description: The request was malformed
         '500':
           description: An error occured processing the request
+    get:
+      description: Get an existing party
+      responses:
+        '200':
+          description: Party data is returned
+  /repository/parties/{idType}/{idValue}:
+    put:
+      description: Modifies a party
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Party'
+      responses:
+        '204':
+          description: Party was created
+        '400':
+          description: The request was malformed
+        '500':
+          description: An error occured processing the request
+    delete:
+      description: Deletes a party
+      responses:
+        '204':
+          description: The party was created
+        '500':
+          description: An error occured processing the request
+      parameters:
+        - name: idType
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idType'
+        - name: idValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idValue'
 
 components:
   schemas:
@@ -107,4 +145,14 @@ components:
           type: string
           minLength: 1
           maxLength: 128
+    idType:
+      type: string
+      enum:
+      - MSISDN
+      - ACCOUNT_NO
+      
+    idValue:
+      type: string
+      minLength: 1
+      maxLength: 128
 
