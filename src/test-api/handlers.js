@@ -52,6 +52,59 @@ const createParty = async (ctx) => {
     }
 };
 
+const readParties = async (ctx) => {
+    try {
+        const res = await ctx.state.model.party.getAll();
+        if (!res) {
+            ctx.response.body = '';
+            ctx.response.status = 404;
+            return;
+        }
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.response.body = '';
+        ctx.response.status = 500;
+    }
+};
+
+const updateParty = async (ctx) => {
+    const { idValue, idType } = ctx.state.path.params;
+    const model = ctx.request.body;
+    if (!idValue || !idType) {
+        ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
+        ctx.response.status = 400;
+        return;
+    }
+
+    try {
+        await ctx.state.model.party.update(idType, idValue, model);
+        ctx.response.status = 204;
+        return;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.ID_NOT_UNIQUE;
+        ctx.response.status = 500;
+    }
+};
+
+const deleteParty = async (ctx) => {
+    const { idValue, idType } = ctx.state.path.params;
+    if (!idValue || !idType) {
+        ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
+        ctx.response.status = 500;
+        return;
+    }
+
+    try {
+        await ctx.state.model.party.delete(idType, idValue);
+        ctx.response.status = 204;
+        return;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.ID_NOT_UNIQUE;
+        ctx.response.status = 500;
+    }
+};
+
 
 /**
  * Handles all operation scenarios
@@ -134,13 +187,17 @@ const handleScenarios = async (ctx) => {
     }
 };
 
-
 const map = {
     '/scenarios': {
         post: handleScenarios,
     },
     '/repository/parties': {
+        get: readParties,
         post: createParty,
+    },
+    '/repository/parties/{idType}/{idValue}': {
+        put: updateParty,
+        delete: deleteParty,
     },
 };
 

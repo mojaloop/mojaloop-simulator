@@ -35,7 +35,7 @@ const yaml = require('yamljs');
 const util = require('util');
 const router = require('@internal/router');
 const https = require('https');
-
+const cors = require('@koa/cors');
 const RulesEngine = require('@internal/rules-engine');
 
 // eslint-disable-next-line import/no-dynamic-require
@@ -47,7 +47,6 @@ const testApiHandlers = require('./test-api/handlers');
 
 const { setConfig, getConfig } = require('./config.js');
 const Model = require('./models/model');
-
 
 require('dotenv').config();
 
@@ -95,6 +94,7 @@ const testApi = new Koa();
     report.use(failSafe);
     testApi.use(failSafe);
 
+    testApi.use(cors());
 
     // Add a log context for each request, log the receipt and handling thereof
     simulator.use(async (ctx, next) => {

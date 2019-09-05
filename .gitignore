@@ -61,3 +61,8 @@ typings/
 
 log.sqlite3
 simulator.log
+
+# environments
+docker-compose.local.yml
+goldenpayerfsp
+goldenpayeefsp

@@ -23,8 +23,9 @@
 'use strict';
 
 const test = require('ava');
-
+const Model = require('../../src/models/model');
 const handlers = require('../test-api/handlers');
+const { ops, party } = require('./constants');
 
 const testOps = [{
     name: 'scenario1',
@@ -57,12 +58,59 @@ const testOps = [{
     },
 }];
 
-
 test.beforeEach(async (t) => {
+    const model = new Model();
+    await model.init(':memory:');
     // eslint-disable-next-line no-param-reassign
-    t.context = { state: { logger: console }, response: {} };
+    t.context = { state: { model, logger: console }, response: {} };
 });
 
+test.afterEach(async (t) => {
+    await t.context.state.model.close();
+});
+
+test('should return 200 when reading a party', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    await handlers.map['/repository/parties'].get(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('should return 204 when creating a party', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: party };
+    await handlers.map['/repository/parties'].post(t.context);
+    t.falsy(t.context.response.body);
+    t.is(t.context.response.status, 204);
+});
+
+test('should return 204 when updating a party', async (t) => {
+    const { idType, idValue } = party;
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: party };
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { idType, idValue } };
+    await handlers.map['/repository/parties/{idType}/{idValue}'].put(t.context);
+    t.falsy(t.context.response.body);
+    t.is(t.context.response.status, 204);
+});
+
+test('should return 204 when deleting a party', async (t) => {
+    const { idType, idValue } = party;
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { idType, idValue } };
+    await handlers.map['/repository/parties/{idType}/{idValue}'].delete(t.context);
+    t.falsy(t.context.response.body);
+    t.is(t.context.response.status, 204);
+});
+
+test('should return 200 when posting correct scenarios', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: ops };
+    await handlers.map['/scenarios'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
 
 test('should call outbound transfers model and pass on results to next operation', async (t) => {
     const model = {
