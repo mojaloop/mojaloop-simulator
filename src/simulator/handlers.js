@@ -20,10 +20,11 @@
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
 
 const util = require('util');
 require('dotenv').config();
+const { getStackOrInspect } = require('@internal/log');
 const { ApiErrorCodes } = require('../models/errors.js');
 
 
@@ -71,7 +72,7 @@ const postTransfers = async (ctx) => {
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.log(`Error in postTransfers: ${err.stack || util.inspect(err)}`);
+        ctx.state.logger.log(`Error in postTransfers: ${getStackOrInspect(err)}`);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -85,7 +86,7 @@ const postQuotes = async (ctx) => {
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.log(`Error in postQuotes: ${err.stack || util.inspect(err)}`);
+        ctx.state.logger.log(`Error in postQuotes: ${getStackOrInspect(err)}`);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }

@@ -21,7 +21,7 @@
  * ModusBox <https://modusbox.com>
  --------------
  ******/
-'use strict'
+'use strict';
 
 /**
  * @file Simulator resources Party model

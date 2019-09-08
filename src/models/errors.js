@@ -20,7 +20,7 @@
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
 
 const ApiErrorCodes = {
     MISSING_ID_VALUE: { statusCode: '3102', message: 'ID not supplied' },

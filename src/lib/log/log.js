@@ -20,7 +20,7 @@
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
 
 // An immutable structured logger. It uses JSON.stringify to stringify any arguments.
 // TODO: either make this callable, or remove the following text indicating the logger is callable.
@@ -108,7 +108,7 @@ class Logger {
         context = {},
         space,
         printTimestamp = true,
-        timestampFmt = ts => ts.toISOString(),
+        timestampFmt = (ts) => ts.toISOString(),
         transports = [],
     } = {}) {
         this.opts = {};
@@ -155,8 +155,8 @@ class Logger {
         }
         // Check none of the new context replaces any of the old context
         if (Object.keys(context)
-            .findIndex(k => Object.keys(this[contextSym])
-                .findIndex(l => l === k) !== -1) !== -1) {
+            .findIndex((k) => Object.keys(this[contextSym])
+                .findIndex((l) => l === k) !== -1) !== -1) {
             throw new Error('Key already exists in logger');
         }
         return new Logger({ ...this.opts, context: { ...this[contextSym], ...context } });
@@ -183,14 +183,25 @@ class Logger {
             }, replaceOutput, this.opts.space);
         } else {
             // TODO: Define replaceErrors
+            /* istanbul ignore next */
             // eslint-disable-next-line no-undef
             output = JSON.stringify({ ...this[contextSym], msg }, replaceErrors, this.opts.space);
         }
-        await Promise.all(this.opts.transports.map(t => t(output, ts)));
+        await Promise.all(this.opts.transports.map((t) => t(output, ts)));
     }
 }
+
+/**
+ * @function getStackOrInspect
+ * @description Given an anonymous error, return said error's stack if it has it, or util.inspect it
+ * @param {any} err - The error object to inspect
+ */
+const getStackOrInspect = (err, options = null) => err.stack || util.inspect(err, options);
 
 module.exports = {
     Logger,
     Transports,
+    getStackOrInspect,
+    // Export for unit testing only
+    _replaceOutput: replaceOutput,
 };

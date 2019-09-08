@@ -20,7 +20,7 @@
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
 
 // TODO: is it worth bringing in an external lib just for converting params to JSON schema?
 // Consider replacing this.
@@ -59,7 +59,7 @@ const createSchema = (pathValue, methodValue) => {
             ...Object.entries(properties.headers.properties)
                 .map(([headerName, value]) => ({ [headerName.toLowerCase()]: value })),
         );
-        properties.headers.required = properties.headers.required.map(r => r.toLowerCase());
+        properties.headers.required = properties.headers.required.map((r) => r.toLowerCase());
     }
     const required = Object.entries(properties)
         .filter(([, value]) => value.required && value.required.length > 0)
@@ -103,7 +103,7 @@ const createSchema = (pathValue, methodValue) => {
 //     }
 //   }
 // }
-const transformApiDoc = apiDoc => ({
+const transformApiDoc = (apiDoc) => ({
     ...apiDoc,
     // TODO: as we now discard most of the extra information, it probably makes sense to explicitly
     // return the object form we're interested in, rather than do all of this awkward object
@@ -158,7 +158,7 @@ class Validator {
                 // replace the path parameters with named regex matches corresponding to the path
                 // names.
                 regex: new RegExp(`^${path.replace(pathParamMatch, '([^{}/]+)')}$`),
-                params: (path.match(pathParamMatch) || []).map(s => s.replace(/(^{|}$)/g, '')),
+                params: (path.match(pathParamMatch) || []).map((s) => s.replace(/(^{|}$)/g, '')),
             },
             methods: { ...pathSpec },
         }));
@@ -171,7 +171,7 @@ class Validator {
     // is probably more valuable, given the purpose of the simulator. However; having the lib
     // support this option would be good.
     validatePath(path, logger) {
-        const result = this.paths.find(p => path.match(p.matcher.regex) !== null);
+        const result = this.paths.find((p) => path.match(p.matcher.regex) !== null);
 
         if (result === undefined) {
             throw new Error(`Couldn't match path ${path}`);

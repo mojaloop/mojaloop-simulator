@@ -9,6 +9,6 @@
   "author": "Matt Kingston, ModusBox Inc",
   "license": "Apache-2.0",
   "dependencies": {
-    "sqlite": "^3.0.1"
+    "sqlite": "3.0.1"
   }
 }

@@ -17,47 +17,22 @@
  optionally within square brackets <email>.
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Mowali
+ * Vessels Tech
+ - Lewis Daly <lewis@vesselstech.com>
  --------------
  ******/
 'use strict';
 
-const partyTable = 'party';
-const quoteTable = 'quote';
-const transferTable = 'transfer';
+const test = require('ava');
 
-const createPartyTable = `
-CREATE TABLE IF NOT EXISTS ${partyTable} (
-    displayName TEXT,
-    firstName TEXT,
-    middleName TEXT,
-    lastName TEXT,
-    dateOfBirth TEXT,
-    idType TEXT,
-    idValue TEXT NOT NULL PRIMARY KEY,
-    CHECK(idValue <> '')
-)
-`;
+const randomphrase = require('@internal/randomphrase');
 
-const createQuoteTable = `
-CREATE TABLE IF NOT EXISTS ${quoteTable} (
-    id TEXT NOT NULL PRIMARY KEY,
-    request TEXT,
-    response TEXT,
-    created TIMESTAMP
-    CHECK(id <> '')
-)
-`;
+test('gets 2 random phrases', (t) => {
+    // Arrange
+    // Act
+    const phrase1 = randomphrase();
+    const phrase2 = randomphrase();
 
-const createTransferTable = `
-CREATE TABLE IF NOT EXISTS ${transferTable} (
-    id TEXT NOT NULL PRIMARY KEY,
-    request TEXT,
-    response TEXT,
-    CHECK(id <> '')
-)
-`;
-
-module.exports = {
-    partyTable, quoteTable, createPartyTable, createQuoteTable, createTransferTable, transferTable,
-};
+    // Assert
+    t.falsy(phrase1 === phrase2, '2 Random phrases should not match');
+});

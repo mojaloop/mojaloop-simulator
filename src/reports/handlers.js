@@ -20,12 +20,12 @@
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
 
 const { parse } = require('querystring');
 const sqlite = require('sqlite');
-const util = require('util');
 
+const { getStackOrInspect } = require('@internal/log');
 const { ApiErrorCodes } = require('../models/errors');
 const { quoteTable } = require('../models/constants');
 
@@ -105,7 +105,8 @@ const getReport = async (ctx) => {
         ctx.response.body = responses;
         ctx.response.status = 200;
     } catch (err) {
-        console.log(`Error generating report: ${err.stack || util.inspect(err)}`);
+        // eslint-disable-next-line no-console
+        console.log(`Error generating report: ${getStackOrInspect(err)}`);
         ctx.response.body = ApiErrorCodes.REPORT_ERROR;
         ctx.response.status = 500;
     }

@@ -20,7 +20,7 @@
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
 
 const test = require('ava');
 
@@ -29,6 +29,7 @@ const { map } = require('../simulator/handlers');
 const {
     transfer, quote, party, idType, idValue,
 } = require('./constants');
+const { ApiErrorCodes } = require('../models/errors');
 
 test.beforeEach(async (t) => {
     const model = new Model();
@@ -109,4 +110,42 @@ test('should return 404 while getting a non existing participant', async (t) => 
     await map['/participants/{idType}/{idValue}'].get(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 404);
+});
+
+test('should return a valid health check', async (t) => {
+    // Arrange
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { idValue, idType } };
+    const expected = {
+        status: 200,
+        body: '',
+    };
+
+    // Act
+    await map['/'].get(t.context);
+
+    // Assert
+    t.deepEqual(t.context.response, expected, 'Response did not match expected');
+});
+
+
+test('postQuotes should handle 500 errors', async (t) => {
+    // Arrange
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { idValue, idType } };
+    // eslint-disable-next-line no-throw-literal, no-param-reassign
+    t.context.state.model.quote.create = () => { throw 'Bad error!'; };
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: quote };
+
+    const expected = {
+        body: ApiErrorCodes.SERVER_ERROR,
+        status: 500,
+    };
+
+    // Act
+    await map['/quoterequests'].post(t.context);
+    // Assert
+    t.deepEqual(t.context.response, expected, 'Response did not match expected');
+    t.pass();
 });

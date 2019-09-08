@@ -20,7 +20,10 @@
  * Mowali
  --------------
  ******/
-'use strict'
+'use strict';
+
+// Ignore this file in coverage checks since most of it can't be tested in unit tests
+/* istanbul ignore file */
 
 const fs = require('fs');
 // TODO: consider: https://github.com/JoshuaWise/better-sqlite3
@@ -30,6 +33,7 @@ const sqlite = require('sqlite');
 const nullTransport = () => {};
 
 const consoleDir = () => (msg) => {
+    // eslint-disable-next-line no-console
     console.dir(JSON.parse(msg), { depth: Infinity, colors: true });
 };
 
@@ -44,7 +48,7 @@ const file = (path) => {
     const stream = fs.createWriteStream(path, { flags: 'a' });
     // TODO: when the filesystem fills up?
     // TODO: Implement a reject case
-    return async msg => new Promise((res) => {
+    return async (msg) => new Promise((res) => {
         if (!stream.write(msg)) {
             stream.once('drain', res);
         } else {
