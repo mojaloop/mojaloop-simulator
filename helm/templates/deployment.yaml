@@ -1,0 +1,139 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "self.fullname" . }}
+  labels: 
+{{ include "self.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "self.fullname" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "self.fullname" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ template "self.fullname" . }}-cache
+        image: "{{ .Values.config.cache.image.repository }}:{{ .Values.config.cache.image.tag }}"
+        imagePullPolicy: {{ .Values.config.cache.image.pullPolicy }}
+        ports:
+          - name: redis
+            containerPort: 6379
+            protocol: TCP
+        {{- if .Values.config.cache.livenessProbe.enabled }}
+        livenessProbe:
+          initialDelaySeconds: {{ .Values.config.cache.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.config.cache.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.config.cache.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.config.cache.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.config.cache.livenessProbe.failureThreshold }}
+          exec:
+            command:
+            - sh
+            - -c
+            - redis-cli ping {{ .Values.config.cache.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        {{- if .Values.config.cache.readinessProbe.enabled}}
+        readinessProbe:
+          initialDelaySeconds: {{ .Values.config.cache.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.config.cache.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.config.cache.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.config.cache.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.config.cache.readinessProbe.failureThreshold }}
+          exec:
+            command:
+            - sh
+            - -c
+            - redis-cli ping {{ .Values.config.cache.readinessProbe.timeoutSeconds }}
+        {{- end }}
+        resources:
+{{ toYaml .Values.config.cache.resources | indent 12 }}
+      - name: {{ template "self.fullname" . }}-sim-backend
+        image: "{{ .Values.config.simBackend.image.repository }}:{{ .Values.config.simBackend.image.tag }}"
+        imagePullPolicy: {{ .Values.config.simBackend.image.pullPolicy }}
+        ports:
+          - name: simapi
+            containerPort: 3000
+            protocol: TCP
+          - name: reportapi
+            containerPort: 3002
+            protocol: TCP
+          - name: testapi
+            containerPort: 3003
+            protocol: TCP
+        {{- if .Values.config.simBackend.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000 
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.config.simBackend.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.config.simBackend.readinessProbe.periodSeconds }}
+        {{- end }}
+        {{- if .Values.config.simBackend.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.config.simBackend.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.config.simBackend.livenessProbe.periodSeconds }}
+        {{- end }}
+        envFrom:
+        - configMapRef:
+            name: {{ template "self.fullname" . }}-sim-backend-config
+        resources:
+{{ toYaml .Values.config.simBackend.resources | indent 12 }}
+      - name: {{ template "self.fullname" . }}-scheme-adapter
+        image: "{{ .Values.config.schemeAdapter.image.repository }}:{{ .Values.config.schemeAdapter.image.tag }}"
+        imagePullPolicy: {{ .Values.config.schemeAdapter.image.pullPolicy }}
+        ports:
+          - name: inboundapi
+            containerPort: 4000
+            protocol: TCP
+          - name: outboundapi
+            containerPort: 4001
+            protocol: TCP
+        {{- if .Values.config.schemeAdapter.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 4001
+            scheme: HTTP 
+          initialDelaySeconds: {{ .Values.config.schemeAdapter.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.config.schemeAdapter.readinessProbe.periodSeconds }}
+        {{- end }}
+        {{- if .Values.config.schemeAdapter.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 4001
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.config.schemeAdapter.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.config.schemeAdapter.livenessProbe.periodSeconds }}
+        {{- end }}
+        envFrom:
+        - configMapRef:
+            name: {{ template "self.fullname" . }}-scheme-adapter-config
+          resources:
+{{ toYaml .Values.config.schemeAdapter.resources | indent 12 }}
+
+      imagePullSecrets:
+        - name: {{ .Values.config.imagePullSecretName }}
+
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
