@@ -113,7 +113,6 @@ defaults_build_docker_login: &defaults_build_docker_login
 defaults_build_docker_build: &defaults_build_docker_build
   name: Build Docker image
   command: |
-    cd src
     docker build -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG .
 
 defaults_build_docker_publish: &defaults_build_docker_publish
