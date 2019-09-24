@@ -141,6 +141,7 @@ components:
           enum:
           - MSISDN
           - ACCOUNT_NO
+
         idValue:
           type: string
           minLength: 1
@@ -148,8 +149,14 @@ components:
     idType:
       type: string
       enum:
-      - MSISDN
-      - ACCOUNT_NO
+        - MSISDN
+        - EMAIL
+        - PERSONAL_ID
+        - BUSINESS
+        - DEVICE
+        - ACCOUNT_ID
+        - IBAN
+        - ALIAS
       
     idValue:
       type: string
