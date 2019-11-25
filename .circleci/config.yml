@@ -410,6 +410,7 @@ jobs:
       - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
+          <<: *src_working_directory
       - store_artifacts:
           path: /tmp/license-scanner/results
           prefix: licenses
