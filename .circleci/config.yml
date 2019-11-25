@@ -226,6 +226,7 @@ jobs:
       - run:
           name: Update NPM install
           command: npm install
+          <<: *src_working_directory
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
@@ -235,10 +236,10 @@ jobs:
       - save_cache:
           key: dependency-cache-{{ checksum "./src/package.json" }}
           paths:
-            - node_modules
+            - ./src/node_modules
 
   test-unit:
-    <<: *src_working_directory
+    <<: *default_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
@@ -252,23 +253,27 @@ jobs:
       - run:
           name: Install tape and tap-xunit
           command: npm install tape tap-xunit
+          <<: *src_working_directory
       - run:
           name: Create dir for test results
           command: mkdir -p ./test/results
+          <<: *src_working_directory
       - run:
           name: Install tapes
           command: npm install -g tapes
+          <<: *src_working_directory
       - run:
           name: Execute unit tests
           command: npm -s run test:xunit > ./test/results/tape.xml
+          <<: *src_working_directory
       - store_artifacts:
-          path: ./test/results
+          path: ./src/test/results
           prefix: test
       - store_test_results:
-          path: ./test/results
+          path: ./src/test/results
 
   test-coverage:
-    <<: *src_working_directory
+    <<: *default_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
@@ -306,7 +311,7 @@ jobs:
             fi
   test-integration:
     machine: true
-    <<: *src_working_directory
+    <<: *default_working_directory
     steps:
       # - run:
       #     <<: *defaults_custom_checkout
@@ -327,7 +332,7 @@ jobs:
 
   test-functional:
     machine: true
-    <<: *src_working_directory
+    <<: *default_working_directory
     steps:
       - run:
           name: Add the Postgres 9.6 binaries to the path.
@@ -356,7 +361,7 @@ jobs:
           path: ./test/results
 
   vulnerability-check:
-    <<: *src_working_directory
+    <<: *default_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
@@ -378,7 +383,7 @@ jobs:
           prefix: audit
 
   audit-licenses:
-    <<: *src_working_directory
+    <<: *default_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
@@ -493,7 +498,7 @@ jobs:
 
   # TODO: reenable after deployment exists 
   # deploy-snapshot:
-  #   <<: *src_working_directory
+  #   <<: *default_working_directory
   #   <<: *defaults_docker_helm_kube
   #   steps:
   #     - run:
@@ -527,7 +532,7 @@ jobs:
 
   # TODO: reenable after deployment exists 
   # deploy:
-  #   <<: *src_working_directory
+  #   <<: *default_working_directory
   #   <<: *defaults_docker_helm_kube
   #   steps:
   #     - run:
