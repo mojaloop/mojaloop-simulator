@@ -208,7 +208,8 @@ jobs:
           command: *defaults_Dependencies
       # - run:
           # <<: *defaults_custom_checkout
-      - checkout
+      - checkout:
+          path: /home/circleci/project
       - run:
           name: Build dependencies
           command: apk add --no-cache -t build-dependencies make gcc g++ python libtool autoconf automake
