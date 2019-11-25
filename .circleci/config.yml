@@ -206,8 +206,9 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+          # <<: *defaults_custom_checkout
+      - checkout
       - run:
           name: Build dependencies
           command: apk add --no-cache -t build-dependencies make gcc g++ python libtool autoconf automake
