@@ -1,7 +1,7 @@
 # CircleCI v2 Config
 version: 2
 
-default_working_directory: &src_working_directory
+default_working_directory: &default_working_directory
   # The working directory for this project (place where package.json is) is /src, 
   # as opposed to the project root
   working_directory: /home/circleci/project/git
