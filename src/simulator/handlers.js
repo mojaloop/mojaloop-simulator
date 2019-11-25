@@ -21,7 +21,7 @@
  --------------
  ******/
 'use strict';
- 
+
 const util = require('util');
 require('dotenv').config();
 const { getStackOrInspect } = require('@internal/log');
