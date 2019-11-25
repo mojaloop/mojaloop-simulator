@@ -1,7 +1,12 @@
 # CircleCI v2 Config
 version: 2
 
-defaults_working_directory: &defaults_working_directory
+default_working_directory: &src_working_directory
+  # The working directory for this project (place where package.json is) is /src, 
+  # as opposed to the project root
+  working_directory: /home/circleci/project/git
+
+src_working_directory: &src_working_directory
   # The working directory for this project (place where package.json is) is /src, 
   # as opposed to the project root
   working_directory: /home/circleci/project/git/src
@@ -200,7 +205,7 @@ defaults_slack_announcement: &defaults_slack_announcement
     }"
 jobs:
   setup:
-    <<: *defaults_working_directory
+    <<: *default_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
@@ -208,8 +213,7 @@ jobs:
           command: *defaults_Dependencies
       # - run:
           # <<: *defaults_custom_checkout
-      - checkout:
-          path: /home/circleci/project/git
+      - checkout
       - run:
           name: Build dependencies
           command: apk add --no-cache -t build-dependencies make gcc g++ python libtool autoconf automake
@@ -229,19 +233,20 @@ jobs:
       #     name: Update NPM install
       #     command: npm link sodium && npm link argon2 && npm install --production
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "./src/package.json" }}
           paths:
             - node_modules
 
   test-unit:
-    <<: *defaults_working_directory
+    <<: *src_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
@@ -263,7 +268,7 @@ jobs:
           path: ./test/results
 
   test-coverage:
-    <<: *defaults_working_directory
+    <<: *src_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
@@ -272,8 +277,9 @@ jobs:
       - run:
           name: Install AWS CLI dependencies
           command: *defaults_awsCliDependencies
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - restore_cache:
           keys:
             - dependency-cache-{{ checksum "package.json" }}
@@ -300,10 +306,11 @@ jobs:
             fi
   test-integration:
     machine: true
-    <<: *defaults_working_directory
+    <<: *src_working_directory
     steps:
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
@@ -320,7 +327,7 @@ jobs:
 
   test-functional:
     machine: true
-    <<: *defaults_working_directory
+    <<: *src_working_directory
     steps:
       - run:
           name: Add the Postgres 9.6 binaries to the path.
@@ -331,8 +338,9 @@ jobs:
             curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
             mv ~/docker-compose /usr/local/bin/docker-compose
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
@@ -348,14 +356,15 @@ jobs:
           path: ./test/results
 
   vulnerability-check:
-    <<: *defaults_working_directory
+    <<: *src_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
@@ -369,7 +378,7 @@ jobs:
           prefix: audit
 
   audit-licenses:
-    <<: *defaults_working_directory
+    <<: *src_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
@@ -377,8 +386,9 @@ jobs:
           command: *defaults_Dependencies
       - run:
           <<: *defaults_license_scanner
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
@@ -390,10 +400,9 @@ jobs:
 
   build-snapshot:
     machine: true
-    <<: *defaults_working_directory
+    <<: *default_working_directory
     steps:
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
       - run:
           name: setup environment vars for SNAPSHOT release
           command: |
@@ -409,10 +418,10 @@ jobs:
   
   build-perf:
     machine: true
+    <<: *default_working_directory
     # <<: *default_env
     steps:
-      - run:
-          <<: *defaults_custom_checkout
+      #     <<: *defaults_custom_checkout
       - run:
           name: setup environment vars for LATEST release
           command: |
@@ -428,10 +437,10 @@ jobs:
 
   build:
     machine: true
+    <<: *default_working_directory
     # <<: *default_env
     steps:
-      - run:
-          <<: *defaults_custom_checkout
+      - checkout
       - run:
           name: setup environment vars for LATEST release
           command: |
@@ -455,10 +464,12 @@ jobs:
 
   test-build:
     machine: true
+    <<: *default_working_directory
     # <<: *default_env
     steps:
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - run:
           name: setup environment vars for LATEST release
           command: |
@@ -482,7 +493,7 @@ jobs:
 
   # TODO: reenable after deployment exists 
   # deploy-snapshot:
-  #   <<: *defaults_working_directory
+  #   <<: *src_working_directory
   #   <<: *defaults_docker_helm_kube
   #   steps:
   #     - run:
@@ -516,7 +527,7 @@ jobs:
 
   # TODO: reenable after deployment exists 
   # deploy:
-  #   <<: *defaults_working_directory
+  #   <<: *src_working_directory
   #   <<: *defaults_docker_helm_kube
   #   steps:
   #     - run:
