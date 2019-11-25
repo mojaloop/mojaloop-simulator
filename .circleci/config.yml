@@ -1,7 +1,7 @@
 # CircleCI v2 Config
 version: 2
 
-default_working_directory: &default_working_directory
+defaults_working_directory: &defaults_working_directory
   # The working directory for this project (place where package.json is) is /src, 
   # as opposed to the project root
   working_directory: /home/circleci/project/git
@@ -207,14 +207,14 @@ defaults_slack_announcement: &defaults_slack_announcement
     }"
 jobs:
   setup:
-    <<: *default_working_directory
+    <<: *defaults_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
       # - run:
-          # <<: *defaults_custom_checkout
+      #     <<: *defaults_custom_checkout
       - checkout
       - run:
           name: Build dependencies
@@ -241,7 +241,7 @@ jobs:
             - ./src/node_modules
 
   test-unit:
-    <<: *default_working_directory
+    <<: *defaults_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
@@ -275,7 +275,7 @@ jobs:
           path: ./src/test/results
 
   test-coverage:
-    <<: *default_working_directory
+    <<: *defaults_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
@@ -316,7 +316,7 @@ jobs:
           <<: *src_working_directory
   test-integration:
     machine: true
-    <<: *default_working_directory
+    <<: *defaults_working_directory
     steps:
       # - run:
       #     <<: *defaults_custom_checkout
@@ -339,7 +339,7 @@ jobs:
 
   test-functional:
     machine: true
-    <<: *default_working_directory
+    <<: *defaults_working_directory
     steps:
       - run:
           name: Add the Postgres 9.6 binaries to the path.
@@ -370,7 +370,7 @@ jobs:
           path: ./src/test/results
 
   vulnerability-check:
-    <<: *default_working_directory
+    <<: *defaults_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
@@ -394,7 +394,7 @@ jobs:
           prefix: audit
 
   audit-licenses:
-    <<: *default_working_directory
+    <<: *defaults_working_directory
     <<: *defaults_docker_node
     steps:
       - run:
@@ -417,7 +417,7 @@ jobs:
 
   build-snapshot:
     machine: true
-    <<: *default_working_directory
+    <<: *defaults_working_directory
     steps:
       # - run:
       - run:
@@ -435,7 +435,7 @@ jobs:
   
   build-perf:
     machine: true
-    <<: *default_working_directory
+    <<: *defaults_working_directory
     # <<: *default_env
     steps:
       #     <<: *defaults_custom_checkout
@@ -454,7 +454,7 @@ jobs:
 
   build:
     machine: true
-    <<: *default_working_directory
+    <<: *defaults_working_directory
     # <<: *default_env
     steps:
       - checkout
@@ -481,7 +481,7 @@ jobs:
 
   test-build:
     machine: true
-    <<: *default_working_directory
+    <<: *defaults_working_directory
     # <<: *default_env
     steps:
       # - run:
@@ -510,7 +510,7 @@ jobs:
 
   # TODO: reenable after deployment exists 
   # deploy-snapshot:
-  #   <<: *default_working_directory
+  #   <<: *defaults_working_directory
   #   <<: *defaults_docker_helm_kube
   #   steps:
   #     - run:
@@ -544,7 +544,7 @@ jobs:
 
   # TODO: reenable after deployment exists 
   # deploy:
-  #   <<: *default_working_directory
+  #   <<: *defaults_working_directory
   #   <<: *defaults_docker_helm_kube
   #   steps:
   #     - run:
