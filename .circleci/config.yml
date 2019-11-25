@@ -24,8 +24,11 @@ defaults_docker_helm_kube: &defaults_docker_helm_kube
 # we will be able to remove this custom checkout step
 #
 # Copied from CircleCI reference
-# Removed this because we are getting the following error in PR build process
-
+#
+# Removed this because we are getting the following error in PR build process in setup job
+# "fatal: Could not parse object '50ed413ba761823f64bf74b4c0a2a82d71484534'"
+# We refactored the jobs by adding working direcotry to run scripts and now this custom checkout can be avoided. 
+# 
 # defaults_custom_checkout: &defaults_custom_checkout
 #   name: Checkout the source
 #   command: |
