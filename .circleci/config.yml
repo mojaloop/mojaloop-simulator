@@ -4,7 +4,7 @@ version: 2
 defaults_working_directory: &defaults_working_directory
   # The working directory for this project (place where package.json is) is /src, 
   # as opposed to the project root
-  working_directory: /home/circleci/project/src
+  working_directory: /home/circleci/project/git/src
 
 defaults_docker_node: &defaults_docker_node
   docker:
@@ -209,7 +209,7 @@ jobs:
       # - run:
           # <<: *defaults_custom_checkout
       - checkout:
-          path: /home/circleci/project
+          path: /home/circleci/project/git
       - run:
           name: Build dependencies
           command: apk add --no-cache -t build-dependencies make gcc g++ python libtool autoconf automake
