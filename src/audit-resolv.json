@@ -1,0 +1,14 @@
+{
+  "1300|nyc>istanbul-reports>handlebars": {
+    "fix": 1
+  },
+  "1316|nyc>istanbul-reports>handlebars": {
+    "fix": 1
+  },
+  "1324|nyc>istanbul-reports>handlebars": {
+    "fix": 1
+  },
+  "1325|nyc>istanbul-reports>handlebars": {
+    "fix": 1
+  }
+}

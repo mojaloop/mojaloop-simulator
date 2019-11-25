@@ -320,13 +320,8 @@ components:
       type: object
       required:
         - transferId
-        - quote
-        - from
-        - to
-        - amountType
         - currency
         - amount
-        - transactionType
       properties:
         transferId:
           $ref: '#/components/schemas/transferId'
