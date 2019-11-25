@@ -249,7 +249,7 @@ jobs:
       #     <<: *defaults_custom_checkout
       - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "./src/package.json" }}
       - run:
           name: Install tape and tap-xunit
           command: npm install tape tap-xunit
