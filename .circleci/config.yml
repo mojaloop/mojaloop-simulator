@@ -441,7 +441,7 @@ jobs:
     <<: *defaults_working_directory
     # <<: *default_env
     steps:
-      #     <<: *defaults_custom_checkout
+      - checkout
       - run:
           name: setup environment vars for LATEST release
           command: |
