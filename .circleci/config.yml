@@ -287,18 +287,20 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - dependency-cache-{{ checksum "package.json" }}
+            - dependency-cache-{{ checksum "./src/package.json" }}
       - run:
           name: Run install again for nested package.json files
           command: npm install
+          <<: *src_working_directory
       - run:
           name: Execute code coverage check
           command: npm -s run test:coverage-check
+          <<: *src_working_directory
       - store_artifacts:
-          path: coverage
+          path: ./src/coverage
           prefix: test
       - store_test_results:
-          path: coverage
+          path: ./src/coverage
       - run:
           name: Copy code coverage to SonarQube
           command: |
@@ -309,6 +311,7 @@ jobs:
             else
                 echo "Not a release (env CIRCLE_BRANCH != 'master'), skipping sending lcov.info to SonarQube."
             fi
+          <<: *src_working_directory
   test-integration:
     machine: true
     <<: *default_working_directory
@@ -317,18 +320,20 @@ jobs:
       #     <<: *defaults_custom_checkout
       - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "./src/package.json" }}
       - run:
           name: Create dir for test results
           command: mkdir -p ./test/results
+          <<: *src_working_directory
       - run:
           name: Execute integration tests
           command: npm -s run test:integration
+          <<: *src_working_directory
       - store_artifacts:
-          path: ./test/results
+          path: ./src/test/results
           prefix: test
       - store_test_results:
-          path: ./test/results
+          path: ./src/test/results
 
   test-functional:
     machine: true
@@ -347,18 +352,20 @@ jobs:
       #     <<: *defaults_custom_checkout
       - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "./src/package.json" }}
       - run:
           name: Create dir for test results
           command: mkdir -p ./test/results
+          <<: *src_working_directory
       - run:
           name: Execute functional tests
           command: npm -s run test:functional
+          <<: *src_working_directory
       - store_artifacts:
-          path: ./test/results
+          path: ./src/test/results
           prefix: test
       - store_test_results:
-          path: ./test/results
+          path: ./src/test/results
 
   vulnerability-check:
     <<: *default_working_directory
@@ -371,15 +378,17 @@ jobs:
       #     <<: *defaults_custom_checkout
       - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "./src/package.json" }}
       - run:
           name: Create dir for test results
           command: mkdir -p ./audit/results
+          <<: *src_working_directory
       - run:
           name: Check for new npm vulnerabilities
           command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json 
+          <<: *src_working_directory
       - store_artifacts:
-          path: ./audit/results
+          path: ./src/audit/results
           prefix: audit
 
   audit-licenses:
@@ -395,7 +404,7 @@ jobs:
       #     <<: *defaults_custom_checkout
       - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "./src/package.json" }}
       - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
