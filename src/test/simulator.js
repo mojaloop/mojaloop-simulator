@@ -27,7 +27,7 @@ const test = require('ava');
 const Model = require('../models/model');
 const { map } = require('../simulator/handlers');
 const {
-    transfer, quote, party, idType, idValue,
+    transfer, transferWithoutQuote, quote, party, idType, idValue,
 } = require('./constants');
 const { ApiErrorCodes } = require('../models/errors');
 
@@ -64,6 +64,14 @@ test('create a quote', async (t) => {
 test('create a transfer', async (t) => {
     // eslint-disable-next-line no-param-reassign
     t.context.request = { body: transfer };
+    await map['/transfers'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('create a transfer without a quote', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: transferWithoutQuote };
     await map['/transfers'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);

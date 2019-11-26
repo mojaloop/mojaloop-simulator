@@ -132,6 +132,12 @@ const newTransfer = {
     transactionType,
 };
 
+const transferWithoutQuote = {
+    transferId,
+    currency,
+    amount,
+};
+
 
 test('constants', async (t) => {
     // to avoid test warnings
@@ -139,5 +145,5 @@ test('constants', async (t) => {
 });
 
 module.exports = {
-    transfer, quote, party, newQuote, newTransfer, idType, idValue, transferId,
+    transfer, quote, party, newQuote, newTransfer, transferWithoutQuote, idType, idValue, transferId,
 };
