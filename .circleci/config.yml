@@ -4,7 +4,12 @@ version: 2
 defaults_working_directory: &defaults_working_directory
   # The working directory for this project (place where package.json is) is /src, 
   # as opposed to the project root
-  working_directory: /home/circleci/project/src
+  working_directory: /home/circleci/project/git
+
+src_working_directory: &src_working_directory
+  # The working directory for this project (place where package.json is) is /src, 
+  # as opposed to the project root
+  working_directory: /home/circleci/project/git/src
 
 defaults_docker_node: &defaults_docker_node
   docker:
@@ -19,58 +24,63 @@ defaults_docker_helm_kube: &defaults_docker_helm_kube
 # we will be able to remove this custom checkout step
 #
 # Copied from CircleCI reference
-defaults_custom_checkout: &defaults_custom_checkout
-  name: Checkout the source
-  command: |
-    export REPO_DIR=/home/circleci/project
-    mkdir -p ~/.ssh
+#
+# Removed this because we are getting the following error in PR build process in setup job
+# "fatal: Could not parse object '50ed413ba761823f64bf74b4c0a2a82d71484534'"
+# We refactored the jobs by adding working direcotry to run scripts and now this custom checkout can be avoided. 
+# 
+# defaults_custom_checkout: &defaults_custom_checkout
+#   name: Checkout the source
+#   command: |
+#     export REPO_DIR=/home/circleci/project
+#     mkdir -p ~/.ssh
 
-    echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
-    bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw==
-    ' >> ~/.ssh/known_hosts
+#     echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+#     bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw==
+#     ' >> ~/.ssh/known_hosts
 
-    (umask 077; touch ~/.ssh/id_rsa)
-    chmod 0600 ~/.ssh/id_rsa
-    (cat <<EOF > ~/.ssh/id_rsa
-    $CHECKOUT_KEY
-    EOF
-    )
-    echo '2'
-    # use git+ssh instead of https
-    git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
-    git config --global gc.auto 0 || true
+#     (umask 077; touch ~/.ssh/id_rsa)
+#     chmod 0600 ~/.ssh/id_rsa
+#     (cat <<EOF > ~/.ssh/id_rsa
+#     $CHECKOUT_KEY
+#     EOF
+#     )
+#     echo '2'
+#     # use git+ssh instead of https
+#     git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
+#     git config --global gc.auto 0 || true
 
-    if [ -e ${REPO_DIR}/.git ]
-    then
-      cd ${REPO_DIR}
-      git remote set-url origin "$CIRCLE_REPOSITORY_URL" || true
-    else
-      mkdir -p ${REPO_DIR}
-      cd ${REPO_DIR}
-      rm -rf ./src #temporary measure to allow git to clone into here
-      ls -la
-      git clone "$CIRCLE_REPOSITORY_URL" .
-    fi
+#     if [ -e ${REPO_DIR}/.git ]
+#     then
+#       cd ${REPO_DIR}
+#       git remote set-url origin "$CIRCLE_REPOSITORY_URL" || true
+#     else
+#       mkdir -p ${REPO_DIR}
+#       cd ${REPO_DIR}
+#       rm -rf ./src #temporary measure to allow git to clone into here
+#       ls -la
+#       git clone "$CIRCLE_REPOSITORY_URL" .
+#     fi
 
-    if [ -n "$CIRCLE_TAG" ]
-    then
-      git fetch --force origin "refs/tags/${CIRCLE_TAG}"
-    else
-      git fetch --force origin "pull/1/head:remotes/origin/pull/1"
-    fi
+#     if [ -n "$CIRCLE_TAG" ]
+#     then
+#       git fetch --force origin "refs/tags/${CIRCLE_TAG}"
+#     else
+#       git fetch --force origin "pull/1/head:remotes/origin/pull/1"
+#     fi
 
 
-    if [ -n "$CIRCLE_TAG" ]
-    then
-      git reset --hard "$CIRCLE_SHA1"
-      git checkout -q "$CIRCLE_TAG"
-    elif [ -n "$CIRCLE_BRANCH" ]
-    then
-      git reset --hard "$CIRCLE_SHA1"
-      git checkout -q -B "$CIRCLE_BRANCH"
-    fi
+#     if [ -n "$CIRCLE_TAG" ]
+#     then
+#       git reset --hard "$CIRCLE_SHA1"
+#       git checkout -q "$CIRCLE_TAG"
+#     elif [ -n "$CIRCLE_BRANCH" ]
+#     then
+#       git reset --hard "$CIRCLE_SHA1"
+#       git checkout -q -B "$CIRCLE_BRANCH"
+#     fi
 
-    git reset --hard "$CIRCLE_SHA1"
+#     git reset --hard "$CIRCLE_SHA1"
 
 
 # default_env: &default_env
@@ -206,8 +216,9 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - run:
           name: Build dependencies
           command: apk add --no-cache -t build-dependencies make gcc g++ python libtool autoconf automake
@@ -220,6 +231,7 @@ jobs:
       - run:
           name: Update NPM install
           command: npm install
+          <<: *src_working_directory
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
@@ -227,9 +239,9 @@ jobs:
       #     name: Update NPM install
       #     command: npm link sodium && npm link argon2 && npm install --production
       - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "./src/package.json" }}
           paths:
-            - node_modules
+            - ./src/node_modules
 
   test-unit:
     <<: *defaults_working_directory
@@ -238,27 +250,32 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "./src/package.json" }}
       - run:
           name: Install tape and tap-xunit
           command: npm install tape tap-xunit
+          <<: *src_working_directory
       - run:
           name: Create dir for test results
           command: mkdir -p ./test/results
+          <<: *src_working_directory
       - run:
           name: Install tapes
           command: npm install -g tapes
+          <<: *src_working_directory
       - run:
           name: Execute unit tests
           command: npm -s run test:xunit > ./test/results/tape.xml
+          <<: *src_working_directory
       - store_artifacts:
-          path: ./test/results
+          path: ./src/test/results
           prefix: test
       - store_test_results:
-          path: ./test/results
+          path: ./src/test/results
 
   test-coverage:
     <<: *defaults_working_directory
@@ -270,22 +287,25 @@ jobs:
       - run:
           name: Install AWS CLI dependencies
           command: *defaults_awsCliDependencies
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - restore_cache:
           keys:
-            - dependency-cache-{{ checksum "package.json" }}
+            - dependency-cache-{{ checksum "./src/package.json" }}
       - run:
           name: Run install again for nested package.json files
           command: npm install
+          <<: *src_working_directory
       - run:
           name: Execute code coverage check
           command: npm -s run test:coverage-check
+          <<: *src_working_directory
       - store_artifacts:
-          path: coverage
+          path: ./src/coverage
           prefix: test
       - store_test_results:
-          path: coverage
+          path: ./src/coverage
       - run:
           name: Copy code coverage to SonarQube
           command: |
@@ -296,25 +316,29 @@ jobs:
             else
                 echo "Not a release (env CIRCLE_BRANCH != 'master'), skipping sending lcov.info to SonarQube."
             fi
+          <<: *src_working_directory
   test-integration:
     machine: true
     <<: *defaults_working_directory
     steps:
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "./src/package.json" }}
       - run:
           name: Create dir for test results
           command: mkdir -p ./test/results
+          <<: *src_working_directory
       - run:
           name: Execute integration tests
           command: npm -s run test:integration
+          <<: *src_working_directory
       - store_artifacts:
-          path: ./test/results
+          path: ./src/test/results
           prefix: test
       - store_test_results:
-          path: ./test/results
+          path: ./src/test/results
 
   test-functional:
     machine: true
@@ -329,21 +353,24 @@ jobs:
             curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
             chmod +x ~/docker-compose
             mv ~/docker-compose /usr/local/bin/docker-compose
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "./src/package.json" }}
       - run:
           name: Create dir for test results
           command: mkdir -p ./test/results
+          <<: *src_working_directory
       - run:
           name: Execute functional tests
           command: npm -s run test:functional
+          <<: *src_working_directory
       - store_artifacts:
-          path: ./test/results
+          path: ./src/test/results
           prefix: test
       - store_test_results:
-          path: ./test/results
+          path: ./src/test/results
 
   vulnerability-check:
     <<: *defaults_working_directory
@@ -352,18 +379,21 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "./src/package.json" }}
       - run:
           name: Create dir for test results
           command: mkdir -p ./audit/results
+          <<: *src_working_directory
       - run:
           name: Check for new npm vulnerabilities
           command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json 
+          <<: *src_working_directory
       - store_artifacts:
-          path: ./audit/results
+          path: ./src/audit/results
           prefix: audit
 
   audit-licenses:
@@ -375,13 +405,15 @@ jobs:
           command: *defaults_Dependencies
       - run:
           <<: *defaults_license_scanner
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "./src/package.json" }}
       - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
+          <<: *src_working_directory
       - store_artifacts:
           path: /tmp/license-scanner/results
           prefix: licenses
@@ -390,8 +422,7 @@ jobs:
     machine: true
     <<: *defaults_working_directory
     steps:
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
       - run:
           name: setup environment vars for SNAPSHOT release
           command: |
@@ -407,10 +438,10 @@ jobs:
 
   build:
     machine: true
+    <<: *defaults_working_directory
     # <<: *default_env
     steps:
-      - run:
-          <<: *defaults_custom_checkout
+      - checkout
       - run:
           name: setup environment vars for LATEST release
           command: |
@@ -434,10 +465,12 @@ jobs:
 
   test-build:
     machine: true
+    <<: *defaults_working_directory
     # <<: *default_env
     steps:
-      - run:
-          <<: *defaults_custom_checkout
+      # - run:
+      #     <<: *defaults_custom_checkout
+      - checkout
       - run:
           name: setup environment vars for LATEST release
           command: |
@@ -624,6 +657,7 @@ workflows:
             branches:
               ignore:
                 - /.*/
+
       # TODO: reenable after deployment exists 
       # - deploy-snapshot:
       #     context: org-global
