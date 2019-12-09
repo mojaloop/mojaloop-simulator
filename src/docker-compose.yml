@@ -16,7 +16,7 @@ services:
    image: "mojaloop/sdk-scheme-adapter:latest"
    env_file: ./scheme-adapter.env
    ports:
-     - "3500:4000"
-     - "3501:4001"
+     - "4000:4000"
+     - "4001:4001"
    depends_on:
      - redis
