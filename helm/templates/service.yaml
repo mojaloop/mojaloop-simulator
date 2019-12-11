@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: ClusterIP
+   type: ClusterIP
    ports:
      - port: 4000
        protocol: TCP
