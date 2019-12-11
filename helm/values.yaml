@@ -213,25 +213,6 @@ config:
       # e.g. a rule can be used to trigger NDC errors given transfers between certain limits.
       RULES_FILE: ./rules.json
 
-  # set service type to NodePort for local testing on Minikube
-  # set to ClusterIP for kubernetes cluster deployments
-  service:
-    type: NodePort
-    ports:
-      - name: inboundapi
-        targetPort: inboundapi
-        port: 4000
-        protocol: TCP
-      - name: reportapi
-        targetPort: reportapi
-        port: 3002
-        protocol: TCP
-      - name: testapi
-        targetPort: testapi
-        port: 3003
-        protocol: TCP
-
-
 ingress:
   enabled: true
   annotations: {

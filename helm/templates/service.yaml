@@ -2,49 +2,31 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $fullName }}-sim-backend
+  name: {{ $fullName }}-sim
   labels:
     app: {{ template "mojaloop-simulator.name" . }}
     chart: {{ template "mojaloop-simulator.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: {{ .Values.config.service.type }}
-  ports:
-    - port: 4001
-      protocol: TCP
-      name: outboundapi
-    - port: 3002
-      protocol: TCP
-      name: reportapi
-    - port: 3003
-      protocol: TCP
-      name: testapi  
-  selector:
-    app: {{ template "mojaloop-simulator.name" . }}
-    release: {{ .Release.Name }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ $fullName }}-scheme-adapter
-  labels:
-    app: {{ template "mojaloop-simulator.name" . }}
-    chart: {{ template "mojaloop-simulator.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  type: {{ .Values.config.service.type }}
-  ports:
-    - port: 4000
-      protocol: TCP
-      name: inboundapi
-    - port: 3002
-      protocol: TCP
-      name: reportapi
-    - port: 3003
-      protocol: TCP
-      name: testapi
-  selector:
-    app: {{ template "mojaloop-simulator.name" . }}
-    release: {{ .Release.Name }}
+  type: ClusterIP
+   ports:
+     - port: 4000
+       protocol: TCP
+       name: inboundapi
+       targetPort: inboundapi
+     - port: 4001
+       protocol: TCP
+       name: outboundapi
+       targetPort: outboundapi
+     - port: 3002
+       protocol: TCP
+       name: reportapi
+       targetPort: reportapi
+     - port: 3003
+       protocol: TCP
+       name: testapi
+       targetPort: testapi
+   selector:
+     app: {{ template "mojaloop-simulator.name" . }}
+     release: {{ .Release.Name }}
