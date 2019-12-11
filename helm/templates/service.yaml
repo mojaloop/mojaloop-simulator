@@ -1,7 +1,8 @@
+{{- $fullName := include "mojaloop-simulator.fullname" . -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "mojaloop-simulator.fullname" . }}
+  name: {{ $fullName }}-sim-backend
   labels:
     app: {{ template "mojaloop-simulator.name" . }}
     chart: {{ template "mojaloop-simulator.chart" . }}
@@ -10,12 +11,40 @@ metadata:
 spec:
   type: {{ .Values.config.service.type }}
   ports:
-    {{- range .Values.config.service.ports }}
-    - port: {{ .port }}
-      targetPort: {{ .targetPort }}
-      protocol: {{ .protocol }}
-      name: {{ .name }}
-    {{- end }}
+    - port: 4001
+      protocol: TCP
+      name: outboundapi
+    - port: 3002
+      protocol: TCP
+      name: reportapi
+    - port: 3003
+      protocol: TCP
+      name: testapi  
+  selector:
+    app: {{ template "mojaloop-simulator.name" . }}
+    release: {{ .Release.Name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-scheme-adapter
+  labels:
+    app: {{ template "mojaloop-simulator.name" . }}
+    chart: {{ template "mojaloop-simulator.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.config.service.type }}
+  ports:
+    - port: 4000
+      protocol: TCP
+      name: inboundapi
+    - port: 3002
+      protocol: TCP
+      name: reportapi
+    - port: 3003
+      protocol: TCP
+      name: testapi
   selector:
     app: {{ template "mojaloop-simulator.name" . }}
     release: {{ .Release.Name }}
