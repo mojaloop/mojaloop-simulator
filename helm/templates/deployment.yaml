@@ -1,29 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "self.fullname" . }}
-  labels: 
-{{ include "self.labels" . | indent 4 }}
+  name: {{ template "mojaloop-simulator.fullname" . }}
+  labels:
+    app: {{ template "mojaloop-simulator.name" . }}
+    chart: {{ template "mojaloop-simulator.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "self.fullname" . }}
+      app: {{ template "mojaloop-simulator.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "self.fullname" . }}
+        app: {{ template "mojaloop-simulator.name" . }}
         release: {{ .Release.Name }}
     spec:
       containers:
-      - name: {{ template "self.fullname" . }}-cache
+      {{- if .Values.config.cache.enabled }}
+      - name: {{ .Chart.Name }}-cache
         image: "{{ .Values.config.cache.image.repository }}:{{ .Values.config.cache.image.tag }}"
         imagePullPolicy: {{ .Values.config.cache.image.pullPolicy }}
-        ports:
-          - name: redis
-            containerPort: 6379
-            protocol: TCP
+        # ports:
+        # - name: redis
+        #   containerPort: 6379
+        #   protocol: TCP
         {{- if .Values.config.cache.livenessProbe.enabled }}
         livenessProbe:
           initialDelaySeconds: {{ .Values.config.cache.livenessProbe.initialDelaySeconds }}
@@ -48,11 +52,12 @@ spec:
             command:
             - sh
             - -c
-            - redis-cli ping {{ .Values.config.cache.readinessProbe.timeoutSeconds }}
+            - redis-cli ping {{ .Values.config.cache.livenessProbe.timeoutSeconds }}
         {{- end }}
         resources:
 {{ toYaml .Values.config.cache.resources | indent 12 }}
-      - name: {{ template "self.fullname" . }}-sim-backend
+      {{- end }}
+      - name: {{ .Chart.Name }}-sim-backend
         image: "{{ .Values.config.simBackend.image.repository }}:{{ .Values.config.simBackend.image.tag }}"
         imagePullPolicy: {{ .Values.config.simBackend.image.pullPolicy }}
         ports:
@@ -69,7 +74,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /
-            port: 3000 
+            port: 3000
             scheme: HTTP
           initialDelaySeconds: {{ .Values.config.simBackend.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.config.simBackend.readinessProbe.periodSeconds }}
@@ -85,10 +90,10 @@ spec:
         {{- end }}
         envFrom:
         - configMapRef:
-            name: {{ template "self.fullname" . }}-sim-backend-config
+            name: {{ template "mojaloop-simulator.fullname" . }}-sim-backend-config
         resources:
 {{ toYaml .Values.config.simBackend.resources | indent 12 }}
-      - name: {{ template "self.fullname" . }}-scheme-adapter
+      - name: {{ .Chart.Name }}-scheme-adapter
         image: "{{ .Values.config.schemeAdapter.image.repository }}:{{ .Values.config.schemeAdapter.image.tag }}"
         imagePullPolicy: {{ .Values.config.schemeAdapter.image.pullPolicy }}
         ports:
@@ -103,7 +108,7 @@ spec:
           httpGet:
             path: /
             port: 4001
-            scheme: HTTP 
+            scheme: HTTP
           initialDelaySeconds: {{ .Values.config.schemeAdapter.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.config.schemeAdapter.readinessProbe.periodSeconds }}
         {{- end }}
@@ -118,13 +123,11 @@ spec:
         {{- end }}
         envFrom:
         - configMapRef:
-            name: {{ template "self.fullname" . }}-scheme-adapter-config
+            name: {{ template "mojaloop-simulator.fullname" . }}-scheme-adapter-config
           resources:
 {{ toYaml .Values.config.schemeAdapter.resources | indent 12 }}
-
       imagePullSecrets:
         - name: {{ .Values.config.imagePullSecretName }}
-
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
