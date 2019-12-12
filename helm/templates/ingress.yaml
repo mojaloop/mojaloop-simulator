@@ -18,12 +18,12 @@ spec:
   rules:
     - http:
         paths:
-        - path: /{{ $fullName }}/dfsp
+        - path: /{{ $fullName }}/dfsp(.*)
           backend:
             serviceName: {{ $fullName }}-sim
             servicePort: inboundapi
-        - path: /{{ $fullName }}/test
+        - path: /{{ $fullName }}/test(.*)
           backend:
             serviceName: {{ $fullName }}-sim
-            servicePort: testapi
+            servicePort: inboundapi
 {{- end }}
