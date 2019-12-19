@@ -1,34 +1,29 @@
 {{- if .Values.ingress.enabled -}}
+{{- $fullName := include "mojaloop-simulator.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ template "self.fullname" . }}
-  labels: 
-{{ include "self.labels" . | indent 4 }}
+  name: {{ $fullName }}
+  labels:
+    app: {{ template "mojaloop-simulator.name" . }}
+    chart: {{ template "mojaloop-simulator.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 {{- with .Values.ingress.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-{{- if .Values.ingress.tls }}
-  tls:
-  {{- range .Values.ingress.tls }}
-    - hosts:
-      {{- range .hosts }}
-        - {{ . }}
-      {{- end }}
-      secretName: {{ .secretName }}
-  {{- end }}
-{{- end }}
   rules:
     - http:
         paths:
-        - path: {{ .Values.ingress.paths.schemeadapter }}
+        - path: /{{ $fullName }}/dfsp(.*)
           backend:
-            serviceName: {{ template "self.fullname" . }}-scheme-adapter
+            serviceName: {{ $fullName }}-sim
             servicePort: inboundapi
-        - path: {{ .Values.ingress.paths.simbackend }}
+        - path: /{{ $fullName }}/test(.*)
           backend:
-            serviceName: {{ template "self.fullname" . }}-sim-backend
-            servicePort: testapi
+            serviceName: {{ $fullName }}-sim
+            servicePort: inboundapi
 {{- end }}

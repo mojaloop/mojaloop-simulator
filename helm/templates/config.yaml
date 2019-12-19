@@ -1,51 +1,27 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "self.fullname" . }}-scheme-adapter-config
-  labels: 
-{{ include "self.labels" . | indent 4 }}
+  name: {{ template "mojaloop-simulator.fullname" . }}-scheme-adapter-config
+  labels:
+      app: {{ template "mojaloop-simulator.fullname" . }}
+      chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+      release: {{ .Release.Name }}
+      heritage: {{ .Release.Service }}
 data:
-  AUTO_ACCEPT_QUOTES: {{ .Values.config.schemeAdapter.AUTO_ACCEPT_QUOTES | quote }}
-  BACKEND_ENDPOINT: "localhost:3000"
-  CACHE_HOST: localhost
-  CACHE_PORT: "6379"
-  CA_CERT_PATH: {{ .Values.config.schemeAdapter.CA_CERT_PATH | quote }}
-  CHECK_ILP: {{ .Values.config.schemeAdapter.CHECK_ILP  | quote }}
-  DFSP_ID: {{ .Values.config.schemeAdapter.DFSP_ID  | quote }}
-  EXPIRY_SECONDS: {{ .Values.config.schemeAdapter.EXPIRY_SECONDS  | quote }}
-  ILP_SECRET: {{ .Values.config.schemeAdapter.ILP_SECRET  | quote }}
-  JWS_SIGN: {{ .Values.config.schemeAdapter.JWS_SIGN  | quote }}
-  JWS_SIGNING_KEY_PATH: {{ .Values.config.schemeAdapter.JWS_SIGNING_KEY_PATH  | quote }}
-  JWS_VERIFICATION_KEYS_DIRECTORY: {{ .Values.config.schemeAdapter.JWS_VERIFICATION_KEYS_DIRECTORY  | quote }}
-  LOG_INDENT: {{ .Values.config.schemeAdapter.LOG_INDENT  | quote }}
-  MUTUAL_TLS_ENABLED: {{ .Values.config.schemeAdapter.MUTUAL_TLS_ENABLED  | quote }}
-  PEER_ENDPOINT: {{ .Values.config.schemeAdapter.PEER_ENDPOINT  | quote }}
-  SCHEME_NAME: {{ .Values.config.schemeAdapter.SCHEME_NAME  | quote }}
-  SERVER_CERT_PATH: {{ .Values.config.schemeAdapter.SERVER_CERT_PATH  | quote }}
-  SERVER_KEY_PATH: {{ .Values.config.schemeAdapter.SERVER_KEY_PATH  | quote }}
-  VALIDATE_INBOUND_JWS: {{ .Values.config.schemeAdapter.VALIDATE_INBOUND_JWS  | quote }}
-  INBOUND_LISTEN_PORT: "4000"
-  OUTBOUND_LISTEN_PORT: "4001"
-  ENABLE_TEST_FEATURES: {{ .Values.config.schemeAdapter.ENABLE_TEST_FEATURES  | quote }}
-
+  {{- range $k, $v := .Values.config.schemeAdapter.env }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "self.fullname" . }}-sim-backend-config
-  labels: 
-{{ include "self.labels" . | indent 4 }}
+  name: {{ template "mojaloop-simulator.fullname" . }}-sim-backend-config
+  labels:
+      app: {{ template "mojaloop-simulator.fullname" . }}
+      chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+      release: {{ .Release.Name }}
+      heritage: {{ .Release.Service }}
 data:
-  CA_CERT_PATH: {{ .Values.config.simBackend.CA_CERT_PATH  | quote }}
-  DFSP_ID: {{ .Values.config.simBackend.DFSP_ID  | quote }}
-  FEE_MULTIPLIER: {{ .Values.config.simBackend.FEE_MULTIPLIER  | quote }}
-  HTTPS_ENABLED: {{ .Values.config.simBackend.HTTPS_ENABLED  | quote }}
-  LOG_INDENT: {{ .Values.config.simBackend.LOG_INDENT  | quote }}
-  MODEL_DATABASE: {{ .Values.config.simBackend.MODEL_DATABASE  | quote }}
-  MUTUAL_TLS_ENABLED: {{ .Values.config.simBackend.MUTUAL_TLS_ENABLED  | quote }}
-  OUTBOUND_ENDPOINT: "http://localhost:4001" 
-  RULES_FILE: {{ .Values.config.simBackend.RULES_FILE  | quote }}
-  SCHEME_NAME: {{ .Values.config.simBackend.SCHEME_NAME  | quote }}
-  SERVER_CERT_PATH: {{ .Values.config.simBackend.SERVER_CERT_PATH  | quote }}
-  SERVER_KEY_PATH: {{ .Values.config.simBackend.SERVER_KEY_PATH  | quote }}
-  SQLITE_LOG_FILE: {{ .Values.config.simBackend.SQLITE_LOG_FILE  | quote }}
+  {{- range $k, $v := .Values.config.simBackend.env }}
+  {{ $k }}: {{ $v | quote }}
+  {{- end }}
