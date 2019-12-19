@@ -49,11 +49,11 @@ config:
       failureThreshold: 3
 
     env:
-      # Port number that the inbound (Mojaloop API) HTTP server will listen on
-      INBOUND_LISTEN_PORT: "4000"
+      # This option is presented for consistency with the .env file. However, for the purposes of this chart, this port is _not_ configurable.
+      # INBOUND_LISTEN_PORT: "4000"
 
-      # Port number that the outbound (simplified DFSP outbound API) HTTP server will listen on
-      OUTBOUND_LISTEN_PORT: "4001"
+      # This option is presented for consistency with the .env file. However, for the purposes of this chart, this port is _not_ configurable.
+      # OUTBOUND_LISTEN_PORT: "4001"
 
       # Enable mutual TLS authentication. Useful when not running in a secure
       # environment, i.e. when you're running it locally against your own implementation.
