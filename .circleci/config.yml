@@ -347,53 +347,6 @@ jobs:
       - store_test_results:
           path: ./src/test/results
 
-
-
-  # build-snapshot:
-  #   machine: true
-  #   <<: *defaults_working_directory
-  #   steps:
-  #     # - run:
-  #     - run:
-  #         name: setup environment vars for SNAPSHOT release
-  #         command: |
-  #           echo 'export RELEASE_TAG=$RELEASE_TAG_SNAPSHOT' >> $BASH_ENV
-  #     - run:
-  #         <<: *defaults_build_docker_login
-  #     - run:
-  #         <<: *defaults_build_docker_build
-  #     - run:
-  #         <<: *defaults_build_docker_publish
-  #     - run:
-  #         <<: *defaults_slack_announcement
-
-  # build:
-  #   machine: true
-  #   <<: *defaults_working_directory
-  #   # <<: *default_env
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: setup environment vars for LATEST release
-  #         command: |
-  #           echo 'export RELEASE_TAG=$RELEASE_TAG_PROD' >> $BASH_ENV
-  #     - run:
-  #         <<: *defaults_build_docker_login
-  #     - run:
-  #         <<: *defaults_build_docker_build
-  #     - run:
-  #         <<: *defaults_license_scanner
-  #     - run:
-  #         name: Run the license-scanner
-  #         command: cd /tmp/license-scanner && mode=docker dockerImage=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG make run
-  #     - store_artifacts:
-  #         path: /tmp/license-scanner/results
-  #         prefix: licenses
-  #     - run:
-  #         <<: *defaults_build_docker_publish
-  #     - run:
-  #         <<: *defaults_slack_announcement
-
   build:
     executor: default-machine
     steps:
@@ -430,6 +383,9 @@ jobs:
     steps:
       - setup_remote_docker
       - checkout
+      - run:
+          name: Install AWS CLI dependencies
+          command: *defaults_awsCliDependencies
       - attach_workspace:
           at: /tmp
       - run:
@@ -456,9 +412,15 @@ jobs:
               jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
             fi
 
+      - run:
+          name: Upload Anchore reports to s3
+          command: |
+            aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+            aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+            aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+        
             # TODO: Enable this when we want to increase the strictness of our security policies
             # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
-            # echo "FailCount is: ${failCount}"
             # if [ $failCount -gt 0 ]; then
             #   printf "Failed with a policy failure count of: ${failCount}"
             #   exit 1
