@@ -24,6 +24,7 @@
 
 const partyTable = 'party';
 const quoteTable = 'quote';
+const transactionRequestTable = 'transactionRequest';
 const transferTable = 'transfer';
 
 const createPartyTable = `
@@ -49,6 +50,16 @@ CREATE TABLE IF NOT EXISTS ${quoteTable} (
 )
 `;
 
+const createTransactionRequestTable = `
+CREATE TABLE IF NOT EXISTS ${transactionRequestTable} (
+    id TEXT NOT NULL PRIMARY KEY,
+    request TEXT,
+    response TEXT,
+    created TIMESTAMP
+    CHECK(id <> '')
+)
+`;
+
 const createTransferTable = `
 CREATE TABLE IF NOT EXISTS ${transferTable} (
     id TEXT NOT NULL PRIMARY KEY,
@@ -59,5 +70,5 @@ CREATE TABLE IF NOT EXISTS ${transferTable} (
 `;
 
 module.exports = {
-    partyTable, quoteTable, createPartyTable, createQuoteTable, createTransferTable, transferTable,
+    partyTable, quoteTable, transactionRequestTable, createPartyTable, createQuoteTable, createTransactionRequestTable, createTransferTable, transferTable,
 };

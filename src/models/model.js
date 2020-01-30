@@ -31,9 +31,10 @@
 const sqlite = require('sqlite');
 const Party = require('./party');
 const Quote = require('./quote');
+const TransactionRequest = require('./transactionrequest');
 const Transfer = require('./transfer');
 
-const { createPartyTable, createTransferTable, createQuoteTable } = require('./constants');
+const { createPartyTable, createTransferTable, createQuoteTable, createTransactionRequestTable } = require('./constants');
 
 /**
  * @typedef {Object} Model
@@ -47,6 +48,7 @@ module.exports = class Model {
         this.db = null;
         this.party = null;
         this.quote = null;
+        this.transactionrequest = null;
         this.transfer = null;
     }
 
@@ -77,10 +79,12 @@ module.exports = class Model {
             this.db = await sqlite.open(databaseFilepath);
             await this.db.run(createPartyTable);
             await this.db.run(createQuoteTable);
+            await this.db.run(createTransactionRequestTable);
             await this.db.run(createTransferTable);
 
             this.party = new Party(this.db);
             this.quote = new Quote(this.db);
+            this.transactionrequest = new TransactionRequest(this.db);
             this.transfer = new Transfer(this.db);
         } catch (err) {
             throw new Error(err);

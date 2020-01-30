@@ -121,6 +121,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/errorResponse'
 
+  /transactionrequests:
+    post:
+      summary: transaction request that supports pull based transfers
+      tags:
+        - TransactionRequest
+      requestBody:
+        description: Request for Transaction Request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/transactionRequest'
+      responses:
+        200:
+          description: A response to the transfer transaction request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transactionRequestResponse'
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
   /transfers:
     post:
       summary: Transfers funds from an external account to an internal account
@@ -193,6 +224,58 @@ components:
           $ref: '#/components/schemas/money'
           description: The fees in the transaction. The fees element should be empty if fees should be non-disclosed. The fees element should be non-empty if fees should be disclosed.
         feesCurrency:
+          $ref: '#/components/schemas/currency'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+          description: Type of transaction for which the quote is requested.
+        initiator:
+          $ref: '#/components/schemas/initiator'
+          description: Specifies if the initiator of the transfer is the payer or payee
+        initiatorType:
+          $ref: '#/components/schemas/initiatorType'
+          description: Specifies the type of the transaction initiator
+        geoCode:
+          $ref: '#/components/schemas/geoCode'
+          description: Longitude and Latitude of the initiating Party. Can be used to detect fraud.
+        note:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: An optional note associated with the requested transfer
+        expiration:
+          $ref: '#/components/schemas/timestamp'
+          description: An optional deadline for responding to the quote request
+
+    transactionRequest:
+      type: object
+      description: A request for a pull based transfer
+      required:
+        - transactionRequestId
+        - to
+        - from
+        - amountType
+        - amount
+        - currency
+        - transactionType
+        - initiator
+        - initiatorType
+      properties:
+        transactionRequestId:
+          $ref: '#/components/schemas/transactionRequestId'
+          description: Identifier for the transaction, decided by the Payer FSP during the creation of the quote
+        to:
+          $ref: '#/components/schemas/transferParty'
+          description: Information about the Payee in the proposed financial transaction.
+        from:
+          $ref: '#/components/schemas/transferParty'
+          description: Information about the Payer in the proposed financial transaction.
+        amountType:
+          $ref: '#/components/schemas/amountType'
+          description: 'SEND for send amount, RECEIVE for receive amount.'
+        amount:
+          $ref: '#/components/schemas/money'
+          description: Depending on amountType. If SEND - The amount the Payer would like to send, that is, the amount that should be withdrawn from the Payer account including any fees. The amount is updated by each participating entity in the transaction. If RECEIVE - The amount the Payee should receive, that is, the amount that should be sent to the receiver exclusive any fees. The amount is not updated by any of the participating entities.
+        currency:
           $ref: '#/components/schemas/currency'
         transactionType:
           $ref: '#/components/schemas/transactionType'

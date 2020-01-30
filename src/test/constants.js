@@ -67,6 +67,26 @@ const quote = {
     initiatorType: 'CONSUMER',
 };
 
+const transactionrequest = {
+    transactionRequestId: uuid(),
+    to: {
+        idType: 'MSISDN',
+        idValue: '0012345',
+    },
+    from: {
+        idType: 'MSISDN',
+        idValue: '0067890',
+    },
+    amountType: 'SEND',
+    amount: '100',
+    currency: 'USD',
+    feesAmount: '0.5',
+    feesCurrency: 'USD',
+    transactionType: 'TRANSFER',
+    initiator: 'PAYER',
+    initiatorType: 'CONSUMER',
+};
+
 const transfer = {
     transferId,
     quote: {
