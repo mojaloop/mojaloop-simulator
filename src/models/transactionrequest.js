@@ -62,16 +62,16 @@ module.exports = class TransactionRequest {
    * @returns {Promise<Object>}       The Quote response.
    */
     async create(transactionRequest) {
-        const {transactionRequestId} = transactionRequest;
+        const { transactionRequestId } = transactionRequest;
         const response = {
-            transactionId,
-            transactionRequestState: 'RECEIVED'
+            transactionRequestId,
+            transactionRequestState: 'RECEIVED',
         };
         const reqStr = JSON.stringify(transactionRequest);
         const resStr = JSON.stringify(response);
         const created = new Date().toISOString().slice(0, 19);
 
-        await this.db.get(`INSERT INTO ${quoteTable} (id, request, response, created) VALUES (?, ?, ?, ?)`, [transactionRequestId, reqStr, resStr, created]);
+        await this.db.get(`INSERT INTO ${transactionRequestTable} (id, request, response, created) VALUES (?, ?, ?, ?)`, [transactionRequestId, reqStr, resStr, created]);
         return response;
     }
 

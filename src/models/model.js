@@ -34,7 +34,9 @@ const Quote = require('./quote');
 const TransactionRequest = require('./transactionrequest');
 const Transfer = require('./transfer');
 
-const { createPartyTable, createTransferTable, createQuoteTable, createTransactionRequestTable } = require('./constants');
+const {
+    createPartyTable, createTransferTable, createQuoteTable, createTransactionRequestTable,
+} = require('./constants');
 
 /**
  * @typedef {Object} Model

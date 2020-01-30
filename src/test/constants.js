@@ -165,5 +165,14 @@ test('constants', async (t) => {
 });
 
 module.exports = {
-    transfer, quote, party, newQuote, newTransfer, transferWithoutQuote, idType, idValue, transferId,
+    transfer,
+    quote,
+    transactionrequest,
+    party,
+    newQuote,
+    newTransfer,
+    transferWithoutQuote,
+    idType,
+    idValue,
+    transferId,
 };

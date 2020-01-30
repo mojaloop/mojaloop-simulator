@@ -70,5 +70,12 @@ CREATE TABLE IF NOT EXISTS ${transferTable} (
 `;
 
 module.exports = {
-    partyTable, quoteTable, transactionRequestTable, createPartyTable, createQuoteTable, createTransactionRequestTable, createTransferTable, transferTable,
+    partyTable,
+    quoteTable,
+    transactionRequestTable,
+    createPartyTable,
+    createQuoteTable,
+    createTransactionRequestTable,
+    createTransferTable,
+    transferTable,
 };
