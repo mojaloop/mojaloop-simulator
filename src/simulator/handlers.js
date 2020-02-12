@@ -94,7 +94,7 @@ const postQuotes = async (ctx) => {
 
 const postTransactionRequests = async (ctx) => {
     try {
-        const res = await ctx.state.model.transactionRequest.create(ctx.request.body);
+        const res = await ctx.state.model.transactionrequest.create(ctx.request.body);
         ctx.state.logger.log(`postTransactionRequests is returning body: ${util.inspect(res)}`);
         ctx.response.body = res;
         ctx.response.status = 200;

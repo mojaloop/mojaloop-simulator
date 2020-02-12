@@ -253,7 +253,6 @@ components:
         - transactionRequestId
         - to
         - from
-        - amountType
         - amount
         - currency
         - transactionType
@@ -269,9 +268,6 @@ components:
         from:
           $ref: '#/components/schemas/transferParty'
           description: Information about the Payer in the proposed financial transaction.
-        amountType:
-          $ref: '#/components/schemas/amountType'
-          description: 'SEND for send amount, RECEIVE for receive amount.'
         amount:
           $ref: '#/components/schemas/money'
           description: Depending on amountType. If SEND - The amount the Payer would like to send, that is, the amount that should be withdrawn from the Payer account including any fees. The amount is updated by each participating entity in the transaction. If RECEIVE - The amount the Payee should receive, that is, the amount that should be sent to the receiver exclusive any fees. The amount is not updated by any of the participating entities.
@@ -368,7 +364,20 @@ components:
           $ref: '#/components/schemas/geoCode'
           description: Longitude and Latitude of the Payee. Can be used to detect fraud
         
-  
+    transactionRequestResponse:
+      type: object
+      description: A response to a request for a quote
+      required:
+        - transactionId
+        - transactionRequestState
+      properties:
+        transactionId:
+          $ref: '#/components/schemas/transactionId'
+          description: Identifier for the transaction, decided by the Payer FSP during the creation of the quote
+        transferAmount:
+          $ref: '#/components/schemas/transactionRequestState'
+          description: State of the transaction request.
+
     participantsResponse:
       type: object
       properties:
@@ -398,6 +407,15 @@ components:
       type: string
       enum:
       - TRANSFER
+      - DEPOSIT
+
+    transactionRequestState:
+      type: string
+      enum:
+      - RECEIVED
+      - PENDING
+      - ACCEPTED
+      - REJECTED
       
     transferRequest:
       type: object
@@ -478,6 +496,11 @@ components:
       pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
       type: string
       description: A Mojaloop API quote identifier (UUID)
+    
+    transactionRequestId:
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      type: string
+      description: A Mojaloop API transaction request identifier (UUID)
       
     transactionId:
       pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
