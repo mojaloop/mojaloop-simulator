@@ -1,10 +1,10 @@
-FROM node:10.15.3-alpine as intermediate
+FROM node:12.16.0-alpine as intermediate
 
 WORKDIR /src/
 COPY ./src/ /src/
 RUN npm install --production
 
-FROM node:10.15.3-alpine
+FROM node:12.16.0-alpine
 
 WORKDIR /src/
 
