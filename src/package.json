@@ -65,9 +65,6 @@
     "files": [
       "test/**/*.js",
       "!test/**/TestUtils.js"
-    ],
-    "ignoredByWatcher": [
-      "test/**/TestUtils.js"
     ]
   }
 }
