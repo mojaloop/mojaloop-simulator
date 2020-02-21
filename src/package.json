@@ -1,6 +1,6 @@
 {
   "name": "mojaloop-simulator",
-  "version": "8.6.0",
+  "version": "9.2.0",
   "description": "A canonical test example implementation of the parties, transfers and quotes resources of  the Mojaloop API",
   "license": "Apache-2.0",
   "main": "index.js",
@@ -23,6 +23,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "test": "npm run test:unit",
     "test:unit": "ava -c 1",
     "test:xunit": "ava --tap | tap-xunit",
     "test:coverage-check": "nyc ava",
@@ -37,36 +38,36 @@
     "@internal/router": "file:lib/router",
     "@internal/rules-engine": "file:lib/rules-engine",
     "@internal/validate": "file:lib/validate",
-    "@koa/cors": "2.2.3",
-    "ajv": "6.10.2",
-    "chance": "1.1.0",
-    "dotenv": "8.1.0",
+    "@koa/cors": "3.0.0",
+    "ajv": "6.11.0",
+    "chance": "1.1.4",
+    "dotenv": "8.2.0",
     "joi": "14.3.1",
-    "koa": "2.8.1",
+    "koa": "2.11.0",
     "koa-body": "4.1.1",
-    "mustache": "3.0.3",
+    "mustache": "4.0.0",
     "node-fetch": "2.6.0",
     "sqlite": "3.0.3",
     "yamljs": "0.3.0"
   },
   "devDependencies": {
-    "ava": "2.3.0",
-    "eslint": "6.3.0",
+    "ava": "3.3.0",
+    "eslint": "6.8.0",
     "eslint-config-airbnb-base": "14.0.0",
-    "eslint-plugin-import": "2.18.2",
-    "husky": "3.0.5",
-    "npm-audit-resolver": "1.5.0",
-    "nyc": "14.1.1",
+    "eslint-plugin-import": "2.20.1",
+    "husky": "4.2.3",
+    "npm-audit-resolver": "2.2.0",
+    "nyc": "15.0.0",
     "tap-xunit": "2.4.1",
-    "uuid": "3.3.3"
+    "uuid": "3.4.0"
   },
   "ava": {
     "files": [
       "test/**/*.js",
       "!test/**/TestUtils.js"
     ],
-    "sources": [
-      "src/**/*.js"
+    "ignoredByWatcher": [
+      "test/**/TestUtils.js"
     ]
   }
 }
