@@ -408,6 +408,7 @@ components:
       enum:
       - TRANSFER
       - DEPOSIT
+      - PAYMENT
 
     transactionRequestState:
       type: string
