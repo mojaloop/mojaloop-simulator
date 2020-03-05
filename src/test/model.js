@@ -26,7 +26,8 @@ const test = require('ava');
 
 const Model = require('../models/model');
 const {
-    transfer, quote, transactionrequest, party, newQuote, newTransfer, idType, idValue, transferId,transactionRequestId,
+    transfer, quote, transactionrequest, party, newQuote, newTransfer, idType, idValue,
+    transferId, transactionRequestId,
 } = require('./constants');
 
 test.beforeEach(async (t) => {
