@@ -29,6 +29,7 @@ const uuid = require('uuid/v1');
 const chance = new Chance();
 const randName = chance.name({ suffix: true, middle: true });
 const transferId = uuid();
+const transactionRequestId = uuid();
 const idType = 'msisdn';
 const idValue = uuid();
 const currency = '$';
@@ -68,14 +69,14 @@ const quote = {
 };
 
 const transactionrequest = {
-    transactionRequestId: uuid(),
+    transactionRequestId,
     to: {
         idType: 'MSISDN',
         idValue: '0012345',
     },
     from: {
-        idType: 'MSISDN',
-        idValue: '0067890',
+        idType: 'BUSINESS',
+        idValue: 'Starbucks',
     },
     amountType: 'SEND',
     amount: '100',
@@ -175,4 +176,5 @@ module.exports = {
     idType,
     idValue,
     transferId,
+    transactionRequestId,
 };
