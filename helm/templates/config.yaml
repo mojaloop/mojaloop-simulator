@@ -1,27 +1,30 @@
+{{- range $name, $config := .Values.simulators }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "mojaloop-simulator.fullname" . }}-scheme-adapter-config
+  name: {{ $name }}-sim-scheme-adapter
   labels:
-      app: {{ template "mojaloop-simulator.fullname" . }}
-      chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-      release: {{ .Release.Name }}
-      heritage: {{ .Release.Service }}
+    app: {{ $name }}-sim
+    chart: {{ template "mojaloop-simulator.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
 data:
-  {{- range $k, $v := .Values.config.schemeAdapter.env }}
+  {{- range $k, $v := $config.config.schemeAdapter.env }}
   {{ $k }}: {{ $v | quote }}
   {{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "mojaloop-simulator.fullname" . }}-sim-backend-config
+  name: {{ $name }}-sim-backend
   labels:
-      app: {{ template "mojaloop-simulator.fullname" . }}
-      chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-      release: {{ .Release.Name }}
-      heritage: {{ .Release.Service }}
+    app: {{ $name }}-sim
+    chart: {{ template "mojaloop-simulator.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
 data:
-  {{- range $k, $v := .Values.config.simBackend.env }}
+  {{- range $k, $v := $config.config.simBackend.env }}
   {{ $k }}: {{ $v | quote }}
   {{- end }}
+---
+{{- end }}

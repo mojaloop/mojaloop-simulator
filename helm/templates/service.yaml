@@ -1,13 +1,13 @@
-{{- $fullName := include "mojaloop-simulator.fullname" . -}}
+{{- range $name, $config := .Values.simulators }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $fullName }}-sim
+  name: {{ $name }}-sim
   labels:
-    app: {{ template "mojaloop-simulator.name" . }}
-    chart: {{ template "mojaloop-simulator.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    app: {{ $name }}-sim
+    chart: {{ template "mojaloop-simulator.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
 spec:
    type: ClusterIP
    ports:
@@ -28,5 +28,7 @@ spec:
        name: testapi
        targetPort: testapi
    selector:
-     app: {{ template "mojaloop-simulator.name" . }}
-     release: {{ .Release.Name }}
+     app: {{ $name }}-sim
+     release: {{ $.Release.Name }}
+---
+{{ end }}

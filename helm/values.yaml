@@ -4,242 +4,249 @@
 
 replicaCount: 1
 
-config:
-  imagePullSecretName: dock-casa-secret
+common: &common
+  config:
+    imagePullSecretName: dock-casa-secret
 
-  cache:
+    cache:
+      enabled: true
+      image:
+        repository: redis
+        tag: 5.0.4-alpine
+        pullPolicy: Always
+      readinessProbe:
+        enabled: true
+        initialDelaySeconds: 30
+        periodSeconds: 30
+        timeoutSeconds: 10
+        successThreshold: 1
+        failureThreshold: 12
+      livenessProbe:
+        enabled: true
+        initialDelaySeconds: 30
+        periodSeconds: 30
+        timeoutSeconds: 10
+        successThreshold: 1
+        failureThreshold: 3
+
+    schemeAdapter:
+      image:
+        repository: mojaloop/sdk-scheme-adapter
+        tag: v8.6.1
+        pullPolicy: Always
+      readinessProbe:
+        enabled: true
+        initialDelaySeconds: 30
+        periodSeconds: 30
+        timeoutSeconds: 10
+        successThreshold: 1
+        failureThreshold: 3
+      livenessProbe:
+        enabled: true
+        initialDelaySeconds: 30
+        periodSeconds: 30
+        timeoutSeconds: 10
+        successThreshold: 1
+        failureThreshold: 3
+
+      env:
+        # This option is presented for consistency with the .env file. However, for the purposes of this chart, this port is _not_ configurable.
+        INBOUND_LISTEN_PORT: "4000"
+
+        # This option is presented for consistency with the .env file. However, for the purposes of this chart, this port is _not_ configurable.
+        OUTBOUND_LISTEN_PORT: "4001"
+
+        # Enable mutual TLS authentication. Useful when not running in a secure
+        # environment, i.e. when you're running it locally against your own implementation.
+        MUTUAL_TLS_ENABLED: "false"
+
+        # Enable JWS verification and signing
+        VALIDATE_INBOUND_JWS: "false"
+        JWS_SIGN: "true"
+
+        # Path to JWS signing key (private key of THIS DFSP)
+        JWS_SIGNING_KEY_PATH: "/jwsSigningKey.key"
+        JWS_VERIFICATION_KEYS_DIRECTORY: "/jwsVerificationKeys"
+
+        # Location of certs and key required for TLS
+        IN_CA_CERT_PATH: "./secrets/cacert.pem"
+        IN_SERVER_CERT_PATH: "./secrets/servercert.pem"
+        IN_SERVER_KEY_PATH: "./secrets/serverkey.pem"
+
+        OUT_CA_CERT_PATH: "./secrets/cacert.pem"
+        OUT_CLIENT_CERT_PATH: "./secrets/servercert.pem"
+        OUT_CLIENT_KEY_PATH: "./secrets/serverkey.pem"
+
+        # The number of space characters by which to indent pretty-printed logs. If set to zero, log events
+        # will each be printed on a single line.
+        LOG_INDENT: "0"
+
+        # REDIS CACHE CONNECTION
+        CACHE_HOST: "localhost" # within pod
+        CACHE_PORT: "6379"
+
+        # SWITCH ENDPOINT
+        PEER_ENDPOINT: "test-quoting-service:80"
+
+        # BACKEND ENDPOINT
+        BACKEND_ENDPOINT: "localhost:3000" # within pod
+
+        # FSPID of this DFSP
+        DFSP_ID: "mojaloop-sdk"
+
+        # Secret used for generation and verification of secure ILP
+        ILP_SECRET: "Quaixohyaesahju3thivuiChai5cahng"
+
+        # expiry period in seconds for quote and transfers issued by the SDK
+        EXPIRY_SECONDS: "60"
+
+        # if set to false the SDK will not automatically accept all returned quotes
+        # but will halt the transfer after a quote response is received. A further
+        # confirmation call will be required to complete the final transfer stage.
+        AUTO_ACCEPT_QUOTES: "false"
+
+        # if set to false the SDK will not automatically accept a resolved party
+        # but will halt the transer after a party lookup response is received. A further
+        # cnofirmation call will be required to progress the transfer to quotes state.
+        AUTO_ACCEPT_PARTY: "false"
+
+        # when set to true, when sending money via the outbound API, the SDK will use the value
+        # of FSPIOP-Source header from the received quote response as the payeeFsp value in the
+        # transfer prepare request body instead of the value received in the payee party lookup.
+        # This behaviour should be enabled when the SDK user DFSP is in a forex enabled switch
+        # ecosystem and expects quotes and transfers to be rerouted by the switch to forex
+        # entities i.e. forex providing DFSPs. Please see the SDK documentation and switch
+        # operator documentation for more information on forex use cases.
+        USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP: "false"
+
+        # set to true to validate ILP, otherwise false to ignore ILP
+        CHECK_ILP: "true"
+
+        # set to true to enable test features such as request cacheing and retrieval endpoints
+        ENABLE_TEST_FEATURES: "true"
+
+        # set to true to mock WSO2 oauth2 token endpoint
+        ENABLE_OAUTH_TOKEN_ENDPOINT: "false"
+        OAUTH_TOKEN_ENDPOINT_CLIENT_KEY: "test-client-key"
+        OAUTH_TOKEN_ENDPOINT_CLIENT_SECRET: "test-client-secret"
+        OAUTH_TOKEN_ENDPOINT_LISTEN_PORT: "6000"
+
+        # WS02 Bearer Token specific to golden-fsp instance and environment
+        WS02_BEARER_TOKEN: "7718fa9b-be13-3fe7-87f0-a12cf1628168"
+
+        # OAuth2 data used to obtain WSO2 bearer token
+        OAUTH_TOKEN_ENDPOINT: ""
+        OAUTH_CLIENT_KEY: ""
+        OAUTH_CLIENT_SECRET: ""
+        OAUTH_REFRESH_SECONDS: "3600"
+
+        # Set to true to respect expirity timestamps
+        REJECT_EXPIRED_QUOTE_RESPONSES: "false"
+        REJECT_TRANSFERS_ON_EXPIRED_QUOTES: "false"
+        REJECT_EXPIRED_TRANSFER_FULFILS: "false"
+
+        INBOUND_MUTUAL_TLS_ENABLED: "false"
+        OUTBOUND_MUTUAL_TLS_ENABLED: "false"
+
+    simBackend:
+      image:
+        repository: mojaloop/mojaloop-simulator
+        tag: v8.6.0-snapshot
+        pullPolicy: Always
+      readinessProbe:
+        enabled: true
+        initialDelaySeconds: 30
+        periodSeconds: 30
+        timeoutSeconds: 10
+        successThreshold: 1
+        failureThreshold: 3
+      livenessProbe:
+        enabled: true
+        initialDelaySeconds: 30
+        periodSeconds: 30
+        timeoutSeconds: 10
+        successThreshold: 1
+        failureThreshold: 3
+
+      env:
+        ##### Section for simulator backend container #####
+        OUTBOUND_ENDPOINT: "http://localhost:4001" # within the pod
+
+        # Enable mutual TLS authentication. Useful when the simulator is not running in a managed
+        # environment, i.e. when you're running it locally against your own implementation.
+        MUTUAL_TLS_ENABLED: "false"
+
+        # Enable server-only TLS; i.e. serve on HTTPS instead of HTTP.
+        HTTPS_ENABLED: "false"
+
+        # Location of certs and key required for TLS
+        CA_CERT_PATH: ./secrets/cacert.pem
+        SERVER_CERT_PATH: ./secrets/servercert.pem
+        SERVER_KEY_PATH: ./secrets/serverkey.pem
+
+        # The number of space characters by which to indent pretty-printed logs. If set to zero, log events
+        # will each be printed on a single line.
+        LOG_INDENT: "0"
+
+        # The name of the sqlite log file. This probably doesn't matter much to the user, except that
+        # setting :memory: will use an in-memory sqlite db, which will be faster and not consume disk
+        # space. However, it will also mean that the logs will be lost once the container is stopped.
+        SQLITE_LOG_FILE: ./log.sqlite
+
+        # The DFSPID of this simulator. The simulator will accept any requests routed to
+        # FSPIOP-Destination: $SCHEME_NAME. Other requests will be rejected.
+        SCHEME_NAME: golden
+        DFSP_ID: golden
+
+        # The name of the sqlite model database. If you would like to start the simulator with preloaded
+        # state you can use a preexisting file. If running in a container, you can mount a sqlite file as a
+        # volume in the container to preserve state between runs.
+        # Use MODEL_DATABASE: :memory: for an ephemeral in-memory database
+        MODEL_DATABASE: ./model.sqlite
+
+        # The simulator can automatically add fees when generating quote responses. Use this
+        # variable to control the fee amounts added. e.g. for a transfer of 100 USD a FEE_MULTIPLIER of 0.1
+        # reuslts in fees of USD 10 being applied to the quote response
+        FEE_MULTIPLIER: "0.05"
+
+        # Specifies the location of a rules file for the simulator backend. Rules can be used to produce
+        # specific simulator behaviours in response to incoming requests that match certain conditions.
+        # e.g. a rule can be used to trigger NDC errors given transfers between certain limits.
+        RULES_FILE: ./rules.json
+
+  ingress:
     enabled: true
-    image:
-      repository: redis
-      tag: 5.0.4-alpine
-      pullPolicy: Always
-    readinessProbe:
-      enabled: true
-      initialDelaySeconds: 30
-      periodSeconds: 30
-      timeoutSeconds: 10
-      successThreshold: 1
-      failureThreshold: 12
-    livenessProbe:
-      enabled: true
-      initialDelaySeconds: 30
-      periodSeconds: 30
-      timeoutSeconds: 10
-      successThreshold: 1
-      failureThreshold: 3
+    annotations: {
+      "nginx.ingress.kubernetes.io/rewrite-target": "$1",
+      "nginx.org/server-snippet": "proxy_ssl_verify off;"
+    }
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
 
-  schemeAdapter:
-    image:
-      repository: mojaloop/sdk-scheme-adapter
-      tag: v8.6.1
-      pullPolicy: Always
-    readinessProbe:
-      enabled: true
-      initialDelaySeconds: 30
-      periodSeconds: 30
-      timeoutSeconds: 10
-      successThreshold: 1
-      failureThreshold: 3
-    livenessProbe:
-      enabled: true
-      initialDelaySeconds: 30
-      periodSeconds: 30
-      timeoutSeconds: 10
-      successThreshold: 1
-      failureThreshold: 3
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
 
-    env:
-      # This option is presented for consistency with the .env file. However, for the purposes of this chart, this port is _not_ configurable.
-      INBOUND_LISTEN_PORT: "4000"
+  nodeSelector: {}
 
-      # This option is presented for consistency with the .env file. However, for the purposes of this chart, this port is _not_ configurable.
-      OUTBOUND_LISTEN_PORT: "4001"
+  tolerations: []
 
-      # Enable mutual TLS authentication. Useful when not running in a secure
-      # environment, i.e. when you're running it locally against your own implementation.
-      MUTUAL_TLS_ENABLED: "false"
+  affinity: {}
 
-      # Enable JWS verification and signing
-      VALIDATE_INBOUND_JWS: "false"
-      JWS_SIGN: "true"
-
-      # Path to JWS signing key (private key of THIS DFSP)
-      JWS_SIGNING_KEY_PATH: "/jwsSigningKey.key"
-      JWS_VERIFICATION_KEYS_DIRECTORY: "/jwsVerificationKeys"
-
-      # Location of certs and key required for TLS
-      IN_CA_CERT_PATH: "./secrets/cacert.pem"
-      IN_SERVER_CERT_PATH: "./secrets/servercert.pem"
-      IN_SERVER_KEY_PATH: "./secrets/serverkey.pem"
-
-      OUT_CA_CERT_PATH: "./secrets/cacert.pem"
-      OUT_CLIENT_CERT_PATH: "./secrets/servercert.pem"
-      OUT_CLIENT_KEY_PATH: "./secrets/serverkey.pem"
-
-      # The number of space characters by which to indent pretty-printed logs. If set to zero, log events
-      # will each be printed on a single line.
-      LOG_INDENT: "0"
-
-      # REDIS CACHE CONNECTION
-      CACHE_HOST: "localhost" # within pod
-      CACHE_PORT: "6379"
-
-      # SWITCH ENDPOINT
-      PEER_ENDPOINT: "test-quoting-service:80"
-
-      # BACKEND ENDPOINT
-      BACKEND_ENDPOINT: "localhost:3000" # within pod
-
-      # FSPID of this DFSP
-      DFSP_ID: "mojaloop-sdk"
-
-      # Secret used for generation and verification of secure ILP
-      ILP_SECRET: "Quaixohyaesahju3thivuiChai5cahng"
-
-      # expiry period in seconds for quote and transfers issued by the SDK
-      EXPIRY_SECONDS: "60"
-
-      # if set to false the SDK will not automatically accept all returned quotes
-      # but will halt the transfer after a quote response is received. A further
-      # confirmation call will be required to complete the final transfer stage.
-      AUTO_ACCEPT_QUOTES: "false"
-
-      # if set to false the SDK will not automatically accept a resolved party
-      # but will halt the transer after a party lookup response is received. A further
-      # cnofirmation call will be required to progress the transfer to quotes state.
-      AUTO_ACCEPT_PARTY: "false"
-
-      # when set to true, when sending money via the outbound API, the SDK will use the value
-      # of FSPIOP-Source header from the received quote response as the payeeFsp value in the
-      # transfer prepare request body instead of the value received in the payee party lookup.
-      # This behaviour should be enabled when the SDK user DFSP is in a forex enabled switch
-      # ecosystem and expects quotes and transfers to be rerouted by the switch to forex
-      # entities i.e. forex providing DFSPs. Please see the SDK documentation and switch
-      # operator documentation for more information on forex use cases.
-      USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP: "false"
-
-      # set to true to validate ILP, otherwise false to ignore ILP
-      CHECK_ILP: "true"
-
-      # set to true to enable test features such as request cacheing and retrieval endpoints
-      ENABLE_TEST_FEATURES: "true"
-
-      # set to true to mock WSO2 oauth2 token endpoint
-      ENABLE_OAUTH_TOKEN_ENDPOINT: "false"
-      OAUTH_TOKEN_ENDPOINT_CLIENT_KEY: "test-client-key"
-      OAUTH_TOKEN_ENDPOINT_CLIENT_SECRET: "test-client-secret"
-      OAUTH_TOKEN_ENDPOINT_LISTEN_PORT: "6000"
-
-      # WS02 Bearer Token specific to golden-fsp instance and environment
-      WS02_BEARER_TOKEN: "7718fa9b-be13-3fe7-87f0-a12cf1628168"
-
-      # OAuth2 data used to obtain WSO2 bearer token
-      OAUTH_TOKEN_ENDPOINT: ""
-      OAUTH_CLIENT_KEY: ""
-      OAUTH_CLIENT_SECRET: ""
-      OAUTH_REFRESH_SECONDS: "3600"
-
-      # Set to true to respect expirity timestamps
-      REJECT_EXPIRED_QUOTE_RESPONSES: "false"
-      REJECT_TRANSFERS_ON_EXPIRED_QUOTES: "false"
-      REJECT_EXPIRED_TRANSFER_FULFILS: "false"
-
-      INBOUND_MUTUAL_TLS_ENABLED: "false"
-      OUTBOUND_MUTUAL_TLS_ENABLED: "false"
-
-  simBackend:
-    image:
-      repository: mojaloop/mojaloop-simulator
-      tag: v8.6.0-snapshot
-      pullPolicy: Always
-    readinessProbe:
-      enabled: true
-      initialDelaySeconds: 30
-      periodSeconds: 30
-      timeoutSeconds: 10
-      successThreshold: 1
-      failureThreshold: 3
-    livenessProbe:
-      enabled: true
-      initialDelaySeconds: 30
-      periodSeconds: 30
-      timeoutSeconds: 10
-      successThreshold: 1
-      failureThreshold: 3
-
-    env:
-      ##### Section for simulator backend container #####
-      OUTBOUND_ENDPOINT: "http://localhost:4001" # within the pod
-
-      # Enable mutual TLS authentication. Useful when the simulator is not running in a managed
-      # environment, i.e. when you're running it locally against your own implementation.
-      MUTUAL_TLS_ENABLED: "false"
-
-      # Enable server-only TLS; i.e. serve on HTTPS instead of HTTP.
-      HTTPS_ENABLED: "false"
-
-      # Location of certs and key required for TLS
-      CA_CERT_PATH: ./secrets/cacert.pem
-      SERVER_CERT_PATH: ./secrets/servercert.pem
-      SERVER_KEY_PATH: ./secrets/serverkey.pem
-
-      # The number of space characters by which to indent pretty-printed logs. If set to zero, log events
-      # will each be printed on a single line.
-      LOG_INDENT: "0"
-
-      # The name of the sqlite log file. This probably doesn't matter much to the user, except that
-      # setting :memory: will use an in-memory sqlite db, which will be faster and not consume disk
-      # space. However, it will also mean that the logs will be lost once the container is stopped.
-      SQLITE_LOG_FILE: ./log.sqlite
-
-      # The DFSPID of this simulator. The simulator will accept any requests routed to
-      # FSPIOP-Destination: $SCHEME_NAME. Other requests will be rejected.
-      SCHEME_NAME: golden
-      DFSP_ID: golden
-
-      # The name of the sqlite model database. If you would like to start the simulator with preloaded
-      # state you can use a preexisting file. If running in a container, you can mount a sqlite file as a
-      # volume in the container to preserve state between runs.
-      # Use MODEL_DATABASE: :memory: for an ephemeral in-memory database
-      MODEL_DATABASE: ./model.sqlite
-
-      # The simulator can automatically add fees when generating quote responses. Use this
-      # variable to control the fee amounts added. e.g. for a transfer of 100 USD a FEE_MULTIPLIER of 0.1
-      # reuslts in fees of USD 10 being applied to the quote response
-      FEE_MULTIPLIER: "0.05"
-
-      # Specifies the location of a rules file for the simulator backend. Rules can be used to produce
-      # specific simulator behaviours in response to incoming requests that match certain conditions.
-      # e.g. a rule can be used to trigger NDC errors given transfers between certain limits.
-      RULES_FILE: ./rules.json
-
-ingress:
-  enabled: true
-  annotations: {
-    "nginx.ingress.kubernetes.io/rewrite-target": "$1",
-    "nginx.org/server-snippet": "proxy_ssl_verify off;"
-  }
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
+simulators:
+  first:
+    <<: *common
+  second:
+    <<: *common

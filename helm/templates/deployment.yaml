@@ -1,65 +1,67 @@
+{{- range $name, $config := .Values.simulators }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "mojaloop-simulator.fullname" . }}
+  name: {{ $name }}-sim
   labels:
-    app: {{ template "mojaloop-simulator.name" . }}
-    chart: {{ template "mojaloop-simulator.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    # TODO: the labels should be moved into helpers
+    app: {{ $name }}
+    chart: {{ template "mojaloop-simulator.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ $config.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "mojaloop-simulator.name" . }}
-      release: {{ .Release.Name }}
+      app: {{ $name }}-sim
+      release: {{ $.Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "mojaloop-simulator.name" . }}
-        release: {{ .Release.Name }}
+        app: {{ $name }}-sim
+        release: {{ $.Release.Name }}
     spec:
       containers:
-      {{- if .Values.config.cache.enabled }}
-      - name: {{ .Chart.Name }}-cache
-        image: "{{ .Values.config.cache.image.repository }}:{{ .Values.config.cache.image.tag }}"
-        imagePullPolicy: {{ .Values.config.cache.image.pullPolicy }}
+      {{- if $config.config.cache.enabled }}
+      - name: {{ $name }}-cache
+        image: "{{ $config.config.cache.image.repository }}:{{ $config.config.cache.image.tag }}"
+        imagePullPolicy: {{ $config.config.cache.image.pullPolicy }}
         # ports:
         # - name: redis
         #   containerPort: 6379
         #   protocol: TCP
-        {{- if .Values.config.cache.livenessProbe.enabled }}
+        {{- if $config.config.cache.livenessProbe.enabled }}
         livenessProbe:
-          initialDelaySeconds: {{ .Values.config.cache.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.config.cache.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.config.cache.livenessProbe.timeoutSeconds }}
-          successThreshold: {{ .Values.config.cache.livenessProbe.successThreshold }}
-          failureThreshold: {{ .Values.config.cache.livenessProbe.failureThreshold }}
+          initialDelaySeconds: {{ $config.config.cache.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ $config.config.cache.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ $config.config.cache.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ $config.config.cache.livenessProbe.successThreshold }}
+          failureThreshold: {{ $config.config.cache.livenessProbe.failureThreshold }}
           exec:
             command:
             - sh
             - -c
-            - redis-cli ping {{ .Values.config.cache.livenessProbe.timeoutSeconds }}
+            - redis-cli ping {{ $config.config.cache.livenessProbe.timeoutSeconds }}
         {{- end }}
-        {{- if .Values.config.cache.readinessProbe.enabled}}
+        {{- if $config.config.cache.readinessProbe.enabled}}
         readinessProbe:
-          initialDelaySeconds: {{ .Values.config.cache.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.config.cache.readinessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.config.cache.readinessProbe.timeoutSeconds }}
-          successThreshold: {{ .Values.config.cache.readinessProbe.successThreshold }}
-          failureThreshold: {{ .Values.config.cache.readinessProbe.failureThreshold }}
+          initialDelaySeconds: {{ $config.config.cache.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ $config.config.cache.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ $config.config.cache.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ $config.config.cache.readinessProbe.successThreshold }}
+          failureThreshold: {{ $config.config.cache.readinessProbe.failureThreshold }}
           exec:
             command:
             - sh
             - -c
-            - redis-cli ping {{ .Values.config.cache.livenessProbe.timeoutSeconds }}
+            - redis-cli ping {{ $config.config.cache.livenessProbe.timeoutSeconds }}
         {{- end }}
         resources:
-{{ toYaml .Values.config.cache.resources | indent 12 }}
+{{ toYaml $config.config.cache.resources | indent 12 }}
       {{- end }}
-      - name: {{ .Chart.Name }}-sim-backend
-        image: "{{ .Values.config.simBackend.image.repository }}:{{ .Values.config.simBackend.image.tag }}"
-        imagePullPolicy: {{ .Values.config.simBackend.image.pullPolicy }}
+      - name: {{ $name }}-sim-backend
+        image: "{{ $config.config.simBackend.image.repository }}:{{ $config.config.simBackend.image.tag }}"
+        imagePullPolicy: {{ $config.config.simBackend.image.pullPolicy }}
         ports:
           - name: simapi
             containerPort: 3000
@@ -70,32 +72,32 @@ spec:
           - name: testapi
             containerPort: 3003
             protocol: TCP
-        {{- if .Values.config.simBackend.readinessProbe.enabled }}
+        {{- if $config.config.simBackend.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
             path: /
             port: 3000
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.config.simBackend.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.config.simBackend.readinessProbe.periodSeconds }}
+          initialDelaySeconds: {{ $config.config.simBackend.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ $config.config.simBackend.readinessProbe.periodSeconds }}
         {{- end }}
-        {{- if .Values.config.simBackend.livenessProbe.enabled }}
+        {{- if $config.config.simBackend.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
             path: /
             port: 3000
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.config.simBackend.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.config.simBackend.livenessProbe.periodSeconds }}
+          initialDelaySeconds: {{ $config.config.simBackend.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ $config.config.simBackend.livenessProbe.periodSeconds }}
         {{- end }}
         envFrom:
         - configMapRef:
-            name: {{ template "mojaloop-simulator.fullname" . }}-sim-backend-config
+            name: {{ $name }}-sim-backend
         resources:
-{{ toYaml .Values.config.simBackend.resources | indent 12 }}
-      - name: {{ .Chart.Name }}-scheme-adapter
-        image: "{{ .Values.config.schemeAdapter.image.repository }}:{{ .Values.config.schemeAdapter.image.tag }}"
-        imagePullPolicy: {{ .Values.config.schemeAdapter.image.pullPolicy }}
+{{ toYaml $config.config.simBackend.resources | indent 12 }}
+      - name: {{ $name }}-sim-scheme-adapter
+        image: "{{ $config.config.schemeAdapter.image.repository }}:{{ $config.config.schemeAdapter.image.tag }}"
+        imagePullPolicy: {{ $config.config.schemeAdapter.image.pullPolicy }}
         ports:
           - name: inboundapi
             containerPort: 4000
@@ -103,40 +105,42 @@ spec:
           - name: outboundapi
             containerPort: 4001
             protocol: TCP
-        {{- if .Values.config.schemeAdapter.readinessProbe.enabled }}
+        {{- if $config.config.schemeAdapter.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
             path: /
             port: 4001
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.config.schemeAdapter.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.config.schemeAdapter.readinessProbe.periodSeconds }}
+          initialDelaySeconds: {{ $config.config.schemeAdapter.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ $config.config.schemeAdapter.readinessProbe.periodSeconds }}
         {{- end }}
-        {{- if .Values.config.schemeAdapter.livenessProbe.enabled }}
+        {{- if $config.config.schemeAdapter.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
             path: /
             port: 4001
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.config.schemeAdapter.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.config.schemeAdapter.livenessProbe.periodSeconds }}
+          initialDelaySeconds: {{ $config.config.schemeAdapter.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ $config.config.schemeAdapter.livenessProbe.periodSeconds }}
         {{- end }}
         envFrom:
         - configMapRef:
-            name: {{ template "mojaloop-simulator.fullname" . }}-scheme-adapter-config
+            name: {{ $name }}-sim-scheme-adapter
           resources:
-{{ toYaml .Values.config.schemeAdapter.resources | indent 12 }}
+{{ toYaml $config.config.schemeAdapter.resources | indent 12 }}
       imagePullSecrets:
-        - name: {{ .Values.config.imagePullSecretName }}
-    {{- with .Values.nodeSelector }}
+        - name: {{ $config.config.imagePullSecretName }}
+    {{- with $config.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.affinity }}
+    {{- with $config.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with $config.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
+---
+{{ end }}
