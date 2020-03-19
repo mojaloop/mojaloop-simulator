@@ -25,6 +25,7 @@
 const partyTable = 'party';
 const quoteTable = 'quote';
 const transferTable = 'transfer';
+const partyExtensionTable = 'partyExtension';
 
 const createPartyTable = `
 CREATE TABLE IF NOT EXISTS ${partyTable} (
@@ -38,7 +39,15 @@ CREATE TABLE IF NOT EXISTS ${partyTable} (
     CHECK(idValue <> '')
 )
 `;
-
+const createPartyExtensionTable = `
+CREATE TABLE IF NOT EXISTS ${partyExtensionTable} (
+    idValue TEXT NOT NULL,
+    key TEXT NOT NULL,
+    value TEXT NOT NULL,
+    PRIMARY KEY (idValue, key),
+    FOREIGN KEY (idValue) REFERENCES party(idValue) ON DELETE CASCADE
+)
+`;
 const createQuoteTable = `
 CREATE TABLE IF NOT EXISTS ${quoteTable} (
     id TEXT NOT NULL PRIMARY KEY,
@@ -59,5 +68,12 @@ CREATE TABLE IF NOT EXISTS ${transferTable} (
 `;
 
 module.exports = {
-    partyTable, quoteTable, createPartyTable, createQuoteTable, createTransferTable, transferTable,
+    partyTable,
+    quoteTable,
+    createPartyTable,
+    createQuoteTable,
+    createTransferTable,
+    transferTable,
+    partyExtensionTable,
+    createPartyExtensionTable,
 };

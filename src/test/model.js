@@ -26,7 +26,7 @@ const test = require('ava');
 
 const Model = require('../models/model');
 const {
-    transfer, quote, party, newQuote, newTransfer, idType, idValue, transferId,
+    transfer, quote, party, newQuote, newTransfer, idType, idValue, transferId, partyCreate,
 } = require('./constants');
 
 test.beforeEach(async (t) => {
@@ -46,14 +46,14 @@ test('create a model with an in-memory database', async (t) => {
 });
 
 test('create a party', async (t) => {
-    await t.context.model.party.create(party);
+    await t.context.model.party.create(partyCreate);
     t.pass();
 });
 
 test('create and retrieve a party', async (t) => {
     const { model } = t.context;
 
-    await model.party.create(party);
+    await model.party.create(partyCreate);
     const res = await model.party.get(idType, idValue);
     if (!res) {
         t.fail('Result not found');
@@ -72,7 +72,7 @@ test('create and update a party', async (t) => {
         idType,
         idValue,
     };
-    await model.party.create(party);
+    await model.party.create(partyCreate);
     const orig = await model.party.get(idType, idValue);
     await model.party.update(idType, idValue, newParty);
     const changed = await model.party.get(idType, idValue);
@@ -88,7 +88,7 @@ test('retrieve a participant', async (t) => {
 
 test('create and delete a party', async (t) => {
     const { model } = t.context;
-    await model.party.create(party);
+    await model.party.create(partyCreate);
     await model.party.get(idType, idValue);
     await model.party.delete(idType, idValue);
     const deleted = await model.party.get(idType, idValue);

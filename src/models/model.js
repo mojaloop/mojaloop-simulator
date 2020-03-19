@@ -33,7 +33,9 @@ const Party = require('./party');
 const Quote = require('./quote');
 const Transfer = require('./transfer');
 
-const { createPartyTable, createTransferTable, createQuoteTable } = require('./constants');
+const {
+    createPartyTable, createTransferTable, createQuoteTable, createPartyExtensionTable,
+} = require('./constants');
 
 /**
  * @typedef {Object} Model
@@ -75,9 +77,11 @@ module.exports = class Model {
 
         try {
             this.db = await sqlite.open(databaseFilepath);
+            await this.db.run('PRAGMA foreign_keys = true');
             await this.db.run(createPartyTable);
             await this.db.run(createQuoteTable);
             await this.db.run(createTransferTable);
+            await this.db.run(createPartyExtensionTable);
 
             this.party = new Party(this.db);
             this.quote = new Quote(this.db);

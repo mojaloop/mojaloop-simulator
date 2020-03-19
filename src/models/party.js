@@ -28,7 +28,8 @@
  * @description Defines the party model structure and operations within the simulator.
  */
 
-const { partyTable } = require('./constants');
+const { partyTable, partyExtensionTable } = require('./constants');
+
 
 
 /**
@@ -65,7 +66,6 @@ module.exports = class Party {
         return res;
     }
 
-
     /**
     * Creates a Party.
     *
@@ -81,6 +81,15 @@ module.exports = class Party {
   INSERT INTO ${partyTable} (displayName, firstName, middleName, lastName, dateOfBirth, idType, idValue)
   VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [displayName, firstName, middleName, lastName, dateOfBirth, idType, idValue]);
+        if (party.extensionList) {
+            const { extensionList } = party;
+            extensionList.forEach((extension) => {
+                this.db.get(`
+              INSERT INTO ${partyExtensionTable} (idValue, key, value)
+              VALUES (?, ?, ?)`,
+                [idValue, extension.key, extension.value]);
+            });
+        }
     }
 
 
