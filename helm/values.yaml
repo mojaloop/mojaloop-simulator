@@ -47,7 +47,14 @@ config:
       timeoutSeconds: 10
       successThreshold: 1
       failureThreshold: 3
-
+    #if enabled, we expect a secret named $externalSecretName to made availble outside of this chart deployment, this secret will be mounted at $secretVolPath in the scheme adapter container 
+    externalSecretVolMountEnabled: false
+    externalSecretName: REPLACE_AT_DEPLOY_TIME
+    secretVolPath: PATH_ON_SCHEME_ADAPTER
+    #for vault integration to pick up keys upon startup
+    vaultIntegrationEnabled: false
+    vaultToken: TOKEN_VALUE
+    vaultURL: URL_VALUE
     env:
       # This option is presented for consistency with the .env file. However, for the purposes of this chart, this port is _not_ configurable.
       # INBOUND_LISTEN_PORT: "4000"
@@ -166,7 +173,6 @@ config:
       timeoutSeconds: 10
       successThreshold: 1
       failureThreshold: 3
-
     env:
       ##### Section for simulator backend container #####
       OUTBOUND_ENDPOINT: "http://localhost:4001" # within the pod

@@ -54,8 +54,10 @@ spec:
             - -c
             - redis-cli ping {{ .Values.config.cache.livenessProbe.timeoutSeconds }}
         {{- end }}
+        {{- with .Values.config.cache.resources }}
         resources:
-{{ toYaml .Values.config.cache.resources | indent 12 }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
       {{- end }}
       - name: {{ .Chart.Name }}-sim-backend
         image: "{{ .Values.config.simBackend.image.repository }}:{{ .Values.config.simBackend.image.tag }}"
@@ -91,8 +93,10 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ template "mojaloop-simulator.fullname" . }}-sim-backend-config
+        {{- with .Values.config.simBackend.resources }}
         resources:
-{{ toYaml .Values.config.simBackend.resources | indent 12 }}
+{{ toYaml . | indent 10 }}
+        {{- end }}
       - name: {{ .Chart.Name }}-scheme-adapter
         image: "{{ .Values.config.schemeAdapter.image.repository }}:{{ .Values.config.schemeAdapter.image.tag }}"
         imagePullPolicy: {{ .Values.config.schemeAdapter.image.pullPolicy }}
@@ -124,8 +128,22 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ template "mojaloop-simulator.fullname" . }}-scheme-adapter-config
-          resources:
-{{ toYaml .Values.config.schemeAdapter.resources | indent 12 }}
+        {{- if .Values.config.schemeAdapter.externalSecretVolMountEnabled }}
+        volumeMounts:
+          - name: {{ template "mojaloop-simulator.fullname" . }}-secret-volume
+            readOnly: true
+            mountPath: "{{ .Values.config.schemeAdapter.secretVolPath }}"
+        {{- end }}
+        {{- with .Values.config.schemeAdapter.resources }}
+        resources:
+{{ toYaml . | indent 10 }}
+        {{- end }}
+      {{- if .Values.config.schemeAdapter.externalSecretVolMountEnabled }}
+      volumes:
+      - name: {{ template "mojaloop-simulator.fullname" . }}-secret-volume
+        secret:
+          secretName: {{ .Values.config.schemeAdapter.externalSecretName }}
+      {{- end }}
       imagePullSecrets:
         - name: {{ .Values.config.imagePullSecretName }}
     {{- with .Values.nodeSelector }}
