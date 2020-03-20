@@ -2,15 +2,40 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Usage:
+# Add simulators to the simulators object. The following example will create two simulators,
+# 'payerfsp' and 'payeefsp' that will be created with the default values available lower in this
+# file.
+#
+# simulators:
+#   payerfsp: {}
+#   payeefsp: {}
+#
+# The default values can be overridden for all sims by modifying mojaloop-simulator.defaults in
+# your parent chart. They can also be overriden per-simulator. The following example will result in
+# a payerfsp without a cache and a payeefsp with a cache.
+#
+# simulators:
+#   payerfsp:
+#     config:
+#       cache:
+#         enabled: false
+#   payeefsp: {}
+
 # TODO & notes:
 # * support individual pod scaling
 # * support arbitrary init containers + config (that might just be config that goes into defaults
 #   or something?)
 # * create some test containers
+# * parametrise imagePullSecretName
 
-replicaCount: 1
+simulators:
+  # Every key added to this `simulators` object will be a simulator that takes on the default
+  # config below.
 
 defaults: &defaults
+  # Changes to this object in the parent chart, for example 'mojaloop-simulator.defaults' will be
+  # applied to all simulators deployed by this child chart.
   config:
     imagePullSecretName: dock-casa-secret
 
@@ -250,7 +275,3 @@ defaults: &defaults
   tolerations: []
 
   affinity: {}
-
-simulators:
-  first: {}
-  second: {}
