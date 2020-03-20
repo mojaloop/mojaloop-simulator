@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $name }}-sim
+  name: sim-{{ $name }}
   labels:
     # TODO: the labels should be moved into helpers
     app: {{ $name }}
@@ -14,12 +14,12 @@ spec:
   replicas: {{ $config.replicaCount }}
   selector:
     matchLabels:
-      app: {{ $name }}-sim
+      app: sim-{{ $name }}
       release: {{ $.Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ $name }}-sim
+        app: sim-{{ $name }}
         release: {{ $.Release.Name }}
     spec:
       containers:
@@ -60,7 +60,7 @@ spec:
         resources:
 {{ toYaml $config.config.cache.resources | indent 12 }}
       {{- end }}
-      - name: {{ $name }}-sim-backend
+      - name: sim-{{ $name }}-backend
         image: "{{ $config.config.simBackend.image.repository }}:{{ $config.config.simBackend.image.tag }}"
         imagePullPolicy: {{ $config.config.simBackend.image.pullPolicy }}
         ports:
@@ -93,10 +93,10 @@ spec:
         {{- end }}
         envFrom:
         - configMapRef:
-            name: {{ $name }}-sim-backend
+            name: sim-{{ $name }}-backend
         resources:
 {{ toYaml $config.config.simBackend.resources | indent 12 }}
-      - name: {{ $name }}-sim-scheme-adapter
+      - name: sim-{{ $name }}-scheme-adapter
         image: "{{ $config.config.schemeAdapter.image.repository }}:{{ $config.config.schemeAdapter.image.tag }}"
         imagePullPolicy: {{ $config.config.schemeAdapter.image.pullPolicy }}
         ports:
@@ -126,7 +126,7 @@ spec:
         {{- end }}
         envFrom:
         - configMapRef:
-            name: {{ $name }}-sim-scheme-adapter
+            name: sim-{{ $name }}-scheme-adapter
           resources:
 {{ toYaml $config.config.schemeAdapter.resources | indent 12 }}
       imagePullSecrets:

@@ -3,9 +3,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $name }}-sim-scheme-adapter
+  name: sim-{{ $name }}-scheme-adapter
   labels:
-    app: {{ $name }}-sim
+    app: sim-{{ $name }}
     chart: {{ template "mojaloop-simulator.chart" $ }}
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
@@ -17,9 +17,9 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $name }}-sim-backend
+  name: sim-{{ $name }}-backend
   labels:
-    app: {{ $name }}-sim
+    app: sim-{{ $name }}
     chart: {{ template "mojaloop-simulator.chart" $ }}
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}

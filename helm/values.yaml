@@ -28,6 +28,8 @@
 #   or something?)
 # * create some test containers
 # * parametrise imagePullSecretName
+# * support shared JWS public keys
+# * generate JWS private/public keys
 
 simulators:
   # Every key added to this `simulators` object will be a simulator that takes on the default

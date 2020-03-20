@@ -4,9 +4,9 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $name }}-sim
+  name: sim-{{ $name }}
   labels:
-    app: {{ $name }}-sim
+    app: sim-{{ $name }}
     chart: {{ template "mojaloop-simulator.chart" $ }}
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
@@ -20,11 +20,11 @@ spec:
         paths:
         - path: /sim/{{ $name }}/dfsp(.*)
           backend:
-            serviceName: {{ $name }}-sim
+            serviceName: sim-{{ $name }}
             servicePort: inboundapi
         - path: /sim/{{ $name }}/test(.*)
           backend:
-            serviceName: {{ $name }}-sim
+            serviceName: sim-{{ $name }}
             servicePort: inboundapi
 {{- end }}
 ---
