@@ -22,9 +22,13 @@ spec:
         app: sim-{{ $name }}
         release: {{ $.Release.Name }}
     spec:
+      volumes:
+      - name: jws-public-keys
+        configMap:
+          name: sim-jws-public-keys
       containers:
       {{- if $config.config.cache.enabled }}
-      - name: {{ $name }}-cache
+      - name: cache
         image: "{{ $config.config.cache.image.repository }}:{{ $config.config.cache.image.tag }}"
         imagePullPolicy: {{ $config.config.cache.image.pullPolicy }}
         # ports:
@@ -60,7 +64,7 @@ spec:
         resources:
 {{ toYaml $config.config.cache.resources | indent 12 }}
       {{- end }}
-      - name: sim-{{ $name }}-backend
+      - name: backend
         image: "{{ $config.config.simBackend.image.repository }}:{{ $config.config.simBackend.image.tag }}"
         imagePullPolicy: {{ $config.config.simBackend.image.pullPolicy }}
         ports:
@@ -96,7 +100,7 @@ spec:
             name: sim-{{ $name }}-backend
         resources:
 {{ toYaml $config.config.simBackend.resources | indent 12 }}
-      - name: sim-{{ $name }}-scheme-adapter
+      - name: scheme-adapter
         image: "{{ $config.config.schemeAdapter.image.repository }}:{{ $config.config.schemeAdapter.image.tag }}"
         imagePullPolicy: {{ $config.config.schemeAdapter.image.pullPolicy }}
         ports:
@@ -124,6 +128,9 @@ spec:
           initialDelaySeconds: {{ $config.config.schemeAdapter.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ $config.config.schemeAdapter.livenessProbe.periodSeconds }}
         {{- end }}
+        volumeMounts:
+        - name: jws-public-keys
+          mountPath: {{ $config.config.schemeAdapter.env.JWS_VERIFICATION_KEYS_DIRECTORY }}
         envFrom:
         - configMapRef:
             name: sim-{{ $name }}-scheme-adapter

@@ -30,10 +30,22 @@
 # * parametrise imagePullSecretName
 # * support shared JWS public keys
 # * generate JWS private/public keys
+# * support mTLS auto-cert generation
+# * probably eliminate all config that shouldn't actually be changed by a user, e.g.
+#   JWS_VERIFICATION_KEYS_DIRECTORY. That's a good configuration option to have for other contexts,
+#   such as running the sim locally but in this context it's _an implementation detail_. The chart
+#   user should not have to worry about it, and we should not have to test the effect of changing
+#   it.
+# * make ingress more generic- do not preconfigure annotations
+# * think about labels a little more carefully- the app should probably always be "mojaloop-simulator"
+# * add config map and hashes to the deployments so that a configmap change triggers a rolling
+#   update
 
 simulators:
   # Every key added to this `simulators` object will be a simulator that takes on the default
-  # config below.
+  # config below. The default is deliberately left empty so nothing is deployed by default.
+  # payerfsp: {}
+  # payeefsp: {}
 
 defaults: &defaults
   # Changes to this object in the parent chart, for example 'mojaloop-simulator.defaults' will be
@@ -63,6 +75,10 @@ defaults: &defaults
         failureThreshold: 3
 
     schemeAdapter:
+      secrets:
+        jws:
+          privateKey:
+          publicKey:
       image:
         repository: mojaloop/sdk-scheme-adapter
         tag: v8.6.1

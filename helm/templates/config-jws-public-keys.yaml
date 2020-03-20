@@ -1,0 +1,16 @@
+{{- if .Values.simulators }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sim-jws-public-keys
+  labels:
+    app: sim
+    chart: {{ template "mojaloop-simulator.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+data:
+  {{- range $name, $customConfig := .Values.simulators }}
+  {{- $config := merge $customConfig $.Values.defaults }}
+  {{ $name }}: {{ $config.config.schemeAdapter.secrets.jws.publicKey }}
+  {{- end }}
+{{- end }}
