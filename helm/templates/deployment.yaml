@@ -23,6 +23,9 @@ spec:
         release: {{ $.Release.Name }}
     spec:
       volumes:
+      - name: jws-private-key
+        secret:
+          secretName: sim-{{ $name }}-jws-priv-key
       - name: jws-public-keys
         configMap:
           name: sim-jws-public-keys
@@ -131,6 +134,8 @@ spec:
         volumeMounts:
         - name: jws-public-keys
           mountPath: {{ $config.config.schemeAdapter.env.JWS_VERIFICATION_KEYS_DIRECTORY }}
+        - name: jws-private-key
+          mountPath: "/jwsSigningKey/"
         envFrom:
         - configMapRef:
             name: sim-{{ $name }}-scheme-adapter

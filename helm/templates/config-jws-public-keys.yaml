@@ -11,6 +11,11 @@ metadata:
 data:
   {{- range $name, $customConfig := .Values.simulators }}
   {{- $config := merge $customConfig $.Values.defaults }}
+  {{- if eq ($config.config.schemeAdapter.env.VALIDATE_INBOUND_JWS | upper) "TRUE" }}
+  {{- if eq $config.config.schemeAdapter.secrets.jws.publicKey "" }}
+    {{- fail (printf "INBOUND_JWS enabled and jws public key not specified for '%s'. You need to specify %s.schemeAdapter.secrets.jws.publicKey." $name $name) }}
+  {{- end }}
   {{ $name }}: {{ $config.config.schemeAdapter.secrets.jws.publicKey }}
+  {{- end }}
   {{- end }}
 {{- end }}
