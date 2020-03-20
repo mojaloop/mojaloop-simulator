@@ -2,9 +2,15 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# TODO & notes:
+# * support individual pod scaling
+# * support arbitrary init containers + config (that might just be config that goes into defaults
+#   or something?)
+# * create some test containers
+
 replicaCount: 1
 
-common: &common
+defaults: &defaults
   config:
     imagePullSecretName: dock-casa-secret
 
@@ -246,7 +252,5 @@ common: &common
   affinity: {}
 
 simulators:
-  first:
-    <<: *common
-  second:
-    <<: *common
+  first: {}
+  second: {}

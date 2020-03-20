@@ -1,4 +1,5 @@
-{{- range $name, $config := .Values.simulators }}
+{{- range $name, $customConfig := .Values.simulators }}
+{{- $config := merge $customConfig $.Values.defaults }}
 {{- if $config.ingress.enabled -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
