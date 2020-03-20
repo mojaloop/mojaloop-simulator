@@ -25,7 +25,7 @@
 # TODO & notes:
 # * support individual pod scaling
 # * support arbitrary init containers + config (that might just be config that goes into defaults
-#   or something?)
+#   or something?). Supply all config and volumes to the init containers.
 # * create some test containers
 # * parametrise imagePullSecretName
 # * support shared JWS public keys
@@ -40,6 +40,9 @@
 # * think about labels a little more carefully- the app should probably always be "mojaloop-simulator"
 # * add config map and hashes to the deployments so that a configmap change triggers a rolling
 #   update
+# * support JWS public keys for other entities. Add a note in the documentation that they must map
+#   directly to the value that will be received in the FSPIOP-Source (check this is correct)
+# * update labels to be compliant. E.g. app.kubernetes.io/name or whatever
 
 simulators:
   # Every key added to this `simulators` object will be a simulator that takes on the default
@@ -77,8 +80,8 @@ defaults: &defaults
     schemeAdapter:
       secrets:
         jws:
-          privateKey:
-          publicKey:
+          privateKey: ''
+          publicKey: ''
       image:
         repository: mojaloop/sdk-scheme-adapter
         tag: v8.6.1
