@@ -92,6 +92,19 @@ const postQuotes = async (ctx) => {
     }
 };
 
+const postTransactionRequests = async (ctx) => {
+    try {
+        const res = await ctx.state.model.transactionrequest.create(ctx.request.body);
+        ctx.state.logger.log(`postTransactionRequests is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in postTransactionRequests: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
 
 const healthCheck = async (ctx) => {
     ctx.response.status = 200;
@@ -111,6 +124,9 @@ const map = {
     },
     '/quoterequests': {
         post: postQuotes,
+    },
+    '/transactionrequests': {
+        post: postTransactionRequests,
     },
     '/transfers': {
         post: postTransfers,
