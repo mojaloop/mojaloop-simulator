@@ -10,9 +10,10 @@ metadata:
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
 data:
+  CACHE_HOST: {{ printf "sim-%s-cache" $name | quote }}
   {{- range $k, $v := $config.config.schemeAdapter.env }}
   {{ $k }}: {{ $v | quote }}
-  {{- end }}
+  {{ end }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -27,6 +28,5 @@ data:
   {{- range $k, $v := $config.config.simBackend.env }}
   {{ $k }}: {{ $v | quote }}
   {{- end }}
-  CACHE_HOST: {{ printf "sim-%s-cache" $name | quote }}
 ---
 {{- end }}
