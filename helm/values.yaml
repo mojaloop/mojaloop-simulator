@@ -26,7 +26,6 @@
 # * do the port _numbers_ matter at all? Can we get rid of them?
 # * factor out these horrible probe configs. Just use k8s defaults by default and allow the user to
 #   override.
-# * support individual pod scaling
 # * for Mowali, how are JWS and TLS secrets being set up?
 # * support arbitrary init containers + config (that might just be config that goes into defaults
 #   or something?). Supply all config and volumes to the init containers.
@@ -60,6 +59,7 @@
 # * autogenerate ILP stuff?
 # * defaults.resources looks like it's used nowhere- check this and remove it as appropriate
 # * look for references to replicaCount in the charts/values. Is it set, or whatever?
+# * scale Redis
 
 simulators:
   # Every key added to this `simulators` object will be a simulator that takes on the default
@@ -72,6 +72,20 @@ defaults: &defaults
   # applied to all simulators deployed by this child chart.
   config:
     imagePullSecretName: dock-casa-secret
+
+    # Scale here is applied to the Deployment containing both the scheme adapter and backend.
+    scale:
+      enabled: false
+      spec:
+        minReplicas: 1
+        maxReplicas: 10
+        metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 80
 
     cache:
       enabled: true
