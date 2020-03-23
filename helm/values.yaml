@@ -43,6 +43,7 @@
 # * support JWS public keys for other entities. Add a note in the documentation that they must map
 #   directly to the value that will be received in the FSPIOP-Source (check this is correct)
 # * update labels to be compliant. E.g. app.kubernetes.io/name or whatever
+# * rename ".Values.defaults.config" as it's pretty a useless name
 
 simulators:
   # Every key added to this `simulators` object will be a simulator that takes on the default

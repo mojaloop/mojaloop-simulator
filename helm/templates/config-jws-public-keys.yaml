@@ -15,7 +15,8 @@ data:
   {{- if eq $config.config.schemeAdapter.secrets.jws.publicKey "" }}
     {{- fail (printf "INBOUND_JWS enabled and jws public key not specified for '%s'. You need to specify %s.schemeAdapter.secrets.jws.publicKey." $name $name) }}
   {{- end }}
-  {{ $name }}: {{ $config.config.schemeAdapter.secrets.jws.publicKey }}
+  {{ $name }}: |-
+{{ $config.config.schemeAdapter.secrets.jws.publicKey | indent 4 }}
   {{- end }}
   {{- end }}
 {{- end }}
