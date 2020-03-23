@@ -48,8 +48,7 @@ spec:
             path: /
             port: 3000
             scheme: HTTP
-          initialDelaySeconds: {{ $config.config.simBackend.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ $config.config.simBackend.readinessProbe.periodSeconds }}
+{{ $config.config.simBackend.readinessProbe | toYaml | indent 10 -}}
         {{- end }}
         {{- if $config.config.simBackend.livenessProbe.enabled }}
         livenessProbe:
@@ -57,8 +56,7 @@ spec:
             path: /
             port: 3000
             scheme: HTTP
-          initialDelaySeconds: {{ $config.config.simBackend.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ $config.config.simBackend.livenessProbe.periodSeconds }}
+{{ $config.config.simBackend.livenessProbe | toYaml | indent 10 -}}
         {{- end }}
         envFrom:
         - configMapRef:
@@ -81,8 +79,7 @@ spec:
             path: /
             port: 4001
             scheme: HTTP
-          initialDelaySeconds: {{ $config.config.schemeAdapter.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ $config.config.schemeAdapter.readinessProbe.periodSeconds }}
+{{ $config.config.simBackend.readinessProbe | toYaml | indent 10 -}}
         {{- end }}
         {{- if $config.config.schemeAdapter.livenessProbe.enabled }}
         livenessProbe:
@@ -90,8 +87,7 @@ spec:
             path: /
             port: 4001
             scheme: HTTP
-          initialDelaySeconds: {{ $config.config.schemeAdapter.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ $config.config.schemeAdapter.livenessProbe.periodSeconds }}
+{{ $config.config.simBackend.livenessProbe | toYaml | indent 10 -}}
         {{- end }}
         volumeMounts:
         - name: jws-public-keys
@@ -150,11 +146,7 @@ spec:
           protocol: TCP
         {{- if $config.config.cache.livenessProbe.enabled }}
         livenessProbe:
-          initialDelaySeconds: {{ $config.config.cache.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ $config.config.cache.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ $config.config.cache.livenessProbe.timeoutSeconds }}
-          successThreshold: {{ $config.config.cache.livenessProbe.successThreshold }}
-          failureThreshold: {{ $config.config.cache.livenessProbe.failureThreshold }}
+{{ $config.config.simBackend.livenessProbe | toYaml | indent 10 -}}
           exec:
             command:
             - sh
@@ -163,16 +155,12 @@ spec:
         {{- end }}
         {{- if $config.config.cache.readinessProbe.enabled}}
         readinessProbe:
-          initialDelaySeconds: {{ $config.config.cache.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ $config.config.cache.readinessProbe.periodSeconds }}
-          timeoutSeconds: {{ $config.config.cache.readinessProbe.timeoutSeconds }}
-          successThreshold: {{ $config.config.cache.readinessProbe.successThreshold }}
-          failureThreshold: {{ $config.config.cache.readinessProbe.failureThreshold }}
+{{ $config.config.simBackend.readinessProbe | toYaml | indent 10 -}}
           exec:
             command:
             - sh
             - -c
-            - redis-cli ping {{ $config.config.cache.livenessProbe.timeoutSeconds }}
+            - redis-cli ping {{ $config.config.cache.readinessProbe.timeoutSeconds }}
         {{- end }}
         resources:
 {{ toYaml $config.config.cache.resources | indent 12 }}
