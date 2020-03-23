@@ -5,7 +5,6 @@ kind: Deployment
 metadata:
   name: sim-{{ $name }}
   labels:
-    # TODO: the labels should be moved into helpers
     app: {{ $name }}
     chart: {{ template "mojaloop-simulator.chart" $ }}
     release: {{ $.Release.Name }}
@@ -30,43 +29,6 @@ spec:
         configMap:
           name: sim-jws-public-keys
       containers:
-      {{- if $config.config.cache.enabled }}
-      - name: cache
-        image: "{{ $config.config.cache.image.repository }}:{{ $config.config.cache.image.tag }}"
-        imagePullPolicy: {{ $config.config.cache.image.pullPolicy }}
-        # ports:
-        # - name: redis
-        #   containerPort: 6379
-        #   protocol: TCP
-        {{- if $config.config.cache.livenessProbe.enabled }}
-        livenessProbe:
-          initialDelaySeconds: {{ $config.config.cache.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ $config.config.cache.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ $config.config.cache.livenessProbe.timeoutSeconds }}
-          successThreshold: {{ $config.config.cache.livenessProbe.successThreshold }}
-          failureThreshold: {{ $config.config.cache.livenessProbe.failureThreshold }}
-          exec:
-            command:
-            - sh
-            - -c
-            - redis-cli ping {{ $config.config.cache.livenessProbe.timeoutSeconds }}
-        {{- end }}
-        {{- if $config.config.cache.readinessProbe.enabled}}
-        readinessProbe:
-          initialDelaySeconds: {{ $config.config.cache.readinessProbe.initialDelaySeconds }}
-          periodSeconds: {{ $config.config.cache.readinessProbe.periodSeconds }}
-          timeoutSeconds: {{ $config.config.cache.readinessProbe.timeoutSeconds }}
-          successThreshold: {{ $config.config.cache.readinessProbe.successThreshold }}
-          failureThreshold: {{ $config.config.cache.readinessProbe.failureThreshold }}
-          exec:
-            command:
-            - sh
-            - -c
-            - redis-cli ping {{ $config.config.cache.livenessProbe.timeoutSeconds }}
-        {{- end }}
-        resources:
-{{ toYaml $config.config.cache.resources | indent 12 }}
-      {{- end }}
       - name: backend
         image: "{{ $config.config.simBackend.image.repository }}:{{ $config.config.simBackend.image.tag }}"
         imagePullPolicy: {{ $config.config.simBackend.image.pullPolicy }}
@@ -156,4 +118,64 @@ spec:
 {{ toYaml . | indent 8 }}
     {{- end }}
 ---
+{{- if $config.config.cache.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sim-{{ $name }}-cache
+  labels:
+    app: {{ $name }}
+    chart: {{ template "mojaloop-simulator.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+spec:
+  replicas: {{ $config.replicaCount }}
+  selector:
+    matchLabels:
+      app: sim-{{ $name }}-cache
+      release: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: sim-{{ $name }}-cache
+        release: {{ $.Release.Name }}
+    spec:
+      containers:
+      - name: cache
+        image: "{{ $config.config.cache.image.repository }}:{{ $config.config.cache.image.tag }}"
+        imagePullPolicy: {{ $config.config.cache.image.pullPolicy }}
+        ports:
+        - name: redis
+          containerPort: 6379
+          protocol: TCP
+        {{- if $config.config.cache.livenessProbe.enabled }}
+        livenessProbe:
+          initialDelaySeconds: {{ $config.config.cache.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ $config.config.cache.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ $config.config.cache.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ $config.config.cache.livenessProbe.successThreshold }}
+          failureThreshold: {{ $config.config.cache.livenessProbe.failureThreshold }}
+          exec:
+            command:
+            - sh
+            - -c
+            - redis-cli ping {{ $config.config.cache.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        {{- if $config.config.cache.readinessProbe.enabled}}
+        readinessProbe:
+          initialDelaySeconds: {{ $config.config.cache.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ $config.config.cache.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ $config.config.cache.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ $config.config.cache.readinessProbe.successThreshold }}
+          failureThreshold: {{ $config.config.cache.readinessProbe.failureThreshold }}
+          exec:
+            command:
+            - sh
+            - -c
+            - redis-cli ping {{ $config.config.cache.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        resources:
+{{ toYaml $config.config.cache.resources | indent 12 }}
+---
+{{- end }}
 {{ end }}

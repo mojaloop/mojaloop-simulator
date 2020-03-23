@@ -27,5 +27,6 @@ data:
   {{- range $k, $v := $config.config.simBackend.env }}
   {{ $k }}: {{ $v | quote }}
   {{- end }}
+  CACHE_HOST: {{ printf "sim-%s-cache" $name | quote }}
 ---
 {{- end }}

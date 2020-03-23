@@ -32,4 +32,26 @@ spec:
      app: sim-{{ $name }}
      release: {{ $.Release.Name }}
 ---
+{{- if $config.config.cache.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: sim-{{ $name }}-cache
+  labels:
+    app: sim-{{ $name }}-cache
+    chart: {{ template "mojaloop-simulator.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+spec:
+   type: ClusterIP
+   ports:
+     - port: 6379
+       protocol: TCP
+       name: redis
+       targetPort: redis
+   selector:
+     app: sim-{{ $name }}-cache
+     release: {{ $.Release.Name }}
+{{- end }}
+---
 {{ end }}
