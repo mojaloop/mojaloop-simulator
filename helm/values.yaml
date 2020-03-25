@@ -29,7 +29,6 @@
 #   or something?). Supply all config and volumes to the init containers.
 # * create some test containers
 # * parametrise imagePullSecretName (global? like https://github.com/bitnami/charts/tree/master/bitnami/redis#parameters)
-# * support shared JWS public keys
 # * generate JWS private/public keys
 # * generate public key from private?
 # * support mTLS auto-cert generation
@@ -97,6 +96,21 @@ defaultProbes: &defaultProbes
 
 ingress:
   annotations: {}
+
+# If you enable JWS validation and intend to communicate via a switch you will almost certainly
+# want to put your switch JWS public key in this array. The name of the property in this object
+# will correspond directly to the name of the signing key (e.g., in the example below,
+# `switch.pem`). Do not include the `.pem` extension, this will be added for you. The scheme
+# adapter will use the FSPIOP-Source header content to identify the relevant signing key to use.
+# The below example assumes your switch will use `FSPIOP-Source: switch`. If instead, for example,
+# your switch is using `FSPIOP-Source: peter` you will need a property `peter` in the following
+# object. Do not add the public keys of your simulators to this object. Instead, put them in
+# `mojaloop-simulator.simulators.$yourSimName.config.schemeAdapter.secrets.jws.publicKey`.
+sharedJWSPubKeys:
+  # switch: |-
+  #   -----BEGIN PUBLIC KEY-----
+  #   blah blah blah
+  #   -----END PUBLIC KEY-----
 
 defaults: &defaults
   # Changes to this object in the parent chart, for example 'mojaloop-simulator.defaults' will be

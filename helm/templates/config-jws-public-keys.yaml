@@ -19,4 +19,8 @@ data:
 {{ $config.config.schemeAdapter.secrets.jws.publicKey | indent 4 }}
   {{- end }}
   {{- end }}
+  {{- range $name, $key := .Values.sharedJWSPubKeys }}
+  {{ $name }}.pem: |-
+{{ $key | indent 4 }}
+  {{- end }}
 {{- end }}
