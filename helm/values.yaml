@@ -84,6 +84,8 @@ defaultProbes: &defaultProbes
     successThreshold: 1
     failureThreshold: 3
 
+ingress:
+  annotations: {}
 
 defaults: &defaults
   # Changes to this object in the parent chart, for example 'mojaloop-simulator.defaults' will be
@@ -278,12 +280,9 @@ defaults: &defaults
 
   ingress:
     enabled: true
-    annotations: {
-      "nginx.ingress.kubernetes.io/rewrite-target": "$1",
-      "nginx.org/server-snippet": "proxy_ssl_verify off;"
-    }
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
+    path: /
+    hosts:
+      - mojaloop-simulators.local
     tls: []
     #  - secretName: chart-example-tls
     #    hosts:
