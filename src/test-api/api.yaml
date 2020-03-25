@@ -69,6 +69,11 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/idValue'
+    get:
+      description: Get an existing party
+      responses:
+        '200':
+          description: Party data is returned
     delete:
       description: Deletes a party
       responses:

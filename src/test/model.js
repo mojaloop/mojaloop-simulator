@@ -24,6 +24,7 @@
 
 const test = require('ava');
 
+
 const Model = require('../models/model');
 const {
     transfer, quote, party, newQuote, newTransfer, idType, idValue, transferId, partyCreate,
@@ -47,6 +48,27 @@ test('create a model with an in-memory database', async (t) => {
 
 test('create a party', async (t) => {
     await t.context.model.party.create(partyCreate);
+    t.pass();
+});
+
+test('create and retrieve all parties', async (t) => {
+    const { model } = t.context;
+
+    await model.party.create(partyCreate);
+    const res = await model.party.getAll();
+    if (!res) {
+        t.fail('Result not found');
+    }
+    t.pass();
+});
+test('create and retrieve all parties duplicates', async (t) => {
+    const { model } = t.context;
+    await model.party.create(partyCreate);
+    //   await model.party.create(partyCreate);
+    const res = await model.party.getAll();
+    if (!res) {
+        t.fail('Result not found');
+    }
     t.pass();
 });
 

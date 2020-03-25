@@ -58,8 +58,13 @@ const partyCreate = {
             key: 'accountType',
             value: 'Wallet',
         },
+        {
+            key: 'accountNumber',
+            value: '12345343',
+        },
     ],
 };
+
 
 const quote = {
     quoteId: idValue,

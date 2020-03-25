@@ -68,6 +68,28 @@ const readParties = async (ctx) => {
     }
 };
 
+const readParty = async (ctx) => {
+    try {
+        const { idValue, idType } = ctx.state.path.params;
+        if (!idValue || !idType) {
+            ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
+            ctx.response.status = 400;
+            return;
+        }
+        const res = await ctx.state.model.party.get(idType, idValue);
+        if (!res) {
+            ctx.response.body = '';
+            ctx.response.status = 404;
+            return;
+        }
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.response.body = '';
+        ctx.response.status = 500;
+    }
+};
+
 const updateParty = async (ctx) => {
     const { idValue, idType } = ctx.state.path.params;
     const model = ctx.request.body;
@@ -198,6 +220,7 @@ const map = {
     '/repository/parties/{idType}/{idValue}': {
         put: updateParty,
         delete: deleteParty,
+        get: readParty,
     },
 };
 
