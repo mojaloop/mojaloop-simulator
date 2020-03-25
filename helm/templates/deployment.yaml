@@ -24,10 +24,23 @@ spec:
       volumes:
       - name: jws-private-key
         secret:
+          {{- if $config.config.schemeAdapter.secrets.sim_jws_priv_key_secret_name }} 
+          secretName: {{ $config.config.schemeAdapter.secrets.sim_jws_priv_key_secret_name }}
+          {{- else }}
           secretName: sim-{{ $name }}-jws-priv-key
+          {{- end }}
       - name: jws-public-keys
         configMap:
+          {{- if $config.config.schemeAdapter.secrets.sim_jws_pub_keys_map_name }} 
+          name: {{ $config.config.schemeAdapter.secrets.sim_jws_pub_keys_map_name }}
+          {{- else }}
           name: sim-jws-public-keys
+          {{- end }}
+      {{- if $config.config.schemeAdapter.secrets.sim_tls_secrets_name }} 
+      - name: tls-secrets
+        secret:
+          secretName: {{ $config.config.schemeAdapter.secrets.sim_tls_secrets_name }}
+      {{- end }}
       containers:
       - name: backend
         image: "{{ $config.config.simBackend.image.repository }}:{{ $config.config.simBackend.image.tag }}"
@@ -94,6 +107,10 @@ spec:
           mountPath: {{ $config.config.schemeAdapter.env.JWS_VERIFICATION_KEYS_DIRECTORY }}
         - name: jws-private-key
           mountPath: "/jwsSigningKey/"
+        {{- if $config.config.schemeAdapter.secrets.sim_tls_secrets_name }}
+        - name: tls-secrets
+          mountPath: "/secrets/"
+        {{- end }}
         envFrom:
         - configMapRef:
             name: sim-{{ $name }}-scheme-adapter

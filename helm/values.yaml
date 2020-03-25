@@ -128,10 +128,10 @@ defaults: &defaults
 
       env:
         # This option is presented for consistency with the .env file. However, for the purposes of this chart, this port is _not_ configurable.
-        # INBOUND_LISTEN_PORT: "4000"
+        INBOUND_LISTEN_PORT: "4000"
 
         # This option is presented for consistency with the .env file. However, for the purposes of this chart, this port is _not_ configurable.
-        # OUTBOUND_LISTEN_PORT: "4001"
+        OUTBOUND_LISTEN_PORT: "4001"
 
         # Enable mutual TLS authentication. Useful when not running in a secure
         # environment, i.e. when you're running it locally against your own implementation.
