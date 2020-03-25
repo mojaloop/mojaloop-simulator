@@ -1,21 +1,22 @@
-{{- range $name, $customConfig := .Values.simulators }}
-{{- $config := merge $customConfig $.Values.defaults }}
-{{- if $config.ingress.enabled -}}
+{{ if .Values.simulators }}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: sim-{{ $name }}
+  name: simulators
   labels:
-    app: sim-{{ $name }}
+    app: simulators
     chart: {{ template "mojaloop-simulator.chart" $ }}
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
-{{- with $config.ingress.annotations }}
+{{- with .Values.ingress.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
   rules:
+  {{- range $name, $customConfig := .Values.simulators }}
+  {{- $config := merge $customConfig $.Values.defaults }}
+  {{- if $config.ingress.enabled -}}
     {{- range $host := $config.ingress.hosts }}
       - host: {{ $host }}
         http:
@@ -29,6 +30,7 @@ spec:
               serviceName: sim-{{ $name }}
               servicePort: inboundapi
     {{- end }}
-{{- end }}
+  {{- end }}
+  {{- end }}
 ---
 {{ end }}
