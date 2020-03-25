@@ -278,12 +278,14 @@ defaults: &defaults
 
   ingress:
     enabled: true
-    annotations: {
-      "nginx.ingress.kubernetes.io/rewrite-target": "$1",
-      "nginx.org/server-snippet": "proxy_ssl_verify off;"
-    }
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: '$1',
+      nginx.org/server-snippet: 'proxy_ssl_verify off;'
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
+    path: /
+    hosts:
+      - mojaloop-simulators.local
     tls: []
     #  - secretName: chart-example-tls
     #    hosts:

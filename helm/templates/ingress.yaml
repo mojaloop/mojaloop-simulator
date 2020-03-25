@@ -16,16 +16,19 @@ metadata:
 {{- end }}
 spec:
   rules:
-    - http:
-        paths:
-        - path: /sim/{{ $name }}/dfsp(.*)
-          backend:
-            serviceName: sim-{{ $name }}
-            servicePort: inboundapi
-        - path: /sim/{{ $name }}/test(.*)
-          backend:
-            serviceName: sim-{{ $name }}
-            servicePort: inboundapi
+    {{- range .Values.ingress.hosts }}
+      - host: {{ $host }}
+        http:
+          paths:
+          - path: /sim/{{ $name }}/dfsp(.*)
+            backend:
+              serviceName: sim-{{ $name }}
+              servicePort: inboundapi
+          - path: /sim/{{ $name }}/test(.*)
+            backend:
+              serviceName: sim-{{ $name }}
+              servicePort: inboundapi
+    {{- end }}
 {{- end }}
 ---
 {{ end }}
