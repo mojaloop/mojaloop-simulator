@@ -55,7 +55,13 @@
 #   - might need to have the simulators use separate databases per simulator, or prefix all of
 #     their keys with their own name, or something
 # * allow the user to optionally specify the namespace, with the caveat that that namespace will
-#   need to be created manually before the release is deployed
+#   need to be created manually before the release is deployed. There may be a horrible hack (which
+#   I have not tried) whereby all templates are moved to a different directory, say ./xtemplates,
+#   then all are imported using {{ .Files.Glob }} and {{ .Files.Get }} then templated into a single
+#   amazing template with {{ template }}. At the top of this template goes a namespace. The
+#   consequence of this is that the namespace is created first, enabling this beautiful pattern.
+#   Remember, with great power comes great responsibility. (In other words, we probably have a
+#   responsibility to _not_ do this).
 # * should redis be a statefulset? optionally? what does the bitnami chart do?
 # * move labels into helpers
 # * autogenerate ILP stuff?
