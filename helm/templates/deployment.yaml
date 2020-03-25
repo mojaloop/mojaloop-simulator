@@ -107,8 +107,10 @@ spec:
           mountPath: {{ $config.config.schemeAdapter.env.JWS_VERIFICATION_KEYS_DIRECTORY }}
         - name: jws-private-key
           mountPath: "/jwsSigningKey/"
+        {{- if $config.config.schemeAdapter.secrets.sim_tls_secrets_name }}
         - name: tls-secrets
           mountPath: "/secrets/"
+        {{- end }}
         envFrom:
         - configMapRef:
             name: sim-{{ $name }}-scheme-adapter
