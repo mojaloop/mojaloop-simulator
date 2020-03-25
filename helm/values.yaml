@@ -31,12 +31,16 @@
 # * parametrise imagePullSecretName (global? like https://github.com/bitnami/charts/tree/master/bitnami/redis#parameters)
 # * support shared JWS public keys
 # * generate JWS private/public keys
+# * generate public key from private?
 # * support mTLS auto-cert generation
 # * probably eliminate all config that shouldn't actually be changed by a user, e.g.
 #   JWS_VERIFICATION_KEYS_DIRECTORY. That's a good configuration option to have for other contexts,
 #   such as running the sim locally or in docker-compose but in this context it's _an
 #   implementation detail_. The chart user should not have to worry about it, and we should not
 #   have to test the effect of changing it.
+#   Also
+#   INBOUND_LISTEN_PORT
+#   OUTBOUND_LISTEN_PORT
 # * make ingress more generic- do not preconfigure annotations
 # * think about labels a little more carefully- the app should probably always be "mojaloop-simulator"
 # * add config map and hashes to the deployments so that a configmap change triggers a rolling
@@ -61,6 +65,7 @@
 # * changing JWS_SIGNING_KEY_PATH currently breaks the chart because it's nastily hard-coded. It
 #   should be possible to use the Spring filepath functions to avoid this.
 #   (https://masterminds.github.io/sprig/paths.html)
+# * put sim inbound API on port 80
 
 simulators:
   # Every key added to this `simulators` object will be a simulator that takes on the default
@@ -93,20 +98,6 @@ defaults: &defaults
   config:
     imagePullSecretName: dock-casa-secret
 
-    # Scale here is applied to the Deployment containing both the scheme adapter and backend.
-    scale:
-      enabled: false
-      spec:
-        minReplicas: 1
-        maxReplicas: 10
-        metrics:
-        - type: Resource
-          resource:
-            name: cpu
-            target:
-              type: Utilization
-              averageUtilization: 80
-
     cache:
       enabled: true
       image:
@@ -125,6 +116,19 @@ defaults: &defaults
         tag: v8.6.1
         pullPolicy: Always
       <<: *defaultProbes
+
+      scale:
+        enabled: false
+        spec:
+          minReplicas: 1
+          maxReplicas: 10
+          metrics:
+          - type: Resource
+            resource:
+              name: cpu
+              target:
+                type: Utilization
+                averageUtilization: 80
 
       env:
         # This option is presented for consistency with the .env file. However, for the purposes of this chart, this port is _not_ configurable.

@@ -3,9 +3,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sim-{{ $name }}
+  name: sim-{{ $name }}-scheme-adapter
   labels:
-    app: sim-{{ $name }}
+    app: sim-{{ $name }}-scheme-adapter
     chart: {{ template "mojaloop-simulator.chart" $ }}
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
@@ -13,12 +13,12 @@ spec:
   replicas: {{ $config.replicaCount }}
   selector:
     matchLabels:
-      app: sim-{{ $name }}
+      app: sim-{{ $name }}-scheme-adapter
       release: {{ $.Release.Name }}
   template:
     metadata:
       labels:
-        app: sim-{{ $name }}
+        app: sim-{{ $name }}-scheme-adapter
         release: {{ $.Release.Name }}
     spec:
       volumes:
@@ -42,40 +42,6 @@ spec:
           secretName: {{ $config.config.schemeAdapter.secrets.sim_tls_secrets_name }}
       {{- end }}
       containers:
-      - name: backend
-        image: "{{ $config.config.simBackend.image.repository }}:{{ $config.config.simBackend.image.tag }}"
-        imagePullPolicy: {{ $config.config.simBackend.image.pullPolicy }}
-        ports:
-          - name: simapi
-            containerPort: 3000
-            protocol: TCP
-          - name: reportapi
-            containerPort: 3002
-            protocol: TCP
-          - name: testapi
-            containerPort: 3003
-            protocol: TCP
-        {{- if $config.config.simBackend.readinessProbe.enabled }}
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 3000
-            scheme: HTTP
-{{ $config.config.simBackend.readinessProbe | toYaml | indent 10 -}}
-        {{- end }}
-        {{- if $config.config.simBackend.livenessProbe.enabled }}
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 3000
-            scheme: HTTP
-{{ $config.config.simBackend.livenessProbe | toYaml | indent 10 -}}
-        {{- end }}
-        envFrom:
-        - configMapRef:
-            name: sim-{{ $name }}-backend
-        resources:
-{{ toYaml $config.config.simBackend.resources | indent 12 }}
       - name: scheme-adapter
         image: "{{ $config.config.schemeAdapter.image.repository }}:{{ $config.config.schemeAdapter.image.tag }}"
         imagePullPolicy: {{ $config.config.schemeAdapter.image.pullPolicy }}
@@ -116,6 +82,77 @@ spec:
             name: sim-{{ $name }}-scheme-adapter
           resources:
 {{ toYaml $config.config.schemeAdapter.resources | indent 12 }}
+      imagePullSecrets:
+        - name: {{ $config.config.imagePullSecretName }}
+    {{- with $config.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with $config.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with $config.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sim-{{ $name }}-backend
+  labels:
+    app: sim-{{ $name }}-backend
+    chart: {{ template "mojaloop-simulator.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+spec:
+  replicas: {{ $config.replicaCount }}
+  selector:
+    matchLabels:
+      app: sim-{{ $name }}-backend
+      release: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: sim-{{ $name }}-backend
+        release: {{ $.Release.Name }}
+    spec:
+      containers:
+      - name: backend
+        image: "{{ $config.config.simBackend.image.repository }}:{{ $config.config.simBackend.image.tag }}"
+        imagePullPolicy: {{ $config.config.simBackend.image.pullPolicy }}
+        ports:
+          - name: simapi
+            containerPort: 3000
+            protocol: TCP
+          - name: reportapi
+            containerPort: 3002
+            protocol: TCP
+          - name: testapi
+            containerPort: 3003
+            protocol: TCP
+        {{- if $config.config.simBackend.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+            scheme: HTTP
+{{ $config.config.simBackend.readinessProbe | toYaml | indent 10 -}}
+        {{- end }}
+        {{- if $config.config.simBackend.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+            scheme: HTTP
+{{ $config.config.simBackend.livenessProbe | toYaml | indent 10 -}}
+        {{- end }}
+        envFrom:
+        - configMapRef:
+            name: sim-{{ $name }}-backend
+        resources:
+{{ toYaml $config.config.simBackend.resources | indent 12 }}
       imagePullSecrets:
         - name: {{ $config.config.imagePullSecretName }}
     {{- with $config.nodeSelector }}
