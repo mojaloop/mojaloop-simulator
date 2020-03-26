@@ -31,7 +31,6 @@
 const { partyTable, partyExtensionTable } = require('./constants');
 
 
-
 /**
  * @typedef {Object} Party
  *
@@ -50,9 +49,37 @@ module.exports = class Party {
     * @param {String} idValue    The party idValue.
     * @returns {Promise<Object>} Party object.
     */
+
     async get(idType, idValue) {
-        const res = await this.db.get(`SELECT * FROM ${partyTable} WHERE idType = ? AND idValue = ?`, [idType, idValue]);
-        return res;
+        const res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, pe.key, pe.value  FROM ${partyTable} p LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue WHERE p.idType = ? AND p.idValue = ?`, [idType, idValue]);
+        const resultMap = {};
+        res.forEach((row) => {
+            let party;
+            if (resultMap[row.idValue]) {
+                party = resultMap[row.idValue];
+            } else {
+                party = {
+                    displayName: row.displayName,
+                    firstName: row.firstName,
+                    middleName: row.middleName,
+                    lastName: row.lastName,
+                    dateOfBirth: row.dateOfBirth,
+                    idType: row.idType,
+                    idValue: row.idValue,
+                };
+                resultMap[row.idValue] = party;
+            }
+            if (row.key) {
+                if (!party.extensionList) {
+                    party.extensionList = [];
+                }
+                party.extensionList.push({ key: row.key, value: row.value });
+            }
+        });
+        if (res.length && res.length > 0) {
+            return resultMap;
+        }
+        return undefined;
     }
 
     /**
@@ -62,8 +89,32 @@ module.exports = class Party {
     * @returns {Promise<Object>} Party object.
     */
     async getAll() {
-        const res = await this.db.all(`SELECT * FROM ${partyTable} `);
-        return res;
+        const res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, pe.key, pe.value  FROM ${partyTable} p LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue`);
+        const resultMap = {};
+        res.forEach((row) => {
+            let party;
+            if (resultMap[row.idValue]) {
+                party = resultMap[row.idValue];
+            } else {
+                party = {
+                    displayName: row.displayName,
+                    firstName: row.firstName,
+                    middleName: row.middleName,
+                    lastName: row.lastName,
+                    dateOfBirth: row.dateOfBirth,
+                    idType: row.idType,
+                    idValue: row.idValue,
+                };
+                resultMap[row.idValue] = party;
+            }
+            if (row.key) {
+                if (!party.extensionList) {
+                    party.extensionList = [];
+                }
+                party.extensionList.push({ key: row.key, value: row.value });
+            }
+        });
+        return Object.values(resultMap);
     }
 
     /**
@@ -100,19 +151,37 @@ module.exports = class Party {
     * @param {Object} newParty The new Party object.
     */
     async update(idType, idValue, newParty) {
-        const entries = Object.entries(newParty)
-            .filter(([, v]) => v !== undefined); // get rid of undefined values
-        const vals = [...entries.reduce((pv, [, v]) => [...pv, v], []), idType, idValue]; // recombine array
-        const query = entries
-            .map(([k]) => `${k} = ?`) // turn each key, e.g. displayName into 'displayName = ?'
-            .join(', '); // join each of the above with a comma
+        const {
+            displayName, firstName, middleName, lastName, dateOfBirth,
+        } = newParty;
         await this.db.run(`
             UPDATE ${partyTable}
-            SET ${query}
+            SET displayName = ?, firstName = ?, middleName = ?, lastName = ?, dateOfBirth = ?, idType = ?, idValue = ?
             WHERE idType = ? AND idValue = ?`,
-        vals);
+        [displayName,
+            firstName,
+            middleName,
+            lastName,
+            dateOfBirth,
+            idType,
+            idValue,
+            idType,
+            idValue]);
+        if (newParty.extensionList) {
+            const { extensionList } = newParty;
+            extensionList.forEach((extension) => {
+                this.db.run(`
+              UPDATE ${partyExtensionTable}
+              SET value = ?
+              WHERE key = ?`,
+                [extension.value, extension.key]);
+                this.db.run(`
+                INSERT OR IGNORE INTO ${partyExtensionTable} (idValue, key, value)
+                VALUES (?, ?, ?)`,
+                [idValue, extension.key, extension.value]);
+            });
+        }
     }
-
 
     /**
     * Deletes a Party.
