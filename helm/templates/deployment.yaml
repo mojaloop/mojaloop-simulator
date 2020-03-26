@@ -24,15 +24,15 @@ spec:
       volumes:
       - name: jws-private-key
         secret:
-          {{- if $config.config.schemeAdapter.secrets.sim_jws_priv_key_secret_name }} 
-          secretName: {{ $config.config.schemeAdapter.secrets.sim_jws_priv_key_secret_name }}
+          {{- if $config.config.schemeAdapter.secrets.jws.privKeySecretName }} 
+          secretName: {{ $config.config.schemeAdapter.secrets.jws.privKeySecretName }}
           {{- else }}
           secretName: sim-{{ $name }}-jws-priv-key
           {{- end }}
       - name: jws-public-keys
         configMap:
-          {{- if $config.config.schemeAdapter.secrets.sim_jws_pub_keys_map_name }} 
-          name: {{ $config.config.schemeAdapter.secrets.sim_jws_pub_keys_map_name }}
+          {{- if $config.config.schemeAdapter.secrets.jws.publicKeyConfigMapName }} 
+          name: {{ $config.config.schemeAdapter.secrets.jws.publicKeyConfigMapName }}
           {{- else }}
           name: sim-jws-public-keys
           {{- end }}
