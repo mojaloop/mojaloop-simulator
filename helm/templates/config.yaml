@@ -25,7 +25,7 @@ metadata:
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
 data:
-  {{- range $k, $v := $config.config.simBackend.env }}
+  {{- range $k, $v := $config.config.backend.env }}
   {{ $k }}: {{ $v | quote }}
   {{- end }}
 ---

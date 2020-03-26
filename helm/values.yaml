@@ -71,6 +71,8 @@
 #   should be possible to use the Spring filepath functions to avoid this.
 #   (https://masterminds.github.io/sprig/paths.html)
 # * put sim inbound API on port 80
+# * supply more documentation, especially a range of examples, and preferably documentation that is
+#   executable
 
 simulators:
   # Every key added to this `simulators` object will be a simulator that takes on the default
@@ -136,6 +138,11 @@ defaults: &defaults
         tag: v8.6.1
         pullPolicy: Always
       <<: *defaultProbes
+
+      # These will be supplied directly to the init containers array in the deployment for the
+      # scheme adapter. They should look exactly as you'd declare them inside the deployment.
+      # Example: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use
+      initContainers: {}
 
       scale:
         enabled: false
@@ -249,12 +256,17 @@ defaults: &defaults
         INBOUND_MUTUAL_TLS_ENABLED: "false"
         OUTBOUND_MUTUAL_TLS_ENABLED: "false"
 
-    simBackend:
+    backend:
       image:
         repository: mojaloop/mojaloop-simulator
         tag: v8.6.0-snapshot
         pullPolicy: Always
       <<: *defaultProbes
+
+      # These will be supplied directly to the init containers array in the deployment for the
+      # backend. They should look exactly as you'd declare them inside the deployment.
+      # Example: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use
+      initContainers: {}
 
       env:
         ##### Section for simulator backend container #####

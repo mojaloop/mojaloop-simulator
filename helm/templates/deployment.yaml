@@ -41,6 +41,10 @@ spec:
         secret:
           secretName: {{ $config.config.schemeAdapter.secrets.sim_tls_secrets_name }}
       {{- end }}
+      {{- if $config.config.schemeAdapter.initContainers }}
+      initContainers:
+{{ $config.config.schemeAdapter.initContainers | toYaml | indent 6 }}
+      {{- end }}
       containers:
       - name: scheme-adapter
         image: "{{ $config.config.schemeAdapter.image.repository }}:{{ $config.config.schemeAdapter.image.tag }}"
@@ -58,7 +62,7 @@ spec:
             path: /
             port: 4001
             scheme: HTTP
-{{ $config.config.simBackend.readinessProbe | toYaml | indent 10 -}}
+{{ $config.config.backend.readinessProbe | toYaml | indent 10 -}}
         {{- end }}
         {{- if $config.config.schemeAdapter.livenessProbe.enabled }}
         livenessProbe:
@@ -66,7 +70,7 @@ spec:
             path: /
             port: 4001
             scheme: HTTP
-{{ $config.config.simBackend.livenessProbe | toYaml | indent 10 -}}
+{{ $config.config.backend.livenessProbe | toYaml | indent 10 -}}
         {{- end }}
         volumeMounts:
         - name: jws-public-keys
@@ -118,10 +122,14 @@ spec:
         app: sim-{{ $name }}-backend
         release: {{ $.Release.Name }}
     spec:
+      {{- if $config.config.backend.initContainers }}
+      initContainers:
+{{ $config.config.backend.initContainers | toYaml | indent 6 }}
+      {{- end }}
       containers:
       - name: backend
-        image: "{{ $config.config.simBackend.image.repository }}:{{ $config.config.simBackend.image.tag }}"
-        imagePullPolicy: {{ $config.config.simBackend.image.pullPolicy }}
+        image: "{{ $config.config.backend.image.repository }}:{{ $config.config.backend.image.tag }}"
+        imagePullPolicy: {{ $config.config.backend.image.pullPolicy }}
         ports:
           - name: simapi
             containerPort: 3000
@@ -132,27 +140,27 @@ spec:
           - name: testapi
             containerPort: 3003
             protocol: TCP
-        {{- if $config.config.simBackend.readinessProbe.enabled }}
+        {{- if $config.config.backend.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
             path: /
             port: 3000
             scheme: HTTP
-{{ $config.config.simBackend.readinessProbe | toYaml | indent 10 -}}
+{{ $config.config.backend.readinessProbe | toYaml | indent 10 -}}
         {{- end }}
-        {{- if $config.config.simBackend.livenessProbe.enabled }}
+        {{- if $config.config.backend.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
             path: /
             port: 3000
             scheme: HTTP
-{{ $config.config.simBackend.livenessProbe | toYaml | indent 10 -}}
+{{ $config.config.backend.livenessProbe | toYaml | indent 10 -}}
         {{- end }}
         envFrom:
         - configMapRef:
             name: sim-{{ $name }}-backend
         resources:
-{{ toYaml $config.config.simBackend.resources | indent 12 }}
+{{ toYaml $config.config.backend.resources | indent 12 }}
       imagePullSecrets:
         - name: {{ $config.config.imagePullSecretName }}
     {{- with $config.nodeSelector }}
@@ -200,7 +208,7 @@ spec:
           protocol: TCP
         {{- if $config.config.cache.livenessProbe.enabled }}
         livenessProbe:
-{{ $config.config.simBackend.livenessProbe | toYaml | indent 10 -}}
+{{ $config.config.backend.livenessProbe | toYaml | indent 10 -}}
           exec:
             command:
             - sh
@@ -209,7 +217,7 @@ spec:
         {{- end }}
         {{- if $config.config.cache.readinessProbe.enabled}}
         readinessProbe:
-{{ $config.config.simBackend.readinessProbe | toYaml | indent 10 -}}
+{{ $config.config.backend.readinessProbe | toYaml | indent 10 -}}
           exec:
             command:
             - sh
