@@ -77,7 +77,7 @@ module.exports = class Party {
             }
         });
         if (res.length && res.length > 0) {
-            return resultMap;
+            return Object.values(resultMap)[0];
         }
         return undefined;
     }
