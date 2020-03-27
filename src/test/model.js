@@ -26,7 +26,7 @@ const test = require('ava');
 
 const Model = require('../models/model');
 const {
-    transfer, quote, transactionrequest, party, newQuote, newTransfer, idType, idValue,
+    transfer, quote, transactionrequest, party, newQuote, newTransfer, idType, idValue, partyCreate,
     transferId, transactionRequestId,
 } = require('./constants');
 
@@ -47,14 +47,35 @@ test('create a model with an in-memory database', async (t) => {
 });
 
 test('create a party', async (t) => {
-    await t.context.model.party.create(party);
+    await t.context.model.party.create(partyCreate);
+    t.pass();
+});
+
+test('create and retrieve all parties', async (t) => {
+    const { model } = t.context;
+
+    await model.party.create(partyCreate);
+    const res = await model.party.getAll();
+    if (!res) {
+        t.fail('Result not found');
+    }
+    t.pass();
+});
+test('create and retrieve all parties duplicates', async (t) => {
+    const { model } = t.context;
+    await model.party.create(partyCreate);
+    //   await model.party.create(partyCreate);
+    const res = await model.party.getAll();
+    if (!res) {
+        t.fail('Result not found');
+    }
     t.pass();
 });
 
 test('create and retrieve a party', async (t) => {
     const { model } = t.context;
 
-    await model.party.create(party);
+    await model.party.create(partyCreate);
     const res = await model.party.get(idType, idValue);
     if (!res) {
         t.fail('Result not found');
@@ -72,8 +93,18 @@ test('create and update a party', async (t) => {
         dateOfBirth: '1970-01-01T00:00:00.000Z',
         idType,
         idValue,
+        extensionList: [
+            {
+                key: 'accountType',
+                value: 'Wallet',
+            },
+            {
+                key: 'accountNumber',
+                value: '12345343',
+            },
+        ],
     };
-    await model.party.create(party);
+    await model.party.create(partyCreate);
     const orig = await model.party.get(idType, idValue);
     await model.party.update(idType, idValue, newParty);
     const changed = await model.party.get(idType, idValue);
@@ -89,7 +120,7 @@ test('retrieve a participant', async (t) => {
 
 test('create and delete a party', async (t) => {
     const { model } = t.context;
-    await model.party.create(party);
+    await model.party.create(partyCreate);
     await model.party.get(idType, idValue);
     await model.party.delete(idType, idValue);
     const deleted = await model.party.get(idType, idValue);

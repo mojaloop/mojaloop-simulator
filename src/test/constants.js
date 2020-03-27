@@ -46,6 +46,26 @@ const party = {
     idType,
     idValue,
 };
+const partyCreate = {
+    displayName: randName,
+    firstName: randName.split(' ')[0] || '',
+    middleName: randName.split(' ')[1] || '',
+    lastName: randName.split(' ')[2] || '',
+    dateOfBirth: '1970-01-01T00:00:00.000Z',
+    idType,
+    idValue,
+    extensionList: [
+        {
+            key: 'accountType',
+            value: 'Wallet',
+        },
+        {
+            key: 'accountNumber',
+            value: '12345343',
+        },
+    ],
+};
+
 
 const quote = {
     quoteId: idValue,
@@ -170,6 +190,7 @@ module.exports = {
     quote,
     transactionrequest,
     party,
+    partyCreate,
     newQuote,
     newTransfer,
     transferWithoutQuote,

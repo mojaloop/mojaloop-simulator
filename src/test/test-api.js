@@ -25,7 +25,7 @@
 const test = require('ava');
 const Model = require('../../src/models/model');
 const handlers = require('../test-api/handlers');
-const { ops, party } = require('./constants');
+const { ops, party, partyCreate } = require('./constants');
 
 const testOps = [{
     name: 'scenario1',
@@ -78,7 +78,7 @@ test('should return 200 when reading a party', async (t) => {
 
 test('should return 204 when creating a party', async (t) => {
     // eslint-disable-next-line no-param-reassign
-    t.context.request = { body: party };
+    t.context.request = { body: partyCreate };
     await handlers.map['/repository/parties'].post(t.context);
     t.falsy(t.context.response.body);
     t.is(t.context.response.status, 204);

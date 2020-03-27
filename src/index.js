@@ -37,6 +37,7 @@ const router = require('@internal/router');
 const https = require('https');
 const cors = require('@koa/cors');
 const RulesEngine = require('@internal/rules-engine');
+require('dotenv').config();
 
 // eslint-disable-next-line import/no-dynamic-require
 const rules = require(process.env.RULES_FILE);
@@ -48,7 +49,6 @@ const testApiHandlers = require('./test-api/handlers');
 const { setConfig, getConfig } = require('./config.js');
 const Model = require('./models/model');
 
-require('dotenv').config();
 
 const simApiSpec = yaml.load('./simulator/api.yaml');
 const reportApiSpec = yaml.load('./reports/api.yaml');

@@ -35,7 +35,11 @@ const TransactionRequest = require('./transactionrequest');
 const Transfer = require('./transfer');
 
 const {
-    createPartyTable, createTransferTable, createQuoteTable, createTransactionRequestTable,
+    createPartyTable,
+    createTransferTable,
+    createQuoteTable,
+    createTransactionRequestTable,
+    createPartyExtensionTable,
 } = require('./constants');
 
 /**
@@ -79,10 +83,12 @@ module.exports = class Model {
 
         try {
             this.db = await sqlite.open(databaseFilepath);
+            await this.db.run('PRAGMA foreign_keys = true');
             await this.db.run(createPartyTable);
             await this.db.run(createQuoteTable);
             await this.db.run(createTransactionRequestTable);
             await this.db.run(createTransferTable);
+            await this.db.run(createPartyExtensionTable);
 
             this.party = new Party(this.db);
             this.quote = new Quote(this.db);
