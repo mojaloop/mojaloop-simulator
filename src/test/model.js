@@ -24,10 +24,10 @@
 
 const test = require('ava');
 
-
 const Model = require('../models/model');
 const {
-    transfer, quote, party, newQuote, newTransfer, idType, idValue, transferId, partyCreate,
+    transfer, quote, transactionrequest, party, newQuote, newTransfer, idType, idValue, partyCreate,
+    transferId, transactionRequestId,
 } = require('./constants');
 
 test.beforeEach(async (t) => {
@@ -249,6 +249,20 @@ test('create and delete a transfer', async (t) => {
     t.is(deleted, undefined);
 });
 
+test('create a transactionrequest', async (t) => {
+    await t.context.model.transactionrequest.create(transactionrequest);
+    t.pass();
+});
+
+test('create and delete a transactionrequest', async (t) => {
+    const { model } = t.context;
+
+    await model.transactionrequest.create(transactionrequest);
+    await model.transactionrequest.get(transactionRequestId);
+    await model.transactionrequest.delete(transactionRequestId);
+    const deleted = await model.transactionrequest.get(transactionRequestId);
+    t.is(deleted, undefined);
+});
 
 test('throws if we try to init the db twice', async (t) => {
     // Arrange

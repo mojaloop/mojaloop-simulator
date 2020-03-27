@@ -29,6 +29,7 @@ const uuid = require('uuid/v1');
 const chance = new Chance();
 const randName = chance.name({ suffix: true, middle: true });
 const transferId = uuid();
+const transactionRequestId = uuid();
 const idType = 'msisdn';
 const idValue = uuid();
 const currency = '$';
@@ -76,6 +77,26 @@ const quote = {
     from: {
         idType: 'MSISDN',
         idValue: '0067890',
+    },
+    amountType: 'SEND',
+    amount: '100',
+    currency: 'USD',
+    feesAmount: '0.5',
+    feesCurrency: 'USD',
+    transactionType: 'TRANSFER',
+    initiator: 'PAYER',
+    initiatorType: 'CONSUMER',
+};
+
+const transactionrequest = {
+    transactionRequestId,
+    to: {
+        idType: 'MSISDN',
+        idValue: '0012345',
+    },
+    from: {
+        idType: 'BUSINESS',
+        idValue: 'Starbucks',
     },
     amountType: 'SEND',
     amount: '100',
@@ -167,6 +188,7 @@ test('constants', async (t) => {
 module.exports = {
     transfer,
     quote,
+    transactionrequest,
     party,
     partyCreate,
     newQuote,
@@ -175,4 +197,5 @@ module.exports = {
     idType,
     idValue,
     transferId,
+    transactionRequestId,
 };

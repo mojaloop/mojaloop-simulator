@@ -27,7 +27,7 @@ const test = require('ava');
 const Model = require('../models/model');
 const { map } = require('../simulator/handlers');
 const {
-    transfer, transferWithoutQuote, quote, party, idType, idValue,
+    transfer, transferWithoutQuote, quote, transactionrequest, party, idType, idValue,
 } = require('./constants');
 const { ApiErrorCodes } = require('../models/errors');
 
@@ -65,6 +65,14 @@ test('create a transfer', async (t) => {
     // eslint-disable-next-line no-param-reassign
     t.context.request = { body: transfer };
     await map['/transfers'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('create a transactionrequest', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: transactionrequest };
+    await map['/transactionrequests'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
 });
