@@ -93,6 +93,16 @@ test('create and update a party', async (t) => {
         dateOfBirth: '1970-01-01T00:00:00.000Z',
         idType,
         idValue,
+        extensionList: [
+            {
+                key: 'accountType',
+                value: 'Wallet',
+            },
+            {
+                key: 'accountNumber',
+                value: '12345343',
+            },
+        ],
     };
     await model.party.create(partyCreate);
     const orig = await model.party.get(idType, idValue);
