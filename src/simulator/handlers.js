@@ -65,7 +65,6 @@ const getPartiesByTypeAndId = async (ctx) => {
 };
 
 const getOTPById = async (ctx) => {
-    // TODO: check that the provided type was MSISDN? Or just encode that in the API spec..
     try {
         const res = {
             otpValue: Math.floor(Math.random() * 90000) + 10000,
