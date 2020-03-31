@@ -182,7 +182,7 @@ kind: Deployment
 metadata:
   name: sim-{{ $name }}-cache
   labels:
-    app: {{ $name }}
+    app: sim-{{ $name }}-cache
     chart: {{ template "mojaloop-simulator.chart" $ }}
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}

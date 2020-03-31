@@ -74,6 +74,15 @@
 # * put sim inbound API on port 80
 # * supply more documentation, especially a range of examples, and preferably documentation that is
 #   executable
+# * share configmaps, secrets with init containers
+# * share an emptyDir volume between init containers and main containers
+# * allow init containers to create secrets and put them on persistent volumes, or emptyDirs, then
+#   allow main containers to access those
+# * do not put environment variables in configmaps, instead put them straight into the deployments.
+#   This makes the deployment much easier to manage.
+# * Remember, labels are _for_ identifying stuff. So labels should probably be like "release"
+#   (.Release.Name or similar) "chart" (.Chart.Name or similar) "simulator" (e.g. payerfsp,
+#   payeefsp) "sim-component" (e.g. backend, scheme-adapter, cache)
 
 simulators:
   # Every key added to this `simulators` object will be a simulator that takes on the default
