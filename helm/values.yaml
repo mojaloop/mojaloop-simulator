@@ -83,6 +83,8 @@
 # * Remember, labels are _for_ identifying stuff. So labels should probably be like "release"
 #   (.Release.Name or similar) "chart" (.Chart.Name or similar) "simulator" (e.g. payerfsp,
 #   payeefsp) "sim-component" (e.g. backend, scheme-adapter, cache)
+# * can _probably_ remove port numbers from services to simplify chart (although perhaps not? try
+#   to port-forward with a named port instead of a numbered port?)
 
 simulators:
   # Every key added to this `simulators` object will be a simulator that takes on the default
@@ -108,6 +110,11 @@ defaultProbes: &defaultProbes
 
 ingress:
   annotations: {}
+  # Set this to true if you're using nginx ingress controller >= v0.22.0.
+  # This affects the way your rewrite target will work.
+  # For more information see "Breaking changes" here:
+  # https://github.com/kubernetes/ingress-nginx/blob/master/Changelog.md#0220
+  modernIngressController: true
 
 # If you enable JWS validation and intend to communicate via a switch you will almost certainly
 # want to put your switch JWS public key in this array. The name of the property in this object
