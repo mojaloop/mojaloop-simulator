@@ -22,21 +22,23 @@ spec:
         release: {{ $.Release.Name }}
     spec:
       volumes:
+      {{- if eq ($config.config.schemeAdapter.env.JWS_SIGN | upper) "TRUE" }}
       - name: jws-private-key
         secret:
-          {{- if $config.config.schemeAdapter.secrets.jws.privKeySecretName }} 
+          {{- if $config.config.schemeAdapter.secrets.jws.privKeySecretName }}
           secretName: {{ $config.config.schemeAdapter.secrets.jws.privKeySecretName }}
           {{- else }}
           secretName: sim-{{ $name }}-jws-priv-key
           {{- end }}
+      {{- end }}
       - name: jws-public-keys
         configMap:
-          {{- if $config.config.schemeAdapter.secrets.jws.publicKeyConfigMapName }} 
+          {{- if $config.config.schemeAdapter.secrets.jws.publicKeyConfigMapName }}
           name: {{ $config.config.schemeAdapter.secrets.jws.publicKeyConfigMapName }}
           {{- else }}
           name: sim-jws-public-keys
           {{- end }}
-      {{- if $config.config.schemeAdapter.secrets.sim_tls_secrets_name }} 
+      {{- if $config.config.schemeAdapter.secrets.sim_tls_secrets_name }}
       - name: tls-secrets
         secret:
           secretName: {{ $config.config.schemeAdapter.secrets.sim_tls_secrets_name }}
@@ -75,8 +77,10 @@ spec:
         volumeMounts:
         - name: jws-public-keys
           mountPath: {{ $config.config.schemeAdapter.env.JWS_VERIFICATION_KEYS_DIRECTORY }}
+        {{- if eq ($config.config.schemeAdapter.env.JWS_SIGN | upper) "TRUE" }}
         - name: jws-private-key
           mountPath: "/jwsSigningKey/"
+        {{- end }}
         {{- if $config.config.schemeAdapter.secrets.sim_tls_secrets_name }}
         - name: tls-secrets
           mountPath: "/secrets/"
