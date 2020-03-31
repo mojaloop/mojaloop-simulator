@@ -24,11 +24,11 @@ spec:
           - path: /sim/{{ $name }}/outbound(.*)
             backend:
               serviceName: sim-{{ $name }}
-              servicePort: inboundapi
+              servicePort: outboundapi
           - path: /sim/{{ $name }}/inbound(.*)
             backend:
               serviceName: sim-{{ $name }}
-              servicePort: outboundapi
+              servicePort: inboundapi
           - path: /sim/{{ $name }}/test(.*)
             backend:
               serviceName: sim-{{ $name }}
