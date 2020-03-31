@@ -29,7 +29,7 @@ spec:
        name: testapi
        targetPort: testapi
    selector:
-     app: sim-{{ $name }}
+     app: sim-{{ $name }}-scheme-adapter
      release: {{ $.Release.Name }}
 ---
 {{- if $config.config.cache.enabled }}
