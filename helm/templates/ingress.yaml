@@ -21,14 +21,18 @@ spec:
       - host: {{ $host }}
         http:
           paths:
-          - path: /sim/{{ $name }}/dfsp(.*)
+          - path: /sim/{{ $name }}/outbound(.*)
             backend:
               serviceName: sim-{{ $name }}
               servicePort: inboundapi
+          - path: /sim/{{ $name }}/inbound(.*)
+            backend:
+              serviceName: sim-{{ $name }}
+              servicePort: outboundapi
           - path: /sim/{{ $name }}/test(.*)
             backend:
               serviceName: sim-{{ $name }}
-              servicePort: inboundapi
+              servicePort: testapi
     {{- end }}
   {{- end }}
   {{- end }}
