@@ -210,6 +210,14 @@ defaults: &defaults
         VALIDATE_INBOUND_JWS: "false"
         JWS_SIGN: "false"
 
+        # applicable only if VALIDATE_INBOUND_JWS is "true"
+        # allows disabling of validation on incoming PUT /parties/{idType}/{idValue} requests
+        VALIDATE_INBOUND_PUT_PARTIES_JWS: "true"
+
+        # applicable only if JWS_SIGN is "true"
+        # allows disabling of signing on outgoing PUT /parties/{idType}/{idValue} requests
+        JWS_SIGN_PUT_PARTIES: "true"
+
         # Path to JWS signing key (private key of THIS DFSP)
         JWS_SIGNING_KEY_PATH: "/jwsSigningKey/private.key" # TODO: do not configure- will break the chart
         JWS_VERIFICATION_KEYS_DIRECTORY: "/jwsVerificationKeys"
@@ -231,14 +239,22 @@ defaults: &defaults
         # CACHE_HOST: "" # Default is parametrised, but it's possible to override this
         CACHE_PORT: "6379"
 
-        # SWITCH ENDPOINT
-        PEER_ENDPOINT: "test-quoting-service:80"
+        # Switch or DFSP system under test Mojaloop API endpoint
+        # The option 'PEER_ENDPOINT' has no effect if the remaining three options 'ALS_ENDPOINT', 'QUOTES_ENDPOINT', 'TRANSFERS_ENDPOINT' are specified.
+        PEER_ENDPOINT: "mojaloop-switch"
+        # ALS_ENDPOINT="mojaloop-switch-als"
+        # QUOTES_ENDPOINT="mojaloop-switch-quotes"
+        # TRANSFERS_ENDPOINT="mojaloop-switch-transfers"
 
-        # BACKEND ENDPOINT
-        BACKEND_ENDPOINT: "localhost:3000" # within pod
+        # This value specifies the endpoint the scheme adapter expects to communicate with the
+        # backend on.
+        # You're very likely to break the functioning of this chart if you configure the following
+        # value.
+        # BACKEND_ENDPOINT: "localhost:3000"
 
         # FSPID of this DFSP
-        DFSP_ID: "mojaloop-sdk"
+        # Commented by default- you're likely to break the chart if you configure this value.
+        # DFSP_ID: "mojaloop-sdk"
 
         # Secret used for generation and verification of secure ILP
         ILP_SECRET: "Quaixohyaesahju3thivuiChai5cahng"
@@ -253,7 +269,7 @@ defaults: &defaults
 
         # if set to false the SDK will not automatically accept a resolved party
         # but will halt the transer after a party lookup response is received. A further
-        # cnofirmation call will be required to progress the transfer to quotes state.
+        # confirmation call will be required to progress the transfer to quotes state.
         AUTO_ACCEPT_PARTY: "false"
 
         # when set to true, when sending money via the outbound API, the SDK will use the value
@@ -291,6 +307,14 @@ defaults: &defaults
         REJECT_TRANSFERS_ON_EXPIRED_QUOTES: "false"
         REJECT_EXPIRED_TRANSFER_FULFILS: "false"
 
+        # Timeout for GET/POST/DELETE - PUT flow processing
+        REQUEST_PROCESSING_TIMEOUT_SECONDS: "30"
+
+        # To allow transfer without a previous quote request, set this value to true.
+        # The incoming transfer request should consist of an ILP packet and a matching condition in this case.
+        # The fulfilment will be generated from the provided ILP packet, and must hash to the provided condition.
+        ALLOW_TRANSFER_WITHOUT_QUOTE: "false"
+
         INBOUND_MUTUAL_TLS_ENABLED: "false"
         OUTBOUND_MUTUAL_TLS_ENABLED: "false"
 
@@ -308,7 +332,11 @@ defaults: &defaults
 
       env:
         ##### Section for simulator backend container #####
-        OUTBOUND_ENDPOINT: "http://localhost:4001" # within the pod
+        # This is the endpoint the backend expects to communicate with the scheme adapter on. It's
+        # not configured by default in this chart as the default value is calculated in a template
+        # and configuring it is likely to break communication between the backend and the scheme
+        # adapter.
+        # OUTBOUND_ENDPOINT: "http://localhost:4001" # within the pod
 
         # Enable mutual TLS authentication. Useful when the simulator is not running in a managed
         # environment, i.e. when you're running it locally against your own implementation.
@@ -333,8 +361,10 @@ defaults: &defaults
 
         # The DFSPID of this simulator. The simulator will accept any requests routed to
         # FSPIOP-Destination: $SCHEME_NAME. Other requests will be rejected.
-        SCHEME_NAME: golden
-        DFSP_ID: golden
+        # Not set in this chart as these are calculated in templates. Setting this values is likely
+        # to break expected functionality.
+        # SCHEME_NAME: golden
+        # DFSP_ID: golden
 
         # The name of the sqlite model database. If you would like to start the simulator with preloaded
         # state you can use a preexisting file. If running in a container, you can mount a sqlite file as a
