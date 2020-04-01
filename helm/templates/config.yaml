@@ -11,7 +11,7 @@ metadata:
     heritage: {{ $.Release.Service }}
 data:
   CACHE_HOST: {{ printf "sim-%s-cache" $name | quote }}
-  BACKEND_ENDPOINT: http://sim-{{ $name }}-backend:3000
+  BACKEND_ENDPOINT: sim-{{ $name }}-backend:3000
   DFSP_ID: {{ $name }}
   {{- range $k, $v := $config.config.schemeAdapter.env }}
   {{ $k }}: {{ $v | quote }}

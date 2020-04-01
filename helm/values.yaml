@@ -241,13 +241,14 @@ defaults: &defaults
 
         # Switch or DFSP system under test Mojaloop API endpoint
         # The option 'PEER_ENDPOINT' has no effect if the remaining three options 'ALS_ENDPOINT', 'QUOTES_ENDPOINT', 'TRANSFERS_ENDPOINT' are specified.
+        # Do not include the protocol, i.e. http.
         PEER_ENDPOINT: "mojaloop-switch"
         # ALS_ENDPOINT="mojaloop-switch-als"
         # QUOTES_ENDPOINT="mojaloop-switch-quotes"
         # TRANSFERS_ENDPOINT="mojaloop-switch-transfers"
 
         # This value specifies the endpoint the scheme adapter expects to communicate with the
-        # backend on.
+        # backend on. Do not include the protocol, i.e. http.
         # You're very likely to break the functioning of this chart if you configure the following
         # value.
         # BACKEND_ENDPOINT: "localhost:3000"
@@ -332,10 +333,11 @@ defaults: &defaults
 
       env:
         ##### Section for simulator backend container #####
-        # This is the endpoint the backend expects to communicate with the scheme adapter on. It's
-        # not configured by default in this chart as the default value is calculated in a template
-        # and configuring it is likely to break communication between the backend and the scheme
-        # adapter.
+        # This is the endpoint the backend expects to communicate with the scheme adapter on.
+        # Include the protocol, i.e. http.
+        # It's not configured by default in this chart as the default value is calculated in a
+        # template and configuring it is likely to break communication between the backend and the
+        # scheme adapter.
         # OUTBOUND_ENDPOINT: "http://localhost:4001" # within the pod
 
         # Enable mutual TLS authentication. Useful when the simulator is not running in a managed
