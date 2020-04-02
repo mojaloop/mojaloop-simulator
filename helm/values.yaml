@@ -98,16 +98,16 @@ simulators:
 defaultProbes: &defaultProbes
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 30
+    initialDelaySeconds: 3
     periodSeconds: 30
     timeoutSeconds: 10
     successThreshold: 1
     failureThreshold: 3
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 30
-    timeoutSeconds: 10
+    initialDelaySeconds: 3
+    periodSeconds: 5
+    timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 3
 
@@ -337,11 +337,14 @@ defaults: &defaults
       # Supply JSON rules here as a string
       # Example:
       # rules: |-
-      # [{
-      #   "ruleId": 1,
-      #   .. etc.
-      # }]
-      rules:
+      #   [
+      #     {
+      #       "ruleId": 1,
+      #       .. etc.
+      #     }
+      #   ]
+      rules: |-
+        []
 
       env:
         ##### Section for simulator backend container #####

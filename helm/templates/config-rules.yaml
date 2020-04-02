@@ -10,5 +10,6 @@ metadata:
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
 data:
-  rules.json: {{ $config.config.backend.rules }}
+  rules.json: {{ $config.config.backend.rules | quote }}
+---
 {{- end }}
