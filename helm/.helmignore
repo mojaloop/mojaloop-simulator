@@ -19,3 +19,7 @@
 .project
 .idea/
 *.tmproj
+
+# This way you can maintain a values-test.yaml in this repo for testing your changes to the chart,
+# without accidentally including it in a packaged chart.
+values-test.yaml

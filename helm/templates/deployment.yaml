@@ -165,6 +165,13 @@ spec:
             name: sim-{{ $name }}-backend
         resources:
 {{ toYaml $config.config.backend.resources | indent 12 }}
+        volumeMounts:
+        - name: sim-rules
+          mountPath: /rules/
+      volumes:
+      - name: sim-rules
+        configMap:
+          name: sim-{{ $name }}-rules
       imagePullSecrets:
         - name: {{ $config.config.imagePullSecretName }}
     {{- with $config.nodeSelector }}
