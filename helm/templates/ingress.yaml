@@ -21,14 +21,18 @@ spec:
       - host: {{ $host }}
         http:
           paths:
-          - path: /sim/{{ $name }}/dfsp(.*)
+          - path: /sim/{{ $name }}/outbound{{ if $.Values.ingress.modernIngressController }}(.*){{ end }}
             backend:
-              serviceName: sim-{{ $name }}
-              servicePort: inboundapi
-          - path: /sim/{{ $name }}/test(.*)
+              serviceName: sim-{{ $name }}-scheme-adapter
+              servicePort: outboundapi
+          - path: /sim/{{ $name }}/inbound{{ if $.Values.ingress.modernIngressController }}(.*){{ end }}
             backend:
-              serviceName: sim-{{ $name }}
+              serviceName: sim-{{ $name }}-scheme-adapter
               servicePort: inboundapi
+          - path: /sim/{{ $name }}/test{{ if $.Values.ingress.modernIngressController }}(.*){{ end }}
+            backend:
+              serviceName: sim-{{ $name }}-backend
+              servicePort: testapi
     {{- end }}
   {{- end }}
   {{- end }}

@@ -3,9 +3,37 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: sim-{{ $name }}
+  name: sim-{{ $name }}-backend
   labels:
-    app: sim-{{ $name }}
+    app: sim-{{ $name }}-backend
+    chart: {{ template "mojaloop-simulator.chart" $ }}
+    release: {{ $.Release.Name }}
+    heritage: {{ $.Release.Service }}
+spec:
+   type: ClusterIP
+   ports:
+     - port: 3000
+       protocol: TCP
+       name: simapi
+       targetPort: simapi
+     - port: 3002
+       protocol: TCP
+       name: reportapi
+       targetPort: reportapi
+     - port: 3003
+       protocol: TCP
+       name: testapi
+       targetPort: testapi
+   selector:
+     app: sim-{{ $name }}-backend
+     release: {{ $.Release.Name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sim-{{ $name }}-scheme-adapter
+  labels:
+    app: sim-{{ $name }}-scheme-adapter
     chart: {{ template "mojaloop-simulator.chart" $ }}
     release: {{ $.Release.Name }}
     heritage: {{ $.Release.Service }}
@@ -20,16 +48,8 @@ spec:
        protocol: TCP
        name: outboundapi
        targetPort: outboundapi
-     - port: 3002
-       protocol: TCP
-       name: reportapi
-       targetPort: reportapi
-     - port: 3003
-       protocol: TCP
-       name: testapi
-       targetPort: testapi
    selector:
-     app: sim-{{ $name }}
+     app: sim-{{ $name }}-scheme-adapter
      release: {{ $.Release.Name }}
 ---
 {{- if $config.config.cache.enabled }}

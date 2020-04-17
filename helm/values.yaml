@@ -69,11 +69,26 @@
 # * look for references to replicaCount in the charts/values. Is it set, or whatever?
 # * scale Redis
 # * changing JWS_SIGNING_KEY_PATH currently breaks the chart because it's nastily hard-coded. It
-#   should be possible to use the Spring filepath functions to avoid this.
+#   should be possible to use the Spring filepath functions to avoid this. Similarly, changing
+#   RULES_FILE will have a similar effect. Alternatively, make these unconfigured by default. I.e.
+#   comment them out, hard-code them and add a warning to the user in the config. (Is there a
+#   scenario where the user should want to configure them? I don't think so..).
 #   (https://masterminds.github.io/sprig/paths.html)
 # * put sim inbound API on port 80
 # * supply more documentation, especially a range of examples, and preferably documentation that is
 #   executable
+# * share configmaps, secrets with init containers
+# * share an emptyDir volume between init containers and main containers
+# * allow init containers to create secrets and put them on persistent volumes, or emptyDirs, then
+#   allow main containers to access those
+# * do not put environment variables in configmaps, instead put them straight into the deployments.
+#   This makes the deployment much easier to manage.
+# * Remember, labels are _for_ identifying stuff. So labels should probably be like "release"
+#   (.Release.Name or similar) "chart" (.Chart.Name or similar) "simulator" (e.g. payerfsp,
+#   payeefsp) "sim-component" (e.g. backend, scheme-adapter, cache)
+# * can _probably_ remove port numbers from services to simplify chart (although perhaps not? try
+#   to port-forward with a named port instead of a numbered port?)
+
 
 simulators:
   # Every key added to this `simulators` object will be a simulator that takes on the default
@@ -84,21 +99,26 @@ simulators:
 defaultProbes: &defaultProbes
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 30
+    initialDelaySeconds: 3
     periodSeconds: 30
     timeoutSeconds: 10
     successThreshold: 1
     failureThreshold: 3
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 30
-    timeoutSeconds: 10
+    initialDelaySeconds: 3
+    periodSeconds: 5
+    timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 3
 
 ingress:
   annotations: {}
+  # Set this to true if you're using nginx ingress controller >= v0.22.0.
+  # This affects the way your rewrite target will work.
+  # For more information see "Breaking changes" here:
+  # https://github.com/kubernetes/ingress-nginx/blob/master/Changelog.md#0220
+  modernIngressController: true
 
 # If you enable JWS validation and intend to communicate via a switch you will almost certainly
 # want to put your switch JWS public key in this array. The name of the property in this object
@@ -194,6 +214,14 @@ defaults: &defaults
         VALIDATE_INBOUND_JWS: "false"
         JWS_SIGN: "false"
 
+        # applicable only if VALIDATE_INBOUND_JWS is "true"
+        # allows disabling of validation on incoming PUT /parties/{idType}/{idValue} requests
+        VALIDATE_INBOUND_PUT_PARTIES_JWS: "true"
+
+        # applicable only if JWS_SIGN is "true"
+        # allows disabling of signing on outgoing PUT /parties/{idType}/{idValue} requests
+        JWS_SIGN_PUT_PARTIES: "true"
+
         # Path to JWS signing key (private key of THIS DFSP)
         JWS_SIGNING_KEY_PATH: "/jwsSigningKey/private.key" # TODO: do not configure- will break the chart
         JWS_VERIFICATION_KEYS_DIRECTORY: "/jwsVerificationKeys"
@@ -215,14 +243,23 @@ defaults: &defaults
         # CACHE_HOST: "" # Default is parametrised, but it's possible to override this
         CACHE_PORT: "6379"
 
-        # SWITCH ENDPOINT
-        PEER_ENDPOINT: "test-quoting-service:80"
+        # Switch or DFSP system under test Mojaloop API endpoint
+        # The option 'PEER_ENDPOINT' has no effect if the remaining three options 'ALS_ENDPOINT', 'QUOTES_ENDPOINT', 'TRANSFERS_ENDPOINT' are specified.
+        # Do not include the protocol, i.e. http.
+        PEER_ENDPOINT: "mojaloop-switch"
+        # ALS_ENDPOINT="mojaloop-switch-als"
+        # QUOTES_ENDPOINT="mojaloop-switch-quotes"
+        # TRANSFERS_ENDPOINT="mojaloop-switch-transfers"
 
-        # BACKEND ENDPOINT
-        BACKEND_ENDPOINT: "localhost:3000" # within pod
+        # This value specifies the endpoint the scheme adapter expects to communicate with the
+        # backend on. Do not include the protocol, i.e. http.
+        # You're very likely to break the functioning of this chart if you configure the following
+        # value.
+        # BACKEND_ENDPOINT: "localhost:3000"
 
         # FSPID of this DFSP
-        DFSP_ID: "mojaloop-sdk"
+        # Commented by default- you're likely to break the chart if you configure this value.
+        # DFSP_ID: "mojaloop-sdk"
 
         # Secret used for generation and verification of secure ILP
         ILP_SECRET: "Quaixohyaesahju3thivuiChai5cahng"
@@ -237,7 +274,7 @@ defaults: &defaults
 
         # if set to false the SDK will not automatically accept a resolved party
         # but will halt the transer after a party lookup response is received. A further
-        # cnofirmation call will be required to progress the transfer to quotes state.
+        # confirmation call will be required to progress the transfer to quotes state.
         AUTO_ACCEPT_PARTY: "false"
 
         # when set to true, when sending money via the outbound API, the SDK will use the value
@@ -275,6 +312,14 @@ defaults: &defaults
         REJECT_TRANSFERS_ON_EXPIRED_QUOTES: "false"
         REJECT_EXPIRED_TRANSFER_FULFILS: "false"
 
+        # Timeout for GET/POST/DELETE - PUT flow processing
+        REQUEST_PROCESSING_TIMEOUT_SECONDS: "30"
+
+        # To allow transfer without a previous quote request, set this value to true.
+        # The incoming transfer request should consist of an ILP packet and a matching condition in this case.
+        # The fulfilment will be generated from the provided ILP packet, and must hash to the provided condition.
+        ALLOW_TRANSFER_WITHOUT_QUOTE: "false"
+
         INBOUND_MUTUAL_TLS_ENABLED: "false"
         OUTBOUND_MUTUAL_TLS_ENABLED: "false"
 
@@ -290,9 +335,26 @@ defaults: &defaults
       # Example: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use
       initContainers: {}
 
+      # Supply JSON rules here as a string
+      # Example:
+      # rules: |-
+      #   [
+      #     {
+      #       "ruleId": 1,
+      #       .. etc.
+      #     }
+      #   ]
+      rules: |-
+        []
+
       env:
         ##### Section for simulator backend container #####
-        OUTBOUND_ENDPOINT: "http://localhost:4001" # within the pod
+        # This is the endpoint the backend expects to communicate with the scheme adapter on.
+        # Include the protocol, i.e. http.
+        # It's not configured by default in this chart as the default value is calculated in a
+        # template and configuring it is likely to break communication between the backend and the
+        # scheme adapter.
+        # OUTBOUND_ENDPOINT: "http://localhost:4001" # within the pod
 
         # Enable mutual TLS authentication. Useful when the simulator is not running in a managed
         # environment, i.e. when you're running it locally against your own implementation.
@@ -317,8 +379,10 @@ defaults: &defaults
 
         # The DFSPID of this simulator. The simulator will accept any requests routed to
         # FSPIOP-Destination: $SCHEME_NAME. Other requests will be rejected.
-        SCHEME_NAME: golden
-        DFSP_ID: golden
+        # Not set in this chart as these are calculated in templates. Setting this values is likely
+        # to break expected functionality.
+        # SCHEME_NAME: golden
+        # DFSP_ID: golden
 
         # The name of the sqlite model database. If you would like to start the simulator with preloaded
         # state you can use a preexisting file. If running in a container, you can mount a sqlite file as a
@@ -334,7 +398,7 @@ defaults: &defaults
         # Specifies the location of a rules file for the simulator backend. Rules can be used to produce
         # specific simulator behaviours in response to incoming requests that match certain conditions.
         # e.g. a rule can be used to trigger NDC errors given transfers between certain limits.
-        RULES_FILE: ./rules.json
+        RULES_FILE: /rules/rules.json
 
   ingress:
     enabled: true
