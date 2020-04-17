@@ -64,6 +64,19 @@ const getPartiesByTypeAndId = async (ctx) => {
     }
 };
 
+const getOTPById = async (ctx) => {
+    try {
+        const res = {
+            otpValue: Math.floor(Math.random() * 90000) + 10000,
+        };
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
 
 const postTransfers = async (ctx) => {
     try {
@@ -130,6 +143,9 @@ const map = {
     },
     '/transfers': {
         post: postTransfers,
+    },
+    '/otp/{requestToPayId}': {
+        get: getOTPById,
     },
 };
 

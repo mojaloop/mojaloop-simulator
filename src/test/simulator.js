@@ -28,8 +28,10 @@ const Model = require('../models/model');
 const { map } = require('../simulator/handlers');
 const {
     transfer, transferWithoutQuote, quote, transactionrequest, party, idType, idValue,
+    transactionRequestId,
 } = require('./constants');
 const { ApiErrorCodes } = require('../models/errors');
+
 
 test.beforeEach(async (t) => {
     const model = new Model();
@@ -42,6 +44,14 @@ test.beforeEach(async (t) => {
 
 test.afterEach(async (t) => {
     await t.context.state.model.close();
+});
+
+test('get an otp', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { transactionRequestId } };
+    await map['/otp/{requestToPayId}'].get(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
 });
 
 test('get a party', async (t) => {

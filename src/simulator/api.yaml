@@ -183,6 +183,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/errorResponse'
 
+  /otp/{requestToPayId}:
+    get:
+      summary: Requests OTP 
+      tags:
+        - OTP
+      parameters:
+        - name: requestToPayId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idValue'
+      responses:
+        200:
+          description: Response containing details of the OTP
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/otpDetails'
+        404:
+          description: The party specified by the provided identifier type and value is not known to the server
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
 components:
   schemas:
   
@@ -444,6 +477,15 @@ components:
         note:
           maxLength: 128
           type: string
+
+    otpDetails:
+      type: object
+      required:
+        - otpValue
+      properties:
+        otpValue:
+          type: string
+          description: OTP value
           
     transferStatus:
       type: string
