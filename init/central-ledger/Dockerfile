@@ -1,5 +1,19 @@
 FROM postman/newman:5.0.0-alpine
-LABEL maintainer="kamuela.franco@modusbox.com"
+
+ARG CREATED
+ARG SOURCE
+ARG REVISION
+ARG VERSION
+
+# See https://github.com/opencontainers/image-spec/blob/master/spec.md for info
+LABEL org.opencontainers.image.created=${CREATED}
+LABEL org.opencontainers.image.url="https://mojaloop.io/"
+LABEL org.opencontainers.image.source=${SOURCE}
+LABEL org.opencontainers.image.version=${VERSION}
+LABEL org.opencontainers.image.revision=${REVISION}
+LABEL org.opencontainers.image.title="init-central-ledger"
+LABEL org.opencontainers.image.authors="kamuela.franco@modusbox.com"
+LABEL org.opencontainers.image.licenses="Apache-2.0"
 
 WORKDIR /opt/init-central-ledger
 COPY . .
