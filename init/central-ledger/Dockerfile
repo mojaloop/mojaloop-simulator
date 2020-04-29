@@ -5,7 +5,7 @@ ARG SOURCE
 ARG REVISION
 ARG VERSION
 
-# See https://github.com/opencontainers/image-spec/blob/master/spec.md for info
+# See https://github.com/opencontainers/image-spec/blob/master/annotations.md#pre-defined-annotation-keys and https://github.com/opencontainers/image-spec/blob/master/spec.md for info
 LABEL org.opencontainers.image.created=${CREATED}
 LABEL org.opencontainers.image.url="https://mojaloop.io/"
 LABEL org.opencontainers.image.source=${SOURCE}
