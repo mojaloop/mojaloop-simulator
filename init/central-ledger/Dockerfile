@@ -4,7 +4,7 @@ LABEL maintainer="kamuela.franco@modusbox.com"
 WORKDIR /opt/init-central-ledger
 COPY . .
 
-RUN newman run \
+CMD newman run \
     --delay-request=${DELAY_REQUEST} \
     --env-var "HOST_CENTRAL_LEDGER=${HOST_CENTRAL_LEDGER}" \
     --env-var "BASE_CENTRAL_LEDGER_ADMIN=${BASE_CENTRAL_LEDGER_ADMIN}" \
