@@ -351,6 +351,22 @@ jobs:
           paths:
             - ./docker-image.tar
 
+  build-init-central-ledger:
+    executor: default-machine
+    steps:
+      - checkout
+      - run:
+          name: Build the central-ledger init container
+          command: |
+            docker build -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-init-central-ledger:$CIRCLE_TAG .
+      - run:
+          name: Save the central-ledger init container docker image to workspace
+          command: docker save -o /tmp/docker-image-init-central-ledger.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-init-central-ledger:$CIRCLE_TAG
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - ./docker-image-init-central-ledger.tar
+
   license-scan:
     executor: default-machine
     steps:
@@ -439,6 +455,41 @@ jobs:
           <<: *defaults_build_docker_publish
       - run:
           <<: *defaults_slack_announcement
+
+  publish-init-central-ledger:
+    executor: default-machine
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image for init-central-ledger from workspace
+          command: docker load -i /tmp/docker-image-init-central-ledger.tar
+      - run:
+          <<: *defaults_build_docker_login
+      - run:
+          name: Setup environment vars for release/snapshot
+          command: ./.circleci/_set_up_deploy_envs.sh
+      - run:
+          name: Re-tag pre built image
+          command: |
+            docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-init-central-ledger:$RELEASE_TAG
+      - run:
+          name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub for init-central-ledger
+          command: |
+            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-init-central-ledger:$CIRCLE_TAG"
+            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-init-central-ledger:$CIRCLE_TAG
+            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-init-central-ledger:$RELEASE_TAG"
+            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-init-central-ledger:$RELEASE_TAG
+      - run:
+        name: Slack announcement for tag releases
+        command: |
+          curl -X POST \
+            $SLACK_WEBHOOK_ANNOUNCEMENT \
+            -H 'Content-type: application/json' \
+            -H 'cache-control: no-cache' \
+            -d "{\"text\": \"*${CIRCLE_PROJECT_REPONAME}-init-central-ledger* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
+
 ##
 # Workflows
 #
@@ -515,6 +566,20 @@ workflows:
             branches:
               ignore:
                 - /.*/
+      - build-init-central-ledger:
+          context: org-global
+          requires:
+            - setup
+            - test-unit
+            - test-coverage
+            - vulnerability-check
+            - audit-licenses
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+            branches:
+              ignore:
+                - /.*/
       - license-scan:
           context: org-global
           requires:
@@ -536,6 +601,17 @@ workflows:
               ignore:
                 - /.*/
       - publish:
+          context: org-global
+          requires:
+            - license-scan
+            - image-scan
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+            branches:
+              ignore:
+                - /.*/
+      - publish-init-central-ledger:
           context: org-global
           requires:
             - license-scan
