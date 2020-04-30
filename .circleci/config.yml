@@ -116,12 +116,6 @@ defaults_license_scanner: &defaults_license_scanner
     git clone https://github.com/mojaloop/license-scanner /tmp/license-scanner
     cd /tmp/license-scanner && make build default-files set-up
 
-
-# defaults_working_directory: &defaults_working_directory
-#   # The working directory for this project (place where package.json is) is /src, 
-#   # as opposed to the project root
-#   working_directory: /home/circleci/project/git
-
 defaults_slack_announcement: &defaults_slack_announcement
   name: Slack announcement for tag releases
   command: |
@@ -132,10 +126,9 @@ defaults_slack_announcement: &defaults_slack_announcement
       -d "{\"text\": \"*${CIRCLE_PROJECT_REPONAME}* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
 
 src_working_directory: &src_working_directory
-  # The working directory for this project (place where package.json is) is /src, 
+  # The working directory for this project (place where package.json is) is /src,
   # as opposed to the project root
   working_directory: /home/circleci/project/git/src
-
 
 ##
 # Executors
@@ -145,7 +138,7 @@ src_working_directory: &src_working_directory
 executors:
   default-docker:
     working_directory: /home/circleci/project/git
-    docker: 
+    docker:
       - image: node:12.16.0-alpine
 
   default-machine:
@@ -155,7 +148,7 @@ executors:
 
   helm-kube:
     working_directory: /home/circleci/project
-    docker: 
+    docker:
       - image: hypnoglow/kubernetes-helm
 
 ##
@@ -171,9 +164,6 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      # - run:
-          # name: Build dependencies
-          # command: apk add --no-cache -t build-dependencies make gcc g++ python libtool autoconf automake
       - run:
           name: Access npm folder as root
           command: cd $(npm root -g)/npm
@@ -273,7 +263,7 @@ jobs:
           <<: *src_working_directory
       - run:
           name: Check for new npm vulnerabilities
-          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json 
+          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
           <<: *src_working_directory
       - store_artifacts:
           path: ./src/audit/results
@@ -411,21 +401,19 @@ jobs:
               printf "\n%s\n" "The following vulnerabilities were found:"
               jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
             fi
-
       - run:
           name: Upload Anchore reports to s3
           command: |
             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
-        
+
             # TODO: Enable this when we want to increase the strictness of our security policies
             # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
             # if [ $failCount -gt 0 ]; then
             #   printf "Failed with a policy failure count of: ${failCount}"
             #   exit 1
             # fi
-
       - store_artifacts:
           path: anchore-reports
 
@@ -451,33 +439,6 @@ jobs:
           <<: *defaults_build_docker_publish
       - run:
           <<: *defaults_slack_announcement
-        
-  # deploy:
-  #   executor: helm-kube
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Install AWS CLI dependencies
-  #         command: *defaults_awsCliDependencies
-  #     - run:
-  #         name: setup environment vars for release/snapshot
-  #         command: ./.circleci/_set_up_deploy_envs.sh
-  #     - run:
-  #         <<: *defaults_deploy_prequisites
-  #     - run:
-  #         <<: *defaults_deploy_config_kubernetes_cluster
-  #     - run:
-  #         <<: *defaults_deploy_config_kubernetes_credentials
-  #     - run:
-  #         <<: *defaults_deploy_config_kubernetes_context
-  #     - run:
-  #         <<: *defaults_deploy_set_kubernetes_context
-  #     - run:
-  #         <<: *defaults_deploy_configure_helm
-  #     - run:
-  #         <<: *defaults_deploy_install_or_upgrade_helm_chart
-
- 
 ##
 # Workflows
 #
