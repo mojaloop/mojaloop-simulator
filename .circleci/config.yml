@@ -482,13 +482,13 @@ jobs:
             echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-init-central-ledger:$RELEASE_TAG"
             docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-init-central-ledger:$RELEASE_TAG
       - run:
-        name: Slack announcement for tag releases
-        command: |
-          curl -X POST \
-            $SLACK_WEBHOOK_ANNOUNCEMENT \
-            -H 'Content-type: application/json' \
-            -H 'cache-control: no-cache' \
-            -d "{\"text\": \"*${CIRCLE_PROJECT_REPONAME}-init-central-ledger* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
+          name: Slack announcement for tag releases
+          command: |
+            curl -X POST \
+              $SLACK_WEBHOOK_ANNOUNCEMENT \
+              -H 'Content-type: application/json' \
+              -H 'cache-control: no-cache' \
+              -d "{\"text\": \"*${CIRCLE_PROJECT_REPONAME}-init-central-ledger* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
 
 ##
 # Workflows
