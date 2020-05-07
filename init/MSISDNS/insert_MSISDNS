@@ -1,0 +1,16 @@
+#! /bin/bash
+
+printenv | grep MSISDN_ > MSISDNS.config
+
+#temporal
+host=localhost:3000
+
+while read var value
+do
+    fsp=${var%%=*}
+    name=$(echo $fsp | cut -d'_' -f 2)
+    url="${host}/participants/MSISDN/${!fsp}"
+    echo $url
+    # curl --location --request POST '(echo $url)' --header 'Content-Type: application/json' --header 'Content-Type: text/plain' --data-raw '$(var)'
+    
+done < ./MSISDNS.config
