@@ -24,13 +24,19 @@
 
 const util = require('util');
 const Mustache = require('mustache');
-
-const { postTransfers, putTransfers } = require('./client');
+const {
+    postTransfers,
+    putTransfers,
+    postBulkTransfers,
+    putBulkTransfers,
+} = require('./client');
 const { ApiErrorCodes } = require('../models/errors');
 
 const supportedOperations = {
     POST_TRANSFERS: 'postTransfers',
     PUT_TRANSFERS: 'putTransfers',
+    POST_BULK_TRANSFERS: 'postBulkTransfers',
+    PUT_BULK_TRANSFERS: 'putBulkTransfers',
 };
 
 
@@ -190,6 +196,8 @@ const handleScenarios = async (ctx) => {
         const res = await handleOps(ctx.state.logger, {
             postTransfers,
             putTransfers,
+            postBulkTransfers,
+            putBulkTransfers,
         }, ctx.request.body);
 
         ctx.state.logger.log(`Scenario operations returned: ${util.inspect(res)}`);

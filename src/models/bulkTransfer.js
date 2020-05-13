@@ -23,8 +23,8 @@
 'use strict';
 
 /**
- * @file Simulator resources Transfer model
- * @description Defines the transfer model structure and operations within the simulator.
+ * @file Simulator resources Bulk Transfer model
+ * @description Defines the bulk transfer model structure and operations within the simulator.
  */
 const { bulkTransferTable } = require('./constants');
 require('dotenv').config();
@@ -43,8 +43,8 @@ module.exports = class BulkTransfer {
     * Retrieves a bulk transfer
     *
     * @async
-    * @param {String} bulkTransferId  The transfer id.
-    * @returns {Promise<Object>}  Transfer object.
+    * @param {String} bulkTransferId  The bulk transfer id.
+    * @returns {Promise<Object>}  BulkTransfer object.
     */
     async get(bulkTransferId) {
         const res = await this.db.get(`SELECT * FROM ${bulkTransferTable} WHERE id = ?`, [bulkTransferId]);
@@ -52,16 +52,16 @@ module.exports = class BulkTransfer {
     }
 
     /**
-    * Creates a transfer.
+    * Creates a bulk transfer.
     *
     * @async
-    * @param {Object} transferRequest  The transfer request object.
-    * @returns {Promise<Object>}       Transfer response.
+    * @param {Object} bulkTransferRequest  The bulk transfer request object.
+    * @returns {Promise<Object>}       Bulk Transfer response.
     */
-    async create(transferRequest) {
-        const { bulkTransferId } = transferRequest;
+    async create(bulkTransferRequest) {
+        const { bulkTransferId } = bulkTransferRequest;
         const response = { bulkTransferId };
-        const reqStr = JSON.stringify(transferRequest);
+        const reqStr = JSON.stringify(bulkTransferRequest);
         const resStr = JSON.stringify(response);
 
         await this.db.get(`INSERT INTO ${bulkTransferTable} (id, request, response) VALUES (?, ?, ?)`, [bulkTransferId, reqStr, resStr]);
@@ -69,15 +69,15 @@ module.exports = class BulkTransfer {
     }
 
     /**
-    * Updates a transfer
+    * Updates a bulk transfer
     *
-    * @param {String} bulkTransferId       The current transfer id.
-    * @param {Object} TansferRequest   The new transfer object.
+    * @param {String} bulkTransferId       The current bulk transfer id.
+    * @param {Object} BulkTansferRequest   The new bulk transfer object.
     */
-    async update(currentbulkTransferId, transferRequest) {
-        const { homeTransactionId: newbulkTransferId } = transferRequest;
+    async update(currentbulkTransferId, bulkTransferRequest) {
+        const { homeTransactionId: newbulkTransferId } = bulkTransferRequest;
         const response = { newbulkTransferId };
-        const reqStr = JSON.stringify(transferRequest);
+        const reqStr = JSON.stringify(bulkTransferRequest);
         const resStr = JSON.stringify(response);
 
         await this.db.run(`
@@ -87,10 +87,10 @@ module.exports = class BulkTransfer {
     }
 
     /**
-    * Deletes a transfer.
+    * Deletes a bulk transfer.
     *
     * @async
-    * @param {String} bulkTransferId The transfer id.
+    * @param {String} bulkTransferId The bulk transfer id.
     */
     async delete(bulkTransferId) {
         await this.db.run(`DELETE FROM ${bulkTransferTable} WHERE id = ?`, [bulkTransferId]);
