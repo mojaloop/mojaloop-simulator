@@ -118,6 +118,19 @@ const postTransactionRequests = async (ctx) => {
     }
 };
 
+const postBulkTransfers = async (ctx) => {
+    try {
+        const res = await ctx.state.model.bulkTransfer.create(ctx.request.body);
+        ctx.state.logger.log(`postBulkTransfers is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in postBulkTransfers: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
 
 const healthCheck = async (ctx) => {
     ctx.response.status = 200;
@@ -146,6 +159,9 @@ const map = {
     },
     '/otp/{requestToPayId}': {
         get: getOTPById,
+    },
+    '/bulkTransfers': {
+        post: postBulkTransfers,
     },
 };
 

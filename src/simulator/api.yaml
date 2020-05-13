@@ -215,6 +215,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
+  
+  /bulkTransfers:
+    post:
+      summary: Execute bulk transfer of funds from an external account to internal accounts
+      tags:
+        - BulkTransfers
+      requestBody:
+        description: An incoming bulk transfer request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bulkTransferRequest'
+      responses:
+        200:
+          description: The bulk transfer was accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bulkTransferResponse'
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
 
 components:
   schemas:
@@ -580,6 +611,43 @@ components:
         merchantClassificationCode:
           type: string
           description: Up to 4 digits specifying the senders merchant classification, if known and applicable
+    
+    bulkTransferRequest:
+      type: object
+      required:
+        - transferId
+        - currency
+        - amount
+      properties:
+        bulkTransferId:
+          $ref: '#/components/schemas/bulkTransferId'
+        quote:
+          $ref: '#/components/schemas/quoteResponse'
+        from:
+          $ref: '#/components/schemas/transferParty'
+        amountType:
+          $ref: '#/components/schemas/amountType'
+        currency:
+          $ref: '#/components/schemas/currency'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+        note:
+          maxLength: 128
+          type: string
+    
+    bulkTransferResponse:
+      type: object
+      required:
+        - homeTransactionId
+      properties:
+        homeTransactionId:
+          type: string
+          description: Transaction ID from the DFSP backend, used to reconcile transactions between the switch and DFSP backend systems
+
+    bulkTransferId:
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      type: string
+      description: A Mojaloop API transfer identifier (UUID)
           
     geoCode:
       type: object

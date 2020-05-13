@@ -26,6 +26,7 @@ const partyTable = 'party';
 const quoteTable = 'quote';
 const transactionRequestTable = 'transactionRequest';
 const transferTable = 'transfer';
+const bulkTransferTable = 'bulkTransfer';
 const partyExtensionTable = 'partyExtension';
 
 const createPartyTable = `
@@ -78,6 +79,15 @@ CREATE TABLE IF NOT EXISTS ${transferTable} (
 )
 `;
 
+const createBulkTransferTable = `
+CREATE TABLE IF NOT EXISTS ${bulkTransferTable} (
+    id TEXT NOT NULL PRIMARY KEY,
+    request TEXT,
+    response TEXT,
+    CHECK(id <> '')
+)
+`;
+
 module.exports = {
     partyTable,
     quoteTable,
@@ -89,4 +99,6 @@ module.exports = {
     transferTable,
     partyExtensionTable,
     createPartyExtensionTable,
+    bulkTransferTable,
+    createBulkTransferTable,
 };
