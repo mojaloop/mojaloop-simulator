@@ -255,9 +255,9 @@ const testApi = new Koa();
     // If config specifies TLS, start an HTTPS server; otherwise HTTP
     let simServer;
     const conf = getConfig();
-    const simulatorPort = 3000;
-    const reportPort = 3002;
-    const testApiPort = 3003;
+    const simulatorPort = conf.ports.simulatorApi;
+    const reportPort = conf.ports.reportApi;
+    const testApiPort = conf.ports.testApi;
 
     if (conf.tls.mutualTLS.enabled || conf.tls.enabled) {
         if (!(conf.tls.creds.ca && conf.tls.creds.cert && conf.tls.creds.key)) {

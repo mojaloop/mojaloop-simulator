@@ -52,6 +52,11 @@ const config = {
             key: null,
         },
     },
+    ports: {
+        simulatorApi: null,
+        reportApi: null,
+        testApi: null,
+    },
 };
 
 
@@ -70,6 +75,9 @@ const setConfig = async (cfg) => {
             readFile(cfg.SERVER_KEY_PATH),
         ]);
     }
+    config.ports.simulatorApi = cfg.SIMULATOR_API_LISTEN_PORT || 3000;
+    config.ports.reportApi = cfg.REPORT_API_LISTEN_PORT || 3002;
+    config.ports.testApi = cfg.TEST_API_LISTEN_PORT || 3003;
 };
 
 

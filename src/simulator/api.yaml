@@ -665,7 +665,7 @@ components:
           type: array
           maxItems: 1000
           items:
-            $ref: '#/components/schema/IndividualQuote'
+            $ref: '#/components/schemas/IndividualQuote'
 
     bulkQuoteResponse:
       type: object
