@@ -179,6 +179,23 @@ const handleOps = async (logger, model, ops) => {
                 const response = await model.putTransfers(renderedParams.transferId, renderedBody);
                 acc[op.name] = { result: response };
             }
+
+            if (op.operation === supportedOperations.POST_BULK_TRANSFERS) {
+                const response = await model.postBulkTransfers(renderedBody);
+                acc[op.name] = { result: response };
+            }
+
+            if (op.operation === supportedOperations.PUT_BULK_TRANSFERS) {
+                if (!renderedParams.bulkTransferId) {
+                    throw new Error(`Scenario ${op.name} does not have required bulkTransferId param for putBulkTransfers operation`);
+                }
+
+                const response = await model.putBulkTransfers(
+                    renderedParams.bulkTransferId,
+                    renderedBody,
+                );
+                acc[op.name] = { result: response };
+            }
         } catch (error) {
             acc[op.name] = { error };
         }

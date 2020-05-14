@@ -216,6 +216,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/errorResponse'
   
+  /bulkQuotes:
+    post:
+      summary: Requests a bulk quote
+      tags:
+        - BulkQuotes
+      requestBody:
+        description: Request for a bulk quotation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/bulkQuoteRequest'
+      responses:
+        200:
+          description: A response to the bulk quote request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bulkQuoteResponse'
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
   /bulkTransfers:
     post:
       summary: Execute bulk transfer of funds from an external account to internal accounts
@@ -249,7 +280,6 @@ paths:
 
 components:
   schemas:
-  
     quoteRequest:
       type: object
       description: A request for a quote for transfer from the DFSP backend
@@ -611,6 +641,139 @@ components:
         merchantClassificationCode:
           type: string
           description: Up to 4 digits specifying the senders merchant classification, if known and applicable
+    
+    bulkQuoteRequest:
+      type: object
+      description: A request for a bulk quote for bulk transfer from the DFSP backend
+      required:
+        - bulkQuoteId
+        - from
+        - individualQuotes
+      properties:
+        bulkQuoteId:
+          $ref: '#/components/schemas/bulkQuoteId'
+        from:
+          $ref: '#/components/schemas/transferParty'
+          description: Information about the Payer in the proposed financial transaction.
+        geoCode:
+          $ref: '#/components/schemas/geoCode'
+          description: Longitude and Latitude of the initiating Party. Can be used to detect fraud.
+        expiration:
+          $ref: '#/components/schemas/timestamp'
+          description: An optional deadline for responding to the quote request
+        individualQuotes:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schema/IndividualQuote'
+
+    bulkQuoteResponse:
+      type: object
+      description: A response to a request for a bulk quote
+      required:
+        - bulkQuoteId
+        - individualQuoteResult
+      properties:
+        bulkQuoteId:
+          $ref: '#/components/schemas/bulkQuoteId'
+          description: Id of the bulk quote this response relates to
+        expiration:
+          $ref: '#/components/schemas/timestamp'
+          description: Timestamp specifying the validity period of the bulk quotation
+        individualQuoteResults:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/IndividualQuoteResult'
+          description: Fees for each individual transaction, if any of them are charged per
+            transaction.
+    
+    IndividualQuote:
+      type: object
+      description: Data model for individual quote ina bulk quote request
+      required:
+        - quoteId
+        - transactionId
+        - to
+        - amountType
+        - amount
+        - currency
+        - transactionType
+        - initiator
+        - initiatorType
+      properties:
+        quoteId:
+          $ref: '#/components/schemas/quoteId'
+        transactionId:
+          $ref: '#/components/schemas/transactionId'
+          description: Identifier for the transaction, decided by the Payer FSP during the creation of the quote
+        to:
+          $ref: '#/components/schemas/transferParty'
+          description: Information about the Payee in the proposed financial transaction.
+        amountType:
+          $ref: '#/components/schemas/amountType'
+          description: 'SEND for send amount, RECEIVE for receive amount.'
+        amount:
+          $ref: '#/components/schemas/money'
+          description: Depending on amountType. If SEND - The amount the Payer would like to send, that is, the amount that should be withdrawn from the Payer account including any fees. The amount is updated by each participating entity in the transaction. If RECEIVE - The amount the Payee should receive, that is, the amount that should be sent to the receiver exclusive any fees. The amount is not updated by any of the participating entities.
+        currency:
+          $ref: '#/components/schemas/currency'
+        feesAmount:
+          $ref: '#/components/schemas/money'
+          description: The fees in the transaction. The fees element should be empty if fees should be non-disclosed. The fees element should be non-empty if fees should be disclosed.
+        feesCurrency:
+          $ref: '#/components/schemas/currency'
+        transactionType:
+          $ref: '#/components/schemas/transactionType'
+          description: Type of transaction for which the quote is requested.
+        initiator:
+          $ref: '#/components/schemas/initiator'
+          description: Specifies if the initiator of the transfer is the payer or payee
+        initiatorType:
+          $ref: '#/components/schemas/initiatorType'
+          description: Specifies the type of the transaction initiator
+        note:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: An optional note associated with the quote
+        
+    IndividualQuoteResult:
+      type: object
+      description: Data model for individual quote in a bulk quote response
+      properties:
+        quoteId:
+          $ref: '#/components/schemas/quoteId'
+          description: Identifies quote message.
+        transferAmount:
+          $ref: '#/components/schemas/money'
+          description: The amount of money that the Payer FSP should transfer to the Payee FSP
+        transferAmountCurrency:
+          $ref: '#/components/schemas/currency'
+          description: The currency of the transferAmount
+        payeeReceiveAmount:  
+          $ref: '#/components/schemas/money'
+          description: The amount that the Payee should receive in the end-to-end transaction. Optional as the Payee FSP might not want to disclose any optional Payee fees
+        payeeReceiveAmountCurrency:
+          $ref: '#/components/schemas/currency'
+          description: The currency of the payeeReceiveAmount
+        payeeFspFeeAmount:
+          $ref: '#/components/schemas/money'
+          description: Payee FSP’s part of the transaction fee
+        payeeFspFeeAmountCurrency:
+          $ref: '#/components/schemas/currency'      
+          description: The currency of the payeeFspFeeAmount
+        payeeFspCommissionAmount:
+          $ref: '#/components/schemas/money'
+          description: Transaction commission from the Payee FSP
+        payeeFspCommissionAmountCurrency:
+          $ref: '#/components/schemas/currency'  
+          description: Currency of the payeeFspCommissionAmount
+    
+    bulkQuoteId:
+      pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+      type: string
+      description: A Mojaloop API bulk quote identifier (UUID)
     
     bulkTransferRequest:
       type: object
