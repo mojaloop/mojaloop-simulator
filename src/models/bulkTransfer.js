@@ -65,6 +65,7 @@ module.exports = class BulkTransfer {
         const resStr = JSON.stringify(response);
 
         await this.db.get(`INSERT INTO ${bulkTransferTable} (id, request, response) VALUES (?, ?, ?)`, [bulkTransferId, reqStr, resStr]);
+
         return response;
     }
 
@@ -76,7 +77,7 @@ module.exports = class BulkTransfer {
     */
     async update(currentBulkTransferId, bulkTransferRequest) {
         const { homeTransactionId: newBulkTransferId } = bulkTransferRequest;
-        const response = { newBulkTransferId: newBulkTransferId };
+        const response = { newBulkTransferId };
         const reqStr = JSON.stringify(bulkTransferRequest);
         const resStr = JSON.stringify(response);
 

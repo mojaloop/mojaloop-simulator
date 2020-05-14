@@ -86,6 +86,7 @@ module.exports = class BulkQuote {
 
         await this.db.get(`INSERT INTO ${bulkQuoteTable} (id, request, response, created) VALUES (?, ?, ?, ?)`,
             [bulkQuoteRequest.bulkQuoteId, reqStr, resStr, created]);
+
         return response;
     }
 
