@@ -105,6 +105,19 @@ const postQuotes = async (ctx) => {
     }
 };
 
+const postBulkQuotes = async (ctx) => {
+    try {
+        const res = await ctx.state.model.bulkQuote.create(ctx.request.body);
+        ctx.state.logger.log(`postBulkQuotes is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in postBulkQuotes: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
 const postTransactionRequests = async (ctx) => {
     try {
         const res = await ctx.state.model.transactionrequest.create(ctx.request.body);
@@ -151,17 +164,20 @@ const map = {
     '/quoterequests': {
         post: postQuotes,
     },
+    '/bulkQuotes': {
+        post: postBulkQuotes,
+    },
     '/transactionrequests': {
         post: postTransactionRequests,
     },
     '/transfers': {
         post: postTransfers,
     },
-    '/otp/{requestToPayId}': {
-        get: getOTPById,
-    },
     '/bulkTransfers': {
         post: postBulkTransfers,
+    },
+    '/otp/{requestToPayId}': {
+        get: getOTPById,
     },
 };
 

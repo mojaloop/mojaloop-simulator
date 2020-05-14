@@ -34,6 +34,7 @@ const Quote = require('./quote');
 const BulkQuote = require('./bulkQuote');
 const TransactionRequest = require('./transactionrequest');
 const Transfer = require('./transfer');
+const BulkTransfer = require('./bulkTransfer');
 
 const {
     createPartyTable,
@@ -102,6 +103,7 @@ module.exports = class Model {
             this.bulkQuote = new BulkQuote(this.db);
             this.transactionrequest = new TransactionRequest(this.db);
             this.transfer = new Transfer(this.db);
+            this.bulkTransfer = new BulkTransfer(this.db);
         } catch (err) {
             throw new Error(err);
         }
