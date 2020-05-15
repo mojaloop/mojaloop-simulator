@@ -222,7 +222,7 @@ paths:
       tags:
         - BulkQuotes
       requestBody:
-        description: Request for a bulk quotation
+        description: Incoming request for a bulk quotation
         content:
           application/json:
             schema:
@@ -644,7 +644,7 @@ components:
     
     bulkQuoteRequest:
       type: object
-      description: A request for a bulk quote for bulk transfer from the DFSP backend
+      description: A request for a bulk quote
       required:
         - bulkQuoteId
         - from
@@ -690,7 +690,7 @@ components:
     
     IndividualQuote:
       type: object
-      description: Data model for individual quote ina bulk quote request
+      description: Data model for individual quote in a bulk quote request
       required:
         - quoteId
         - transactionId
@@ -779,24 +779,62 @@ components:
       type: object
       required:
         - transferId
-        - currency
-        - amount
+        - from
+        - individualTransfers
       properties:
         bulkTransferId:
           $ref: '#/components/schemas/bulkTransferId'
-        quote:
-          $ref: '#/components/schemas/quoteResponse'
+        bulkQuotes:
+          $ref: '#/components/schemas/bulkQuotesResponse'
         from:
           $ref: '#/components/schemas/transferParty'
+        individualTransfers:
+          type: array
+          maxItems: 1000
+          items:
+            $ref: '#components/schemas/IndividualTransfer'
+    
+    IndividualTransfer:
+      type: object
+      description: Data model for individual transfer in a bulk transfer request
+      required:
+        - transferId
+        - to
+        - amount
+        - currency
+      properties:
+        transferId:
+          $ref: '#/components/schemas/transferId'
+        to:
+          $ref: '#/components/schemas/transferParty'
+          description: Information about the Payee in the proposed financial transaction.
         amountType:
           $ref: '#/components/schemas/amountType'
+          description: 'SEND for send amount, RECEIVE for receive amount.'
+        amount:
+          $ref: '#/components/schemas/money'
+          description: Depending on amountType. If SEND - The amount the Payer would like to send, that is, the amount that should be withdrawn from the Payer account including any fees. The amount is updated by each participating entity in the transaction. If RECEIVE - The amount the Payee should receive, that is, the amount that should be sent to the receiver exclusive any fees. The amount is not updated by any of the participating entities.
         currency:
+          $ref: '#/components/schemas/currency'
+        feesAmount:
+          $ref: '#/components/schemas/money'
+          description: The fees in the transaction. The fees element should be empty if fees should be non-disclosed. The fees element should be non-empty if fees should be disclosed.
+        feesCurrency:
           $ref: '#/components/schemas/currency'
         transactionType:
           $ref: '#/components/schemas/transactionType'
+          description: Type of transaction for which the quote is requested.
+        initiator:
+          $ref: '#/components/schemas/initiator'
+          description: Specifies if the initiator of the transfer is the payer or payee
+        initiatorType:
+          $ref: '#/components/schemas/initiatorType'
+          description: Specifies the type of the transaction initiator
         note:
-          maxLength: 128
           type: string
+          minLength: 1
+          maxLength: 128
+          description: An optional note associated with the quote
     
     bulkTransferResponse:
       type: object

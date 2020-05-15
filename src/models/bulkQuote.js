@@ -61,7 +61,8 @@ module.exports = class BulkQuote {
    * @returns {Promise<Object>}       The BulkQuote response.
    */
     async create(bulkQuoteRequest) {
-        const individualQuoteResults = bulkQuoteRequest.individualQuote.map((quote) => {
+        const { bulkQuoteId } = bulkQuoteRequest;
+        const individualQuoteResults = bulkQuoteRequest.individualQuotes.map((quote) => {
             const fee = Math
                 .floor(Number(quote.amount) * Number(process.env.FEE_MULTIPLIER))
                 .toString();
@@ -77,7 +78,7 @@ module.exports = class BulkQuote {
             };
         });
         const response = {
-            bulkQuoteId: bulkQuoteRequest.bulkQuoteId,
+            bulkQuoteId,
             individualQuoteResults,
         };
         const reqStr = JSON.stringify(bulkQuoteRequest);
@@ -85,7 +86,7 @@ module.exports = class BulkQuote {
         const created = new Date().toISOString().slice(0, 19);
 
         await this.db.get(`INSERT INTO ${bulkQuoteTable} (id, request, response, created) VALUES (?, ?, ?, ?)`,
-            [bulkQuoteRequest.bulkQuoteId, reqStr, resStr, created]);
+            [bulkQuoteId, reqStr, resStr, created]);
 
         return response;
     }
