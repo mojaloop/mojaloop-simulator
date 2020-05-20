@@ -28,7 +28,7 @@ const {
     postTransfers,
     putTransfers,
     postBulkTransfers,
-    putBulkTransfers,
+    postBulkQuotes,
 } = require('./client');
 const { ApiErrorCodes } = require('../models/errors');
 
@@ -36,9 +36,8 @@ const supportedOperations = {
     POST_TRANSFERS: 'postTransfers',
     PUT_TRANSFERS: 'putTransfers',
     POST_BULK_TRANSFERS: 'postBulkTransfers',
-    PUT_BULK_TRANSFERS: 'putBulkTransfers',
+    POST_BULK_QUOTES: 'postBulkQuotes',
 };
-
 
 const createParty = async (ctx) => {
     if (!Object.prototype.hasOwnProperty.call(ctx.request.body, 'idValue')) {
@@ -133,7 +132,6 @@ const deleteParty = async (ctx) => {
     }
 };
 
-
 /**
  * Handles all operation scenarios
  *
@@ -185,13 +183,13 @@ const handleOps = async (logger, model, ops) => {
                 acc[op.name] = { result: response };
             }
 
-            if (op.operation === supportedOperations.PUT_BULK_TRANSFERS) {
-                if (!renderedParams.bulkTransferId) {
-                    throw new Error(`Scenario ${op.name} does not have required bulkTransferId param for putBulkTransfers operation`);
+            if (op.operation === supportedOperations.POST_BULK_QUOTES) {
+                if (!renderedParams.bulkQuoteId) {
+                    throw new Error(`Scenario ${op.name} does not have required bulkQuoteId param for postBulkQuotes operation`);
                 }
 
-                const response = await model.putBulkTransfers(
-                    renderedParams.bulkTransferId,
+                const response = await model.postBulkQuotes(
+                    renderedParams.bulkQuoteId,
                     renderedBody,
                 );
                 acc[op.name] = { result: response };
@@ -207,14 +205,13 @@ const handleOps = async (logger, model, ops) => {
     return result;
 };
 
-
 const handleScenarios = async (ctx) => {
     try {
         const res = await handleOps(ctx.state.logger, {
             postTransfers,
             putTransfers,
             postBulkTransfers,
-            putBulkTransfers,
+            postBulkQuotes,
         }, ctx.request.body);
 
         ctx.state.logger.log(`Scenario operations returned: ${util.inspect(res)}`);
@@ -248,7 +245,6 @@ const map = {
         get: readParty,
     },
 };
-
 
 module.exports = {
     map,

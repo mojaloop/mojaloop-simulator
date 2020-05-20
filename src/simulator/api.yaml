@@ -785,14 +785,14 @@ components:
         bulkTransferId:
           $ref: '#/components/schemas/bulkTransferId'
         bulkQuotes:
-          $ref: '#/components/schemas/bulkQuotesResponse'
+          $ref: '#/components/schemas/bulkQuoteResponse'
         from:
           $ref: '#/components/schemas/transferParty'
         individualTransfers:
           type: array
           maxItems: 1000
           items:
-            $ref: '#components/schemas/IndividualTransfer'
+            $ref: '#/components/schemas/IndividualTransfer'
     
     IndividualTransfer:
       type: object
@@ -866,6 +866,7 @@ components:
       type: string
       pattern: ^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$
       description: The API data type Latitude is a JSON String in a lexical format that is restricted by a regular expression for interoperability reasons.
+    
     longitude:
       type: string
       pattern: ^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$

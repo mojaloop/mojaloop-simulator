@@ -98,7 +98,7 @@ components:
     Scenario:
       title: Scenario
       type: object
-      description: An outbound transfer or bulk transfer scenario
+      description: An outbound transfer, bulk transfer or bulk quote scenario
       required:
         - name
         - operation
@@ -111,7 +111,7 @@ components:
         body:
           type: object
           description: >-
-            This object should be either a POST /transfers, PUT /transfers, POST /bulkTransfers or PUT /bulkTransfers
+            This object should be either a POST /transfers, PUT /transfers, POST /bulkTransfers or POST /bulkQuotes
             request body as per the SDK outbound API specification
         params:
           $ref: '#/components/schemas/ScenarioOperationParameters'
@@ -123,30 +123,31 @@ components:
         - postTransfers
         - putTransfers
         - postBulkTransfers
-        - putBulkTransfers
+        - postBulkQuotes
     ScenarioOperationParameters:
       description: Parameters to pass into the scenario operation
-      properties:
-        schema:
-          oneOf:
-            - type: object
-              properties:
-                transferId:
-                  type: string
-                  description: >-
-                    Transfer ID e.g. in the case of putTransfers operation this is the
-                    ID of the transfer to complete
-              required:
-                - transferId
-            - type: object
-              properties:
-                bulkTransferId:
-                  type: string
-                  description: >-
-                    Bulk transfer ID e.g. in the case of putBulkTransfers operation this is the
-                    ID of the bulk transfer to complete
-              required:
-                - bulkTransferId
+      type: object
+      oneOf:
+        - properties:
+            transferId:
+              type: string
+              description: >-
+                Transfer ID e.g. in the case of putTransfers operation this is the
+                ID of the transfer to complete
+          required:
+            - transferId
+        - properties:
+            bulkTransferId:
+              type: string
+              description: Bulk transfer ID
+          required:
+            - bulkTransferId
+        - properties:
+            bulkQuoteId:
+              type: string
+              description: Bulk quote ID
+          required:
+            - bulkQuoteId
     Party:
       title: Party
       type: object

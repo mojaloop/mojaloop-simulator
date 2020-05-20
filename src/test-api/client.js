@@ -77,26 +77,26 @@ const postBulkTransfers = async (body) => {
     return res.json();
 };
 
-
 /**
- * Endpoint call resuming outbound bulk transfers in scenarios where two-step transfers are enabled
+ * Endpoint call to outbound bulk quote request initiation
  *
- * @param {String} bulkTransferId  bulkTransferId must be a uuid
- * @returns {Promise.<Object>}     response
+ * @param {Object} body bulk quote body
+ * @returns {Promise.<Object>}  response
  */
-const putBulkTransfers = async (bulkTransferId, body) => {
-    const res = await fetch(`${OUTBOUND_ENDPOINT}/bulkTransfers/${bulkTransferId}`, {
+const postBulkQuotes = async (body) => {
+    const res = await fetch(`${OUTBOUND_ENDPOINT}/bulkQuotes`, {
+        method: 'POST',
         body: JSON.stringify(body),
         headers: { 'Content-Type': 'application/json' },
-        method: 'PUT',
     });
 
     return res.json();
 };
 
+
 module.exports = {
     postTransfers,
     putTransfers,
     postBulkTransfers,
-    putBulkTransfers,
+    postBulkQuotes,
 };
