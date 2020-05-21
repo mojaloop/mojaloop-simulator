@@ -44,6 +44,11 @@ test('Sets the basic config', async (t) => {
             mutualTLS: { enabled: false },
             creds: { ca: null, cert: null, key: null },
         },
+        ports: {
+            simulatorApi: 3000,
+            reportApi: 3002,
+            testApi: 3003,
+        },
     };
 
     // Act
