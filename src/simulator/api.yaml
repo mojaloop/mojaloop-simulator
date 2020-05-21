@@ -778,13 +778,13 @@ components:
     bulkTransferRequest:
       type: object
       required:
-        - transferId
+        - bulkTransferId
         - from
         - individualTransfers
       properties:
         bulkTransferId:
           $ref: '#/components/schemas/bulkTransferId'
-        bulkQuotes:
+        bulkQuote:
           $ref: '#/components/schemas/bulkQuoteResponse'
         from:
           $ref: '#/components/schemas/transferParty'

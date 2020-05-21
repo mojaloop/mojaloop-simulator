@@ -25,9 +25,10 @@
 const test = require('ava');
 
 const Model = require('../models/model');
+
 const {
-    transfer, quote, transactionrequest, party, newQuote, newTransfer, idType, idValue, partyCreate,
-    transferId, transactionRequestId,
+    transfer, quote, newQuote, bulkQuote, newBulkQuote, transactionrequest, party, newTransfer,
+    idType, idValue, partyCreate, transferId, transactionRequestId,
 } = require('./constants');
 
 test.beforeEach(async (t) => {
@@ -61,6 +62,7 @@ test('create and retrieve all parties', async (t) => {
     }
     t.pass();
 });
+
 test('create and retrieve all parties duplicates', async (t) => {
     const { model } = t.context;
     await model.party.create(partyCreate);
@@ -142,7 +144,6 @@ test('should be undefined for deleted participant', async (t) => {
     t.is(deleted, undefined);
 });
 
-
 test('create a quote', async (t) => {
     await t.context.model.quote.create(quote);
     t.pass();
@@ -159,7 +160,6 @@ test('create and retrieve a quote', async (t) => {
     t.pass();
 });
 
-
 test('created quote has correct fees', async (t) => {
     const { model } = t.context;
 
@@ -174,7 +174,6 @@ test('created quote has correct fees', async (t) => {
 
     return t.pass();
 });
-
 
 test('created quote has correct fees when transfer amount is small', async (t) => {
     const { model } = t.context;
@@ -194,7 +193,6 @@ test('created quote has correct fees when transfer amount is small', async (t) =
     return t.pass();
 });
 
-
 test('create and update a quote', async (t) => {
     const { model } = t.context;
 
@@ -213,6 +211,80 @@ test('create and delete a quote', async (t) => {
     const deleted = await model.quote.get(idValue);
     t.is(deleted, undefined);
 });
+
+
+test('create a bulk quote', async (t) => {
+    await t.context.model.bulkQuote.create({ ...bulkQuote });
+    t.pass();
+});
+
+test('create and retrieve a bulk quote', async (t) => {
+    const { model } = t.context;
+
+    await model.bulkQuote.create({ ...bulkQuote });
+    const res = await model.bulkQuote.get(idValue);
+    if (!res) {
+        t.fail('Result not found');
+    }
+    t.pass();
+});
+
+test('created bulk quote has correct fees', async (t) => {
+    const { model } = t.context;
+
+    const bq = await model.bulkQuote.create({ ...bulkQuote });
+
+    const q = bq.individualQuoteResults[0];
+
+    if (q.payeeFspFeeAmount !== '5') {
+        return t.fail(`Fee is ${q.payeeFspFeeAmount}`);
+    }
+    if (q.payeeFspCommissionAmount !== '5') {
+        return t.fail(`Fee is ${q.payeeFspCommissionAmount}`);
+    }
+
+    return t.pass();
+});
+
+test('created bulk quote has correct fees when transfer amounts is small', async (t) => {
+    const { model } = t.context;
+
+    const smq = { ...bulkQuote };
+    smq.individualQuotes[0].amount = 1;
+
+    const bq = await model.bulkQuote.create(smq);
+
+    const q = bq.individualQuoteResults[0];
+
+    if (q.payeeFspFeeAmount !== '0') {
+        return t.fail(`Fee is ${q.payeeFspFeeAmount}`);
+    }
+    if (q.payeeFspCommissionAmount !== '0') {
+        return t.fail(`Fee is ${q.payeeFspCommissionAmount}`);
+    }
+
+    return t.pass();
+});
+
+test('create and update a bulk quote', async (t) => {
+    const { model } = t.context;
+
+    await model.bulkQuote.create({ ...bulkQuote });
+    const orig = await model.bulkQuote.get(idValue);
+    await model.bulkQuote.update(idValue, { ...newBulkQuote });
+    const changed = await model.bulkQuote.get(idValue);
+    t.notDeepEqual({ orig }, { changed });
+});
+
+test('create and delete a bulk quote', async (t) => {
+    const { model } = t.context;
+    await model.bulkQuote.create({ ...bulkQuote });
+    await model.bulkQuote.get(idValue);
+    await model.bulkQuote.delete(idValue);
+    const deleted = await model.bulkQuote.get(idValue);
+    t.is(deleted, undefined);
+});
+
 
 test('create a transfer', async (t) => {
     await t.context.model.transfer.create(transfer);
