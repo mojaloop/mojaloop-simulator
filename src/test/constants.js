@@ -18,6 +18,9 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Mowali
+
+ * ModusBox <https://modusbox.com>
+ - Steven Oderayi <steven.oderayi@modusbox.com>
  --------------
  ******/
 'use strict';

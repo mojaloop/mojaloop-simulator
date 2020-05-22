@@ -19,6 +19,9 @@
  - Name Surname <name.surname@gatesfoundation.com>
  * Vessels Tech
  - Lewis Daly <lewis@vesselstech.com>
+
+ * ModusBox <https://modusbox.com>
+ - Steven Oderayi <steven.oderayi@modusbox.com>
  --------------
  ******/
 'use strict';
