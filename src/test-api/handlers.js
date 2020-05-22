@@ -184,14 +184,7 @@ const handleOps = async (logger, model, ops) => {
             }
 
             if (op.operation === supportedOperations.POST_BULK_QUOTES) {
-                if (!renderedParams.bulkQuoteId) {
-                    throw new Error(`Scenario ${op.name} does not have required bulkQuoteId param for postBulkQuotes operation`);
-                }
-
-                const response = await model.postBulkQuotes(
-                    renderedParams.bulkQuoteId,
-                    renderedBody,
-                );
+                const response = await model.postBulkQuotes(renderedBody);
                 acc[op.name] = { result: response };
             }
         } catch (error) {
