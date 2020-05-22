@@ -225,9 +225,11 @@ test('create and retrieve a bulk quote', async (t) => {
 
     await model.bulkQuote.create(cloneDeep(bulkQuote));
     const res = await model.bulkQuote.get(idValue);
+
     if (!res) {
         t.fail('Result not found');
     }
+
     t.pass();
 });
 
@@ -235,7 +237,6 @@ test('created bulk quote has correct fees', async (t) => {
     const { model } = t.context;
 
     const bq = await model.bulkQuote.create(cloneDeep(bulkQuote));
-
     const q = bq.individualQuoteResults[0];
 
     if (q.payeeFspFeeAmount !== '5') {
@@ -253,9 +254,7 @@ test('created bulk quote has correct fees when transfer amounts is small', async
 
     const smq = cloneDeep(bulkQuote);
     smq.individualQuotes[0].amount = 1;
-
     const bq = await model.bulkQuote.create(smq);
-
     const q = bq.individualQuoteResults[0];
 
     if (q.payeeFspFeeAmount !== '0') {

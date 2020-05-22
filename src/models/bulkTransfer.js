@@ -1,7 +1,7 @@
 /*****
  License
  --------------
- Copyright © 2017 Bill & Melinda Gates Foundation
+ Copyright © 2020 Bill & Melinda Gates Foundation
  The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
  http://www.apache.org/licenses/LICENSE-2.0
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
@@ -23,8 +23,8 @@
 'use strict';
 
 /**
- * @file Simulator resources Transfer model
- * @description Defines the transfer model structure and operations within the simulator.
+ * @file Simulator resources BulkTransfer model
+ * @description Defines the bulk transfer model structure and operations within the simulator.
  */
 const { bulkTransferTable } = require('./constants');
 require('dotenv').config();
@@ -56,7 +56,7 @@ module.exports = class BulkTransfer {
     *
     * @async
     * @param {Object} bulkTransferRequest  The bulk transfer request object.
-    * @returns {Promise<Object>}       Bulk Transfer response.
+    * @returns {Promise<Object>}       BulkTransfer response.
     */
     async create(bulkTransferRequest) {
         const { bulkTransferId } = bulkTransferRequest;
@@ -73,7 +73,7 @@ module.exports = class BulkTransfer {
     * Updates a bulk transfer
     *
     * @param {String} bulkTransferId       The current bulk transfer id.
-    * @param {Object} BulkTansferRequest   The new bulk transfer object.
+    * @param {Object} BulkTansferRequest   The new BulkTransfer object.
     */
     async update(currentBulkTransferId, bulkTransferRequest) {
         const { homeTransactionId: newBulkTransferId } = bulkTransferRequest;
@@ -88,7 +88,7 @@ module.exports = class BulkTransfer {
     }
 
     /**
-    * Deletes a transfer.
+    * Deletes a bulk transfer.
     *
     * @async
     * @param {String} bulkTransferId The bulk transfer id.
