@@ -307,6 +307,7 @@ module.exports = {
     transferWithoutQuote,
     bulkTransfer,
     newBulkTransfer,
+    bulkTransferId,
     quote,
     newQuote,
     bulkQuote,

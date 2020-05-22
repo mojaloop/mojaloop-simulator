@@ -28,10 +28,9 @@ const Model = require('../models/model');
 const { map } = require('../simulator/handlers');
 const {
     transfer, transferWithoutQuote, quote, transactionrequest, party, idType, idValue,
-    transactionRequestId,
+    transactionRequestId, bulkQuote,
 } = require('./constants');
 const { ApiErrorCodes } = require('../models/errors');
-
 
 test.beforeEach(async (t) => {
     const model = new Model();
@@ -69,6 +68,43 @@ test('create a quote', async (t) => {
     await map['/quoterequests'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
+});
+
+test('create a bulk quote', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: { ...bulkQuote } };
+    await map['/bulkQuotes'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('should return 500 while posting a non valid bulk quote object', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: { hello: 'world' } };
+    await map['/bulkQuotes'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 500);
+});
+
+test('postBulkQuotes should handle 500 errors', async (t) => {
+    // Arrange
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { idValue, idType } };
+    // eslint-disable-next-line no-throw-literal, no-param-reassign
+    t.context.state.model.bulkQuote.create = () => { throw 'Bad error!'; };
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: { ...bulkQuote } };
+
+    const expected = {
+        body: ApiErrorCodes.SERVER_ERROR,
+        status: 500,
+    };
+
+    // Act
+    await map['/bulkQuotes'].post(t.context);
+    // Assert
+    t.deepEqual(t.context.response, expected, 'Response did not match expected');
+    t.pass();
 });
 
 test('create a transfer', async (t) => {
@@ -153,7 +189,6 @@ test('should return a valid health check', async (t) => {
     // Assert
     t.deepEqual(t.context.response, expected, 'Response did not match expected');
 });
-
 
 test('postQuotes should handle 500 errors', async (t) => {
     // Arrange
