@@ -273,7 +273,7 @@ test('create and update a bulk quote', async (t) => {
 
     await model.bulkQuote.create(cloneDeep(bulkQuote));
     const orig = await model.bulkQuote.get(idValue);
-    await model.bulkQuote.update(idValue, { ...newBulkQuote });
+    await model.bulkQuote.update(idValue, cloneDeep(newBulkQuote));
     const changed = await model.bulkQuote.get(idValue);
     t.notDeepEqual({ orig }, { changed });
 });
@@ -325,7 +325,7 @@ test('create and delete a transfer', async (t) => {
 test('create and retrieve a bulk transfer', async (t) => {
     const { model } = t.context;
 
-    await model.bulkTransfer.create({ ...bulkTransfer });
+    await model.bulkTransfer.create(cloneDeep(bulkTransfer));
     const res = await model.bulkTransfer.get(bulkTransferId);
     if (!res) {
         t.fail('Result not found');
@@ -336,16 +336,16 @@ test('create and retrieve a bulk transfer', async (t) => {
 test('create and update a bulk transfer', async (t) => {
     const { model } = t.context;
 
-    await model.bulkTransfer.create({ ...bulkTransfer });
+    await model.bulkTransfer.create(cloneDeep(bulkTransfer));
     const orig = await model.bulkTransfer.get(idValue);
-    await model.bulkTransfer.update(idValue, { ...newBulkTransfer });
+    await model.bulkTransfer.update(idValue, cloneDeep(newBulkTransfer));
     const changed = await model.bulkTransfer.get(idValue);
     t.notDeepEqual({ orig }, { changed });
 });
 
 test('create and delete a bulkTransfer', async (t) => {
     const { model } = t.context;
-    await model.bulkTransfer.create({ ...bulkTransfer });
+    await model.bulkTransfer.create(cloneDeep(bulkTransfer));
     await model.bulkTransfer.get(bulkTransferId);
     await model.bulkTransfer.delete(bulkTransferId);
     const deleted = await model.bulkTransfer.get(bulkTransferId);

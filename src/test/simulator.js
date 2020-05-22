@@ -23,12 +23,12 @@
 'use strict';
 
 const test = require('ava');
-
+const { cloneDeep } = require('./unit/TestUtils');
 const Model = require('../models/model');
 const { map } = require('../simulator/handlers');
 const {
     transfer, transferWithoutQuote, quote, transactionrequest, party, idType, idValue,
-    transactionRequestId, bulkQuote,
+    transactionRequestId, bulkQuote, bulkTransfer,
 } = require('./constants');
 const { ApiErrorCodes } = require('../models/errors');
 
@@ -72,7 +72,7 @@ test('create a quote', async (t) => {
 
 test('create a bulk quote', async (t) => {
     // eslint-disable-next-line no-param-reassign
-    t.context.request = { body: { ...bulkQuote } };
+    t.context.request = { body: cloneDeep(bulkQuote) };
     await map['/bulkQuotes'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
@@ -93,7 +93,7 @@ test('postBulkQuotes should handle 500 errors', async (t) => {
     // eslint-disable-next-line no-throw-literal, no-param-reassign
     t.context.state.model.bulkQuote.create = () => { throw 'Bad error!'; };
     // eslint-disable-next-line no-param-reassign
-    t.context.request = { body: { ...bulkQuote } };
+    t.context.request = { body: cloneDeep(bulkQuote) };
 
     const expected = {
         body: ApiErrorCodes.SERVER_ERROR,
@@ -111,6 +111,14 @@ test('create a transfer', async (t) => {
     // eslint-disable-next-line no-param-reassign
     t.context.request = { body: transfer };
     await map['/transfers'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('create a bulk transfer', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: cloneDeep(bulkTransfer) };
+    await map['/bulkTransfers'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
 });
@@ -162,6 +170,14 @@ test('should return 500 while posting a non valid transfer object', async (t) =>
     // eslint-disable-next-line no-param-reassign
     t.context.request = { body: { hello: 'world' } };
     await map['/transfers'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 500);
+});
+
+test('should return 500 while posting a non valid bulk transfer object', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: { hello: 'world' } };
+    await map['/bulkTransfers'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 500);
 });
