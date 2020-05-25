@@ -22,6 +22,7 @@
  ******/
 'use strict';
 
+const partyAccountsTable = 'account';
 const partyTable = 'party';
 const quoteTable = 'quote';
 const transactionRequestTable = 'transactionRequest';
@@ -78,6 +79,16 @@ CREATE TABLE IF NOT EXISTS ${transferTable} (
 )
 `;
 
+const createAccountTable = `
+CREATE TABLE IF NOT EXISTS ${partyAccountsTable} (
+    address TEXT NOT NULL PRIMARY KEY,
+    currency TEXT NOT NULL,
+    description TEXT NOT NULL,
+    idValue TEXT NOT NULL,
+    FOREIGN KEY (idValue) REFERENCES party(idValue) ON DELETE CASCADE
+)
+`;
+
 module.exports = {
     partyTable,
     quoteTable,
@@ -89,4 +100,6 @@ module.exports = {
     transferTable,
     partyExtensionTable,
     createPartyExtensionTable,
+    partyAccountsTable,
+    createAccountTable,
 };
