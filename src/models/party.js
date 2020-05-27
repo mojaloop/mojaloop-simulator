@@ -172,12 +172,10 @@ module.exports = class Party {
         }
         if (party.accounts) {
             const { accounts } = party;
-            accounts.forEach((account) => {
-                this.db.get(`
-              INSERT INTO ${partyAccountsTable} (idValue, address, currency, description)
-              VALUES (?, ?, ?, ?)`,
-                [idValue, account.address, account.currency, account.description]);
-            });
+            await Promise.all(accounts.map(async (account) => this.db.get(`
+                  INSERT INTO ${partyAccountsTable} (idValue, address, currency, description)
+                  VALUES (?, ?, ?, ?)`,
+            [idValue, account.address, account.currency, account.description])));
         }
     }
 
@@ -221,12 +219,10 @@ module.exports = class Party {
         }
         if (newParty.accounts) {
             const { accounts } = newParty;
-            accounts.forEach((account) => {
-                this.db.run(`
-                INSERT OR IGNORE INTO ${partyAccountsTable} (idValue, address, currency, description)
-                VALUES (?, ?, ?, ?);`,
-                [idValue, account.address, account.currency, account.description]);
-            });
+            await Promise.all(accounts.map(async (account) => this.db.run(`
+                  INSERT OR IGNORE INTO ${partyAccountsTable} (idValue, address, currency, description)
+                  VALUES (?, ?, ?, ?);`,
+            [idValue, account.address, account.currency, account.description])));
         }
     }
 
