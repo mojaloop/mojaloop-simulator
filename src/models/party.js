@@ -28,7 +28,7 @@
  * @description Defines the party model structure and operations within the simulator.
  */
 
-const { partyTable, partyExtensionTable } = require('./constants');
+const { partyTable, partyExtensionTable, partyAccountsTable } = require('./constants');
 
 
 /**
@@ -51,7 +51,12 @@ module.exports = class Party {
     */
 
     async get(idType, idValue) {
-        const res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, pe.key, pe.value  FROM ${partyTable} p LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue WHERE p.idType = ? AND p.idValue = ?`, [idType, idValue]);
+        const res = await this.db.all(`
+          SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, pe.key, pe.value, pa.address, pa.currency, pa.description
+          FROM ${partyTable} p
+          LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue
+          LEFT JOIN ${partyAccountsTable} pa ON p.idValue = pa.idValue
+          WHERE p.idType = ? AND p.idValue = ?`, [idType, idValue]);
         const resultMap = {};
         res.forEach((row) => {
             let party;
@@ -74,6 +79,16 @@ module.exports = class Party {
                     party.extensionList = [];
                 }
                 party.extensionList.push({ key: row.key, value: row.value });
+            }
+            if (row.address) {
+                if (!party.accounts) {
+                    party.accounts = [];
+                }
+                party.accounts.push({
+                    address: row.address,
+                    currency: row.currency,
+                    description: row.description,
+                });
             }
         });
         if (res.length && res.length > 0) {
@@ -89,7 +104,11 @@ module.exports = class Party {
     * @returns {Promise<Object>} Party object.
     */
     async getAll() {
-        const res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, pe.key, pe.value  FROM ${partyTable} p LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue`);
+        const res = await this.db.all(`
+           SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, pe.key, pe.value, pa.address, pa.currency, pa.description
+           FROM ${partyTable} p
+           LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue
+           LEFT JOIN ${partyAccountsTable} pa ON p.idValue = pa.idValue`);
         const resultMap = {};
         res.forEach((row) => {
             let party;
@@ -112,6 +131,16 @@ module.exports = class Party {
                     party.extensionList = [];
                 }
                 party.extensionList.push({ key: row.key, value: row.value });
+            }
+            if (row.address) {
+                if (!party.accounts) {
+                    party.accounts = [];
+                }
+                party.accounts.push({
+                    address: row.address,
+                    currency: row.currency,
+                    description: row.description,
+                });
             }
         });
         return Object.values(resultMap);
@@ -140,6 +169,13 @@ module.exports = class Party {
               VALUES (?, ?, ?)`,
                 [idValue, extension.key, extension.value]);
             });
+        }
+        if (party.accounts) {
+            const { accounts } = party;
+            await Promise.all(accounts.map(async (account) => this.db.get(`
+                  INSERT INTO ${partyAccountsTable} (idValue, address, currency, description)
+                  VALUES (?, ?, ?, ?)`,
+            [idValue, account.address, account.currency, account.description])));
         }
     }
 
@@ -180,6 +216,13 @@ module.exports = class Party {
                 VALUES (?, ?, ?)`,
                 [idValue, extension.key, extension.value]);
             });
+        }
+        if (newParty.accounts) {
+            const { accounts } = newParty;
+            await Promise.all(accounts.map(async (account) => this.db.run(`
+                  INSERT OR IGNORE INTO ${partyAccountsTable} (idValue, address, currency, description)
+                  VALUES (?, ?, ?, ?);`,
+            [idValue, account.address, account.currency, account.description])));
         }
     }
 

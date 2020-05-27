@@ -64,6 +64,18 @@ const partyCreate = {
             value: '12345343',
         },
     ],
+    accounts: [
+        {
+            currency: 'USD',
+            description: 'savings',
+            address: 'moja.blue.8f027046-b82a-4fa9-838b-514514543785',
+        },
+        {
+            currency: 'USD',
+            description: 'checking',
+            address: 'moja.blue.8f027046-b82a-4fa9-838b-70210fcf8137',
+        },
+    ],
 };
 
 

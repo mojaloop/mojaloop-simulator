@@ -173,6 +173,8 @@ components:
           maxLength: 128
         extensionList:
           $ref: '#/components/schemas/ExtensionList'
+        accounts:
+          $ref: '#/components/schemas/AccountList'
     Extension:
       type: object
       required:
@@ -193,6 +195,30 @@ components:
         $ref: '#/components/schemas/Extension'
       title: ExtensionList
       description: Data model for the complex type ExtensionList
+    Account:
+      type: object
+      required:
+        - address
+        - currency
+        - description
+      properties:
+        address:
+          type: string
+          description: The routable address of this account.
+        currency:
+          type: string
+          description: The currency of the account.
+        description:
+          type: string
+          description: The name of the account.
+      title: Account
+      description: Data model for the complex type Account
+    AccountList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Account'
+      title: AccountList
+      description: Data model for the complex type accountList
     idType:
       type: string
       enum:

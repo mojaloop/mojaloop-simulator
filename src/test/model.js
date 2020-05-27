@@ -103,6 +103,18 @@ test('create and update a party', async (t) => {
                 value: '12345343',
             },
         ],
+        accounts: [
+            {
+                currency: 'USD',
+                description: 'savings',
+                address: 'moja.blue.8f027046-b82a-4fa9-838b-100000000000',
+            },
+            {
+                currency: 'USD',
+                description: 'savings',
+                address: 'moja.blue.8f027046-b82a-4fa9-838b-200000000000',
+            },
+        ],
     };
     await model.party.create(partyCreate);
     const orig = await model.party.get(idType, idValue);
