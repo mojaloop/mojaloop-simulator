@@ -247,6 +247,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/errorResponse'
 
+  /bulkQuotes/{idValue}:
+    get:
+      summary: Requests information relating to a bulk quote identified by the specified identifier value
+      tags:
+        - BulkQuotes
+      parameters:
+        - name: idValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idValue'
+      responses:
+        200:
+          description: Response containing details of the requested bulk quote
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bulkQuoteResponse'
+        404:
+          description: The bulk quote specified by the provided identifier value is not known to the server
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
   /bulkTransfers:
     post:
       summary: Execute bulk transfer of funds from an external account to internal accounts
@@ -265,6 +298,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/bulkTransferResponse'
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
+  /bulkTransfers/{idValue}:
+    get:
+      summary: Requests information relating to a bulk transfer identified by the specified identifier value
+      tags:
+        - BulkTransfers
+      parameters:
+        - name: idValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idValue'
+      responses:
+        200:
+          description: Response containing details of the requested bulk transfer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bulkTransferResponse'
+        404:
+          description: The bulk transfer specified by the provided identifier value is not known to the server
         400:
           description: Malformed or missing required headers or parameters
           content:
@@ -673,7 +739,7 @@ components:
       description: A response to a request for a bulk quote
       required:
         - bulkQuoteId
-        - individualQuoteResult
+        - individualQuoteResults
       properties:
         bulkQuoteId:
           $ref: '#/components/schemas/bulkQuoteId'
@@ -844,9 +910,19 @@ components:
       required:
         - homeTransactionId
       properties:
+        bulkTransferId:
+          $ref: '#/components/schemas/bulkTransferId'
         homeTransactionId:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the switch and DFSP backend systems
+        from:
+          $ref: '#/components/schemas/transferParty'
+        individualTransfers:
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/IndividualTransfer'
 
     bulkTransferId:
       pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
