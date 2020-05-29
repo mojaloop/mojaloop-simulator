@@ -42,8 +42,17 @@ defaults_build_docker_publish: &defaults_build_docker_publish
   command: |
     echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
     docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
-    echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
-    docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+    case "$CIRCLE_TAG" in
+      *-pisp*)
+        # Don't update `late5t` for an image that has a `-pisp`
+        echo 'skipping late5t tag'
+        exit 0
+        ;;
+      *)
+        echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
+        docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+        ;;
+    esac
 
 defaults_deploy_config_kubernetes_cluster: &defaults_deploy_config_kubernetes_cluster
   name: Configure Kubernetes cluster
@@ -118,7 +127,7 @@ defaults_license_scanner: &defaults_license_scanner
 
 
 # defaults_working_directory: &defaults_working_directory
-#   # The working directory for this project (place where package.json is) is /src, 
+#   # The working directory for this project (place where package.json is) is /src,
 #   # as opposed to the project root
 #   working_directory: /home/circleci/project/git
 
@@ -132,7 +141,7 @@ defaults_slack_announcement: &defaults_slack_announcement
       -d "{\"text\": \"*${CIRCLE_PROJECT_REPONAME}* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
 
 src_working_directory: &src_working_directory
-  # The working directory for this project (place where package.json is) is /src, 
+  # The working directory for this project (place where package.json is) is /src,
   # as opposed to the project root
   working_directory: /home/circleci/project/git/src
 
@@ -145,7 +154,7 @@ src_working_directory: &src_working_directory
 executors:
   default-docker:
     working_directory: /home/circleci/project/git
-    docker: 
+    docker:
       - image: node:12.16.0-alpine
 
   default-machine:
@@ -155,7 +164,7 @@ executors:
 
   helm-kube:
     working_directory: /home/circleci/project
-    docker: 
+    docker:
       - image: hypnoglow/kubernetes-helm
 
 ##
@@ -273,7 +282,7 @@ jobs:
           <<: *src_working_directory
       - run:
           name: Check for new npm vulnerabilities
-          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json 
+          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
           <<: *src_working_directory
       - store_artifacts:
           path: ./src/audit/results
@@ -418,7 +427,7 @@ jobs:
             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
-        
+
             # TODO: Enable this when we want to increase the strictness of our security policies
             # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
             # if [ $failCount -gt 0 ]; then
@@ -451,7 +460,7 @@ jobs:
           <<: *defaults_build_docker_publish
       - run:
           <<: *defaults_slack_announcement
-        
+
   # deploy:
   #   executor: helm-kube
   #   steps:
@@ -477,7 +486,7 @@ jobs:
   #     - run:
   #         <<: *defaults_deploy_install_or_upgrade_helm_chart
 
- 
+
 ##
 # Workflows
 #
@@ -550,7 +559,7 @@ workflows:
             - audit-licenses
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?(\-pisp)/
             branches:
               ignore:
                 - /.*/
@@ -560,7 +569,7 @@ workflows:
             - build
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?(\-pisp)/
             branches:
               ignore:
                 - /.*/
@@ -570,7 +579,7 @@ workflows:
             - build
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?(\-pisp)/
             branches:
               ignore:
                 - /.*/
@@ -581,7 +590,7 @@ workflows:
             - image-scan
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?(\-pisp)/
             branches:
               ignore:
                 - /.*/
