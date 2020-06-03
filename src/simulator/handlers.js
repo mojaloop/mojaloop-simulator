@@ -121,7 +121,7 @@ const postBulkQuotes = async (ctx) => {
 const getBulkQuoteById = async (ctx) => {
     try {
         const { idValue } = ctx.state.path.params;
-        const res = await ctx.state.model.bulkQuotes.get(idValue);
+        const res = await ctx.state.model.bulkQuote.get(idValue);
         if (!res) {
             ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
             ctx.response.status = 404;
@@ -164,7 +164,7 @@ const postBulkTransfers = async (ctx) => {
 const getBulkTransferById = async (ctx) => {
     try {
         const { idValue } = ctx.state.path.params;
-        const res = await ctx.state.model.bulkTransfers.get(idValue);
+        const res = await ctx.state.model.bulkTransfer.get(idValue);
         if (!res) {
             ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
             ctx.response.status = 404;
