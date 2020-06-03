@@ -71,6 +71,7 @@ const partyCreate = {
     ],
 };
 
+
 const quote = {
     quoteId: idValue,
     transactionId: uuid(),
@@ -298,6 +299,7 @@ const transferWithoutQuote = {
     currency,
     amount,
 };
+
 
 test('constants', async (t) => {
     // to avoid test warnings

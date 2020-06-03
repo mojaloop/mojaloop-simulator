@@ -30,6 +30,7 @@ require('dotenv').config();
 const { getStackOrInspect } = require('@internal/log');
 const { ApiErrorCodes } = require('../models/errors.js');
 
+
 const getParticipantsByTypeAndId = async (ctx) => {
     try {
         const { idValue, idType } = ctx.state.path.params;
@@ -46,6 +47,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
         ctx.response.status = 500;
     }
 };
+
 
 const getPartiesByTypeAndId = async (ctx) => {
     // TODO: check that the provided type was MSISDN? Or just encode that in the API spec..
@@ -78,6 +80,7 @@ const getOTPById = async (ctx) => {
     }
 };
 
+
 const postTransfers = async (ctx) => {
     try {
         const res = await ctx.state.model.transfer.create(ctx.request.body);
@@ -90,6 +93,7 @@ const postTransfers = async (ctx) => {
         ctx.response.status = 500;
     }
 };
+
 
 const postQuotes = async (ctx) => {
     try {
@@ -183,6 +187,7 @@ const healthCheck = async (ctx) => {
     ctx.response.body = '';
 };
 
+
 const map = {
     '/': {
         get: healthCheck,
@@ -218,6 +223,7 @@ const map = {
         get: getOTPById,
     },
 };
+
 
 module.exports = {
     map,

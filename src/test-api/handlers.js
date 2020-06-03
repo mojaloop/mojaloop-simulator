@@ -39,6 +39,7 @@ const supportedOperations = {
     POST_BULK_QUOTES: 'postBulkQuotes',
 };
 
+
 const createParty = async (ctx) => {
     if (!Object.prototype.hasOwnProperty.call(ctx.request.body, 'idValue')) {
         ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
@@ -132,6 +133,7 @@ const deleteParty = async (ctx) => {
     }
 };
 
+
 /**
  * Handles all operation scenarios
  *
@@ -198,6 +200,7 @@ const handleOps = async (logger, model, ops) => {
     return result;
 };
 
+
 const handleScenarios = async (ctx) => {
     try {
         const res = await handleOps(ctx.state.logger, {
@@ -238,6 +241,7 @@ const map = {
         get: readParty,
     },
 };
+
 
 module.exports = {
     map,
