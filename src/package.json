@@ -68,9 +68,6 @@
     "files": [
       "test/**/*.js",
       "!test/**/TestUtils.js"
-    ],
-    "environmentVariables": {
-      "FEE_MULTIPLIER": "0.05"
-    }
+    ]
   }
 }
