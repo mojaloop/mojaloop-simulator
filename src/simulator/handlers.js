@@ -18,6 +18,9 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Mowali
+
+ * ModusBox
+ - Steven Oderayi <steven.oderayi@modusbox.com>
  --------------
  ******/
 'use strict';
@@ -105,6 +108,37 @@ const postQuotes = async (ctx) => {
     }
 };
 
+const postBulkQuotes = async (ctx) => {
+    try {
+        const res = await ctx.state.model.bulkQuote.create(ctx.request.body);
+        ctx.state.logger.log(`postBulkQuotes is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in postBulkQuotes: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
+
+const getBulkQuoteById = async (ctx) => {
+    try {
+        const { idValue } = ctx.state.path.params;
+        const res = await ctx.state.model.bulkQuote.get(idValue);
+        if (!res) {
+            ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
+            ctx.response.status = 404;
+            return;
+        }
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
 const postTransactionRequests = async (ctx) => {
     try {
         const res = await ctx.state.model.transactionrequest.create(ctx.request.body);
@@ -118,6 +152,35 @@ const postTransactionRequests = async (ctx) => {
     }
 };
 
+const postBulkTransfers = async (ctx) => {
+    try {
+        const res = await ctx.state.model.bulkTransfer.create(ctx.request.body);
+        ctx.state.logger.log(`postBulkTransfers is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in postBulkTransfers: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
+const getBulkTransferById = async (ctx) => {
+    try {
+        const { idValue } = ctx.state.path.params;
+        const res = await ctx.state.model.bulkTransfer.get(idValue);
+        if (!res) {
+            ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
+            ctx.response.status = 404;
+            return;
+        }
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
 
 const healthCheck = async (ctx) => {
     ctx.response.status = 200;
@@ -138,11 +201,23 @@ const map = {
     '/quoterequests': {
         post: postQuotes,
     },
+    '/bulkQuotes': {
+        post: postBulkQuotes,
+    },
+    '/bulkQuotes/{idValue}': {
+        get: getBulkQuoteById,
+    },
     '/transactionrequests': {
         post: postTransactionRequests,
     },
     '/transfers': {
         post: postTransfers,
+    },
+    '/bulkTransfers': {
+        post: postBulkTransfers,
+    },
+    '/bulkTransfers/{idValue}': {
+        get: getBulkTransferById,
     },
     '/otp/{requestToPayId}': {
         get: getOTPById,

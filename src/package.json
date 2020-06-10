@@ -1,12 +1,13 @@
 {
   "name": "mojaloop-simulator",
-  "version": "9.4.1",
+  "version": "10.4.0",
   "description": "A canonical test example implementation of the parties, transfers and quotes resources of  the Mojaloop API",
   "license": "Apache-2.0",
   "main": "index.js",
   "author": "Matt Kingston, ModusBox Inc.",
   "contributors": [
     "Matt Kingston <matt.kingston@modusbox.com>",
+    "Steven Oderayi <steven.oderayi@modusbox.com>",
     "ModusBox",
     "Mowali"
   ],

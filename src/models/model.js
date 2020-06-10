@@ -31,13 +31,17 @@
 const sqlite = require('sqlite');
 const Party = require('./party');
 const Quote = require('./quote');
+const BulkQuote = require('./bulkQuote');
 const TransactionRequest = require('./transactionrequest');
 const Transfer = require('./transfer');
+const BulkTransfer = require('./bulkTransfer');
 
 const {
     createPartyTable,
-    createTransferTable,
     createQuoteTable,
+    createBulkQuoteTable,
+    createTransferTable,
+    createBulkTransferTable,
     createTransactionRequestTable,
     createPartyExtensionTable,
 } = require('./constants');
@@ -54,8 +58,10 @@ module.exports = class Model {
         this.db = null;
         this.party = null;
         this.quote = null;
+        this.bulkQuote = null;
         this.transactionrequest = null;
         this.transfer = null;
+        this.bulkTransfer = null;
     }
 
     /**
@@ -89,11 +95,15 @@ module.exports = class Model {
             await this.db.run(createTransactionRequestTable);
             await this.db.run(createTransferTable);
             await this.db.run(createPartyExtensionTable);
+            await this.db.run(createBulkQuoteTable);
+            await this.db.run(createBulkTransferTable);
 
             this.party = new Party(this.db);
             this.quote = new Quote(this.db);
+            this.bulkQuote = new BulkQuote(this.db);
             this.transactionrequest = new TransactionRequest(this.db);
             this.transfer = new Transfer(this.db);
+            this.bulkTransfer = new BulkTransfer(this.db);
         } catch (err) {
             throw new Error(err);
         }
