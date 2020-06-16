@@ -92,6 +92,8 @@ jobs:
       - restore_cache:
           keys:
             - dependency-cache-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
       - run:
           name: Execute linting pass
           command: cd src && npm run lint
@@ -111,15 +113,17 @@ jobs:
     executor: default-docker
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
       - run:
           name: Install AWS CLI dependencies
           command: *defaults_awsCliDependencies
-      - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "src/package-lock.json" }}
       - run:
           name: Execute code coverage check
           command: cd src && npm -s run test:coverage-check
@@ -143,11 +147,14 @@ jobs:
     executor: default-docker
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - restore_cache:
-          key: dependency-cache-{{ checksum "src/package-lock.json" }}
       - run:
           name: Create dir for test results
           command: mkdir -p ./audit/results
@@ -162,13 +169,16 @@ jobs:
     executor: default-docker
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - dependency-cache-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
       - run:
           <<: *defaults_license_scanner
-      - restore_cache:
-          key: dependency-cache-{{ checksum "src/package-lock.json" }}
       - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
