@@ -102,10 +102,10 @@ jobs:
           command: cd src && npm run lint
       - run:
           name: Create dir for test results
-          command: pwd && mkdir -p ./test/results
+          command: mkdir -p ./test/results
       - run:
           name: Execute unit tests
-          command: pwd && npm run test > ../test/results/results.txt
+          command: cd src && npm run test > ../test/results/results.txt
       - store_artifacts:
           path: ./test/results
           prefix: test
