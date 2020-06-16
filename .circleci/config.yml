@@ -73,6 +73,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Print working directory
+          command: pwd
+      - run:
           name: Install general dependencies
           command: *defaults_Dependencies
       - run:
