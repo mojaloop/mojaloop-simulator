@@ -40,6 +40,11 @@ defaults_license_scanner: &defaults_license_scanner
     git clone https://github.com/mojaloop/license-scanner /tmp/license-scanner
     cd /tmp/license-scanner && make build default-files set-up
 
+src_working_directory: &src_working_directory
+  # The working directory for this project (place where package.json is) is /src,
+  # as opposed to the project root
+  working_directory: /home/circleci/project/git/src
+
 ##
 # Executors
 #
@@ -48,7 +53,7 @@ defaults_license_scanner: &defaults_license_scanner
 executors:
   default-docker:
     working_directory: /home/circleci/project/git
-    docker: 
+    docker:
       - image: node:12.16.0-alpine
 
   default-machine:
@@ -73,16 +78,16 @@ jobs:
           name: Access npm folder as root
           command: cd $(npm root -g)/npm
       - run:
-          name: Install node-gyp globally
-          command: npm install -g node-gyp
-      - run:
-          name: Update NPM install
-          command: npm install
+          name: Update NPM install (using `npm ci`)
+          command: npm ci
           <<: *src_working_directory
+      - run:
+          name: Delete build dependencies
+          command: apk del build-dependencies
       - save_cache:
-          key: dependency-cache-{{ checksum "./src/package.json" }}
+          key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
-            - ./src/node_modules
+            - node_modules
 
   test-unit:
     executor: default-docker
@@ -92,28 +97,23 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - restore_cache:
-          key: dependency-cache-{{ checksum "./src/package.json" }}
+          keys:
+            - dependency-cache-{{ checksum "src/package-lock.json" }}
       - run:
-          name: Install tape and tap-xunit
-          command: npm install tape tap-xunit
+          name: Execute linting pass
+          command: npm run lint
           <<: *src_working_directory
       - run:
           name: Create dir for test results
           command: mkdir -p ./test/results
-          <<: *src_working_directory
-      - run:
-          name: Install tapes
-          command: npm install -g tapes
-          <<: *src_working_directory
       - run:
           name: Execute unit tests
-          command: npm -s run test:xunit > ./test/results/tape.xml
-          <<: *src_working_directory
+          command: npm run test > ./test/results/results.txt
       - store_artifacts:
-          path: ./src/test/results
+          path: ./test/results
           prefix: test
       - store_test_results:
-          path: ./src/test/results
+          path: ./test/results
 
   test-coverage:
     executor: default-docker
@@ -127,11 +127,7 @@ jobs:
           command: *defaults_awsCliDependencies
       - restore_cache:
           keys:
-            - dependency-cache-{{ checksum "./src/package.json" }}
-      - run:
-          name: Run install again for nested package.json files
-          command: npm install
-          <<: *src_working_directory
+            - dependency-cache-{{ checksum "src/package-lock.json" }}
       - run:
           name: Execute code coverage check
           command: npm -s run test:coverage-check
@@ -161,17 +157,16 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - restore_cache:
-          key: dependency-cache-{{ checksum "./src/package.json" }}
+          key: dependency-cache-{{ checksum "src/package-lock.json" }}
       - run:
           name: Create dir for test results
           command: mkdir -p ./audit/results
-          <<: *src_working_directory
       - run:
           name: Check for new npm vulnerabilities
-          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json 
+          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
           <<: *src_working_directory
       - store_artifacts:
-          path: ./src/audit/results
+          path: ./audit/results
           prefix: audit
 
   audit-licenses:
@@ -184,70 +179,29 @@ jobs:
       - run:
           <<: *defaults_license_scanner
       - restore_cache:
-          key: dependency-cache-{{ checksum "./src/package.json" }}
+          key: dependency-cache-{{ checksum "src/package-lock.json" }}
       - run:
           name: Run the license-scanner
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
-          <<: *src_working_directory
       - store_artifacts:
           path: /tmp/license-scanner/results
           prefix: licenses
-
-  test-integration:
-    executor: default-machine
-    steps:
-      - checkout
-      - restore_cache:
-          key: dependency-cache-{{ checksum "./src/package.json" }}
-      - run:
-          name: Create dir for test results
-          command: mkdir -p ./test/results
-          <<: *src_working_directory
-      - run:
-          name: Execute integration tests
-          command: npm -s run test:integration
-          <<: *src_working_directory
-      - store_artifacts:
-          path: ./src/test/results
-          prefix: test
-      - store_test_results:
-          path: ./src/test/results
-
-  test-functional:
-    executor: default-machine
-    steps:
-      - checkout
-      - run:
-          name: Add the Postgres 9.6 binaries to the path.
-          command: echo ‘/usr/lib/postgresql/9.6/bin/:$PATH’ >> $BASH_ENV
-      - run:
-          name: Install Docker Compose
-          command: |
-            curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            mv ~/docker-compose /usr/local/bin/docker-compose
-      - restore_cache:
-          key: dependency-cache-{{ checksum "./src/package.json" }}
-      - run:
-          name: Create dir for test results
-          command: mkdir -p ./test/results
-          <<: *src_working_directory
-      - run:
-          name: Execute functional tests
-          command: npm -s run test:functional
-          <<: *src_working_directory
-      - store_artifacts:
-          path: ./src/test/results
-          prefix: test
-      - store_test_results:
-          path: ./src/test/results
 
   build:
     executor: default-machine
     steps:
       - checkout
       - run:
-          <<: *defaults_build_docker_build
+          name: Build Docker $CIRCLE_TAG image
+          command: >
+            echo "Building Docker image: $CIRCLE_TAG"
+
+            docker build
+            --build-arg=BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg=VERSION="$RELEASE_TAG"
+            --build-arg=VCS_URL="$CIRCLE_REPOSITORY_URL"
+            --build-arg=VCS_REF="$CIRCLE_SHA1"
+            -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG .
       - run:
           name: Save docker image to workspace
           command: docker save -o /tmp/docker-image.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
@@ -256,9 +210,33 @@ jobs:
           paths:
             - ./docker-image.tar
 
+  build-local:
+    executor: default-machine
+    steps:
+      - checkout
+      - run:
+          name: Build Docker local image for testing
+          command: >
+            echo "Building Docker image: local"
+
+            docker build
+            --build-arg=BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg=VERSION="local"
+            --build-arg=VCS_URL="$CIRCLE_REPOSITORY_URL"
+            --build-arg=VCS_REF="$CIRCLE_SHA1"
+            -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local .
+      - run:
+          name: Save docker image to workspace
+          command: docker save -o /tmp/docker-image.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - ./docker-image.tar
+
   license-scan:
     executor: default-machine
     steps:
+      - checkout
       - attach_workspace:
           at: /tmp
       - run:
@@ -268,7 +246,7 @@ jobs:
           <<: *defaults_license_scanner
       - run:
           name: Run the license-scanner
-          command: cd /tmp/license-scanner && mode=docker dockerImage=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG make run
+          command: cd /tmp/license-scanner && mode=docker dockerImages=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local make run
       - store_artifacts:
           path: /tmp/license-scanner/results
           prefix: licenses
@@ -288,7 +266,7 @@ jobs:
           command: docker load -i /tmp/docker-image.tar
       - anchore/analyze_local_image:
           dockerfile_path: ./Dockerfile
-          image_name: ${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}
+          image_name: ${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:local
           # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
           policy_failure: false
           timeout: '500'
@@ -306,21 +284,20 @@ jobs:
               printf "\n%s\n" "The following vulnerabilities were found:"
               jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
             fi
-
       - run:
           name: Upload Anchore reports to s3
           command: |
             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
-        
+
             # TODO: Enable this when we want to increase the strictness of our security policies
             # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
+            # echo "FailCount is: ${failCount}"
             # if [ $failCount -gt 0 ]; then
             #   printf "Failed with a policy failure count of: ${failCount}"
             #   exit 1
             # fi
-
       - store_artifacts:
           path: anchore-reports
 
@@ -334,21 +311,37 @@ jobs:
           name: Load the pre-built docker image from workspace
           command: docker load -i /tmp/docker-image.tar
       - run:
-          <<: *defaults_build_docker_login
-      - run:
-          name: setup environment vars for release/snapshot
-          command: ./.circleci/_set_up_deploy_envs.sh
+          name: Login to Docker Hub
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run:
           name: Re-tag pre built image
           command: |
             docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
       - run:
-          <<: *defaults_build_docker_publish
+          name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
+          command: |
+            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
+            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
+            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
+            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
       - run:
-          <<: *defaults_slack_announcement
-        
+          name: Slack announcement for tag releases
+          command: |
+            curl -X POST \
+              $SLACK_WEBHOOK_ANNOUNCEMENT \
+              -H 'Content-type: application/json' \
+              -H 'cache-control: no-cache' \
+              -d "{\"text\": \"*${CIRCLE_PROJECT_REPONAME}* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
 
- 
+  deploy:
+    executor: deploy-kube/helm-kube
+    steps:
+      - checkout
+      - deploy-kube/setup_and_run:
+          helm_set_values: |
+            --set finance-portal.frontend.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
+            --set finance-portal.frontend.image.tag=$CIRCLE_TAG
+
 ##
 # Workflows
 #
@@ -367,78 +360,82 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
+                - /hotfix*/
       - test-unit:
           context: org-global
           requires:
             - setup
           filters:
-            tags:
-              only: /.*/
             branches:
               ignore:
                 - /feature*/
                 - /bugfix*/
+                - /hotfix*/
       - test-coverage:
           context: org-global
           requires:
             - setup
           filters:
-            tags:
-              only: /.*/
             branches:
               ignore:
                 - /feature*/
                 - /bugfix*/
+                - /hotfix*/
       - vulnerability-check:
           context: org-global
           requires:
             - setup
           filters:
-            tags:
-              only: /.*/
             branches:
               ignore:
                 - /feature*/
                 - /bugfix*/
+                - /hotfix*/
       - audit-licenses:
           context: org-global
           requires:
             - setup
           filters:
-            tags:
-              only: /.*/
             branches:
               ignore:
                 - /feature*/
                 - /bugfix*/
-      - build:
+                - /hotfix*/
+      - build-local:
           context: org-global
           requires:
-            - setup
             - test-unit
             - test-coverage
             - vulnerability-check
             - audit-licenses
           filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
             branches:
               ignore:
-                - /.*/
+                - /feature*/
+                - /bugfix*/
+                - /hotfix*/
       - license-scan:
           context: org-global
           requires:
-            - build
+            - build-local
           filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
             branches:
               ignore:
-                - /.*/
+                - /feature*/
+                - /bugfix*/
+                - /hotfix*/
       - image-scan:
           context: org-global
           requires:
-            - build
+            - build-local
+          filters:
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+                - /hotfix*/
+      - build:
+          context: org-global
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
@@ -448,11 +445,20 @@ workflows:
       - publish:
           context: org-global
           requires:
-            - license-scan
-            - image-scan
+            - build
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+            branches:
+              ignore:
+                - /.*/
+      - deploy:
+          context: org-global
+          requires:
+            - publish
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
             branches:
               ignore:
                 - /.*/
