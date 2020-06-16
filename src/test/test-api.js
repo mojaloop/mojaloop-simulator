@@ -18,6 +18,9 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Mowali
+
+ * ModusBox <https://modusbox.com>
+ - Steven Oderayi <steven.oderayi@modusbox.com>
  --------------
  ******/
 'use strict';
@@ -27,36 +30,89 @@ const Model = require('../../src/models/model');
 const handlers = require('../test-api/handlers');
 const { ops, party, partyCreate } = require('./constants');
 
-const testOps = [{
-    name: 'scenario1',
-    operation: 'postTransfers',
-    body: {
-        from: {
-            displayName: 'James Bush',
-            idType: 'MSISDN',
-            idValue: '447710066017',
+const testOps = [
+    {
+        name: 'scenario1',
+        operation: 'postTransfers',
+        body: {
+            from: {
+                displayName: 'James Bush',
+                idType: 'MSISDN',
+                idValue: '447710066017',
+            },
+            to: {
+                idType: 'MSISDN',
+                idValue: '447710066018',
+            },
+            amountType: 'SEND',
+            currency: 'USD',
+            amount: '100',
+            transactionType: 'TRANSFER',
+            note: 'test payment',
+            homeTransactionId: '123ABC',
         },
-        to: {
-            idType: 'MSISDN',
-            idValue: '447710066018',
+    },
+    {
+        name: 'scenario2',
+        operation: 'putTransfers',
+        params: {
+            transferId: '{{scenario1.result.transferId}}',
         },
-        amountType: 'SEND',
-        currency: 'USD',
-        amount: '100',
-        transactionType: 'TRANSFER',
-        note: 'test payment',
-        homeTransactionId: '123ABC',
+        body: {
+            acceptQuote: true,
+        },
     },
-}, {
-    name: 'scenario2',
-    operation: 'putTransfers',
-    params: {
-        transferId: '{{scenario1.result.transferId}}',
+    {
+        name: 'scenario3',
+        operation: 'postBulkTransfers',
+        body: {
+            from: {
+                displayName: 'Steven Oderayi',
+                idType: 'MSISDN',
+                idValue: '447710066028',
+            },
+            individualTransfers: [
+                {
+                    to: {
+                        idType: 'MSISDN',
+                        idValue: '447710066018',
+                    },
+                    amountType: 'SEND',
+                    currency: 'USD',
+                    amount: '100',
+                    transactionType: 'TRANSFER',
+                    note: 'test payment',
+                    homeTransactionId: '123ABC',
+                },
+            ],
+        },
     },
-    body: {
-        acceptQuote: true,
+    {
+        name: 'scenario4',
+        operation: 'postBulkQuotes',
+        body: {
+            from: {
+                displayName: 'Steven Oderayi',
+                idType: 'MSISDN',
+                idValue: '447710066028',
+            },
+            individualQuotes: [
+                {
+                    quoteId: '8746736546',
+                    transactionId: '5678390498',
+                    to: {
+                        idType: 'MSISDN',
+                        idValue: '447710066018',
+                    },
+                    currency: 'USD',
+                    amount: '100',
+                    note: 'test payment',
+                },
+            ],
+        },
     },
-}];
+
+];
 
 test.beforeEach(async (t) => {
     const model = new Model();
@@ -121,19 +177,30 @@ test('should call outbound transfers model and pass on results to next operation
         putTransfers: async (transferId) => Promise.resolve({
             transferId,
         }),
+        postBulkTransfers: async () => Promise.resolve({
+            bulkTransferId: '1234567890',
+        }),
+        postBulkQuotes: async () => Promise.resolve({
+            bulkQuoteId: '1234567890',
+        }),
     };
 
     const result = await handlers.handleOps(console, model, testOps);
 
     t.truthy(result.scenario1);
     t.truthy(result.scenario2);
+    t.truthy(result.scenario3);
+    t.truthy(result.scenario4);
     t.truthy(result.scenario1.result);
     t.truthy(result.scenario2.result);
+    t.truthy(result.scenario3.result);
+    t.truthy(result.scenario4.result);
 
     t.is(result.scenario1.result.transferId, '12345ABCDEF');
     t.is(result.scenario2.result.transferId, '12345ABCDEF');
+    t.is(result.scenario3.result.bulkTransferId, '1234567890');
+    t.is(result.scenario4.result.bulkQuoteId, '1234567890');
 });
-
 
 test('should return 500 when sending a non valid ops', async (t) => {
     // eslint-disable-next-line no-param-reassign

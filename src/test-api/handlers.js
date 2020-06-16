@@ -24,13 +24,19 @@
 
 const util = require('util');
 const Mustache = require('mustache');
-
-const { postTransfers, putTransfers } = require('./client');
+const {
+    postTransfers,
+    putTransfers,
+    postBulkTransfers,
+    postBulkQuotes,
+} = require('./client');
 const { ApiErrorCodes } = require('../models/errors');
 
 const supportedOperations = {
     POST_TRANSFERS: 'postTransfers',
     PUT_TRANSFERS: 'putTransfers',
+    POST_BULK_TRANSFERS: 'postBulkTransfers',
+    POST_BULK_QUOTES: 'postBulkQuotes',
 };
 
 
@@ -173,6 +179,16 @@ const handleOps = async (logger, model, ops) => {
                 const response = await model.putTransfers(renderedParams.transferId, renderedBody);
                 acc[op.name] = { result: response };
             }
+
+            if (op.operation === supportedOperations.POST_BULK_TRANSFERS) {
+                const response = await model.postBulkTransfers(renderedBody);
+                acc[op.name] = { result: response };
+            }
+
+            if (op.operation === supportedOperations.POST_BULK_QUOTES) {
+                const response = await model.postBulkQuotes(renderedBody);
+                acc[op.name] = { result: response };
+            }
         } catch (error) {
             acc[op.name] = { error };
         }
@@ -190,6 +206,8 @@ const handleScenarios = async (ctx) => {
         const res = await handleOps(ctx.state.logger, {
             postTransfers,
             putTransfers,
+            postBulkTransfers,
+            postBulkQuotes,
         }, ctx.request.body);
 
         ctx.state.logger.log(`Scenario operations returned: ${util.inspect(res)}`);
