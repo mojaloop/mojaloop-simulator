@@ -84,6 +84,8 @@ jobs:
           key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
+            - src/lib/log/node_modules
+            - src/lib/validate/node_modules
 
   test-unit:
     executor: default-docker
@@ -93,6 +95,8 @@ jobs:
           key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
+            - src/lib/log/node_modules
+            - src/lib/validate/node_modules
       - run:
           name: Execute linting pass
           command: cd src && npm run lint
@@ -116,6 +120,8 @@ jobs:
           key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
+            - src/lib/log/node_modules
+            - src/lib/validate/node_modules
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
@@ -149,6 +155,8 @@ jobs:
           key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
+            - src/lib/log/node_modules
+            - src/lib/validate/node_modules
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
@@ -170,6 +178,8 @@ jobs:
           key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
+            - src/lib/log/node_modules
+            - src/lib/validate/node_modules
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
