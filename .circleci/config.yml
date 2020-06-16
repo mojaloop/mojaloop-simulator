@@ -66,18 +66,18 @@ jobs:
     executor: default-docker
     steps:
       - checkout
-      - run:
-          name: Print working directory
-          command: pwd && ls -a
+      - run: Change working directory
+          name: Change working directory to src
+          command: cd src
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
       - run:
           name: Update NPM install (using `npm ci`)
-          command: npm ci
+          command: pwd && npm ci
       - run:
           name: Delete build dependencies
-          command: apk del build-dependencies
+          command: pwd && apk del build-dependencies
       - save_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
