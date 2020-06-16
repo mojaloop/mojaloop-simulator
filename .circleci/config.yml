@@ -82,7 +82,8 @@ jobs:
           command: apk del build-dependencies
       - save_cache:
           key: dependency-cache-1{{ checksum "src/package-lock.json" }}
-          path: src/node_modules
+          paths:
+            - src/node_modules
 
   test-unit:
     executor: default-docker
@@ -90,7 +91,8 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-1{{ checksum "src/package-lock.json" }}
-          path: src/node_modules
+          paths:
+            - src/node_modules
       - run:
           name: Execute linting pass
           command: cd src && npm run lint
