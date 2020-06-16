@@ -56,11 +56,6 @@ executors:
     machine:
       image: ubuntu-1604:201903-01
 
-  helm-kube:
-    working_directory: /home/circleci/project
-    docker: 
-      - image: hypnoglow/kubernetes-helm
-
 ##
 # Jobs
 #
