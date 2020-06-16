@@ -69,12 +69,11 @@ executors:
 jobs:
   setup:
     executor: default-docker
-    <<: *src_working_directory
     steps:
       - checkout
       - run:
           name: Print working directory
-          command: pwd
+          command: pwd && ls -a
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
