@@ -74,9 +74,6 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      # - run:
-          # name: Build dependencies
-          # command: apk add --no-cache -t build-dependencies make gcc g++ python libtool autoconf automake
       - run:
           name: Access npm folder as root
           command: cd $(npm root -g)/npm
@@ -355,30 +352,6 @@ jobs:
       - run:
           <<: *defaults_slack_announcement
         
-  # deploy:
-  #   executor: helm-kube
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Install AWS CLI dependencies
-  #         command: *defaults_awsCliDependencies
-  #     - run:
-  #         name: setup environment vars for release/snapshot
-  #         command: ./.circleci/_set_up_deploy_envs.sh
-  #     - run:
-  #         <<: *defaults_deploy_prequisites
-  #     - run:
-  #         <<: *defaults_deploy_config_kubernetes_cluster
-  #     - run:
-  #         <<: *defaults_deploy_config_kubernetes_credentials
-  #     - run:
-  #         <<: *defaults_deploy_config_kubernetes_context
-  #     - run:
-  #         <<: *defaults_deploy_set_kubernetes_context
-  #     - run:
-  #         <<: *defaults_deploy_configure_helm
-  #     - run:
-  #         <<: *defaults_deploy_install_or_upgrade_helm_chart
 
  
 ##
