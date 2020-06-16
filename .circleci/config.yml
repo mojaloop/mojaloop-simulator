@@ -1,7 +1,14 @@
 # CircleCI v2.1 Config
 version: 2.1
+
+##
+# orbs
+#
+# Orbs used in this pipeline
+##
 orbs:
   anchore: anchore/anchore-engine@1.6.0
+  deploy-kube: mojaloop/deployment@0.1.6
 
 ##
 # defaults
