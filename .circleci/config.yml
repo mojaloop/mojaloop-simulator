@@ -408,11 +408,6 @@ workflows:
                 - /hotfix*/
       - build-local:
           context: org-global
-          requires:
-            - test-unit
-            - test-coverage
-            - vulnerability-check
-            - audit-licenses
           filters:
             branches:
               ignore:
