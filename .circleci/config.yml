@@ -75,11 +75,8 @@ jobs:
           name: Install general dependencies
           command: *defaults_Dependencies
       - run:
-          name: Access npm folder as root
-          command: cd $(npm root -g)/npm
-      - run:
           name: Update NPM install (using `npm ci`)
-          command: npm ci
+          command: NODE_ENV=development npm ci
           <<: *src_working_directory
       - run:
           name: Delete build dependencies
