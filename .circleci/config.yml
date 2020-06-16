@@ -81,7 +81,7 @@ jobs:
           name: Delete build dependencies
           command: apk del build-dependencies
       - save_cache:
-          key: dependency-cache-1{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
 
@@ -90,7 +90,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: dependency-cache-1{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
       - run:
@@ -113,8 +113,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
       - run:
@@ -147,8 +146,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
       - run:
@@ -169,8 +167,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
-            - dependency-cache-{{ checksum "src/package-lock.json" }}
+          key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
       - run:
