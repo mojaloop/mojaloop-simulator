@@ -83,7 +83,7 @@ jobs:
       - save_cache:
           key: dependency-cache-{{ checksum "src/package-lock.json" }}
           paths:
-            - node_modules
+            - src/node_modules
 
   test-unit:
     executor: default-docker
