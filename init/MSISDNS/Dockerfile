@@ -2,10 +2,10 @@ FROM alpine
 
 WORKDIR /src/
 
-COPY ./inset_MSISDNS /src/
-
 RUN apk add curl jq
 
-RUN chmod +x /src/inset_MSISDNS
+COPY ./insert_MSISDNS /src/
 
-CMD /src/inset_MSISDNS
+RUN chmod +x /src/insert_MSISDNS
+
+CMD . ./insert_MSISDNS
