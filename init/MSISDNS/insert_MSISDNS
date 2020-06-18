@@ -1,16 +1,13 @@
 #! /bin/bash
 
-printenv | grep MSISDN_ > MSISDNS.config
-
-#temporal
-host=localhost:3000
-
-while read var value
-do
-    fsp=${var%%=*}
-    name=$(echo $fsp | cut -d'_' -f 2)
-    url="${host}/participants/MSISDN/${!fsp}"
-    echo $url
-    # curl --location --request POST '(echo $url)' --header 'Content-Type: application/json' --header 'Content-Type: text/plain' --data-raw '$(var)'
-    
-done < ./MSISDNS.config
+CURRENT_DATE=$(date)
+for participantMSISDN in $(echo "${x}" | jq -c '.[]'); do
+    echo "Calling Pathfinder with ${participantMSISDN}";
+    MSISDN=$(echo "${participantMSISDN}" | jq -r '.MSISDN');
+    DATA=$(echo "${participantMSISDN}" | jq -c '.data');
+    curl --location --request PUT "${PATHFINDER_URL}/participants/MSISDN/${MSISDN}" \
+    --header 'Content-Type: application/json' \
+    --header "date: ${CURRENT_DATE}" \
+    --header "fspiop-source: ${SIM_NAME}" \
+    --data-raw "${DATA}";
+done

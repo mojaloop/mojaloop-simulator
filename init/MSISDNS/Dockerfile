@@ -1,5 +1,11 @@
-# modify
-FROM postman/newman:5.0.0-alpine
+FROM alpine
 
-WORKDIR /opt/init-MSISDNS
+WORKDIR /src/
 
+COPY ./inset_MSISDNS /src/
+
+RUN apk add curl jq
+
+RUN chmod +x /src/inset_MSISDNS
+
+CMD /src/inset_MSISDNS
