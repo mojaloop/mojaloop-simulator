@@ -66,3 +66,6 @@ simulator.log
 docker-compose.local.yml
 goldenpayerfsp
 goldenpayeefsp
+
+#vscode configs
+.vscode/

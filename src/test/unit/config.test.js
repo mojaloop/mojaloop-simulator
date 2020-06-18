@@ -19,6 +19,9 @@
  - Name Surname <name.surname@gatesfoundation.com>
  * Vessels Tech
  - Lewis Daly <lewis@vesselstech.com>
+
+ * ModusBox <https://modusbox.com>
+ - Steven Oderayi <steven.oderayi@modusbox.com>
  --------------
  ******/
 'use strict';
@@ -43,6 +46,11 @@ test('Sets the basic config', async (t) => {
             enabled: false,
             mutualTLS: { enabled: false },
             creds: { ca: null, cert: null, key: null },
+        },
+        ports: {
+            simulatorApi: 3000,
+            reportApi: 3002,
+            testApi: 3003,
         },
     };
 

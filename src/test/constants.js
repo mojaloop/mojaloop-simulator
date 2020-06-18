@@ -18,6 +18,9 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Mowali
+
+ * ModusBox <https://modusbox.com>
+ - Steven Oderayi <steven.oderayi@modusbox.com>
  --------------
  ******/
 'use strict';
@@ -29,6 +32,7 @@ const uuid = require('uuid/v1');
 const chance = new Chance();
 const randName = chance.name({ suffix: true, middle: true });
 const transferId = uuid();
+const bulkTransferId = uuid();
 const transactionRequestId = uuid();
 const idType = 'msisdn';
 const idValue = uuid();
@@ -46,6 +50,7 @@ const party = {
     idType,
     idValue,
 };
+
 const partyCreate = {
     displayName: randName,
     firstName: randName.split(' ')[0] || '',
@@ -86,6 +91,79 @@ const quote = {
     transactionType: 'TRANSFER',
     initiator: 'PAYER',
     initiatorType: 'CONSUMER',
+};
+
+const newQuote = {
+    quoteId: uuid(),
+    transactionId: uuid(),
+    to: {
+        idType: 'MSISDN',
+        idValue: '0012345',
+    },
+    from: {
+        idType: 'MSISDN',
+        idValue: '0067890',
+    },
+    amountType: 'SEND',
+    amount: '100',
+    currency: 'USD',
+    feesAmount: '0.5',
+    feesCurrency: 'USD',
+    transactionType: 'TRANSFER',
+    initiator: 'PAYER',
+    initiatorType: 'CONSUMER',
+};
+
+const bulkQuote = {
+    bulkQuoteId: idValue,
+    from: {
+        idType: 'MSISDN',
+        idValue: '0067890',
+    },
+    individualQuotes: [
+        {
+            quoteId: idValue,
+            transactionId: uuid(),
+            to: {
+                idType: 'MSISDN',
+                idValue: '0012345',
+            },
+            amountType: 'SEND',
+            amount: '100',
+            currency: 'USD',
+            feesAmount: '0.5',
+            feesCurrency: 'USD',
+            transactionType: 'TRANSFER',
+            initiator: 'PAYER',
+            initiatorType: 'CONSUMER',
+        },
+    ],
+};
+
+const newBulkQuote = {
+    bulkQuoteId: uuid(),
+    from: {
+        idType: 'MSISDN',
+        idValue: '0067890',
+    },
+    individualQuotes: [
+        {
+            quoteId: uuid(),
+            transactionId: uuid(),
+            to: {
+                idType: 'MSISDN',
+                idValue: '0012345',
+            },
+            amountType: 'SEND',
+            amount: '100',
+            currency: 'USD',
+            feesAmount: '0.5',
+            feesCurrency: 'USD',
+            transactionType: 'TRANSFER',
+            initiator: 'PAYER',
+            initiatorType: 'CONSUMER',
+        },
+    ],
 };
 
 const transactionrequest = {
@@ -130,27 +208,6 @@ const transfer = {
     transactionType,
 };
 
-const newQuote = {
-    quoteId: uuid(),
-    transactionId: uuid(),
-    to: {
-        idType: 'MSISDN',
-        idValue: '0012345',
-    },
-    from: {
-        idType: 'MSISDN',
-        idValue: '0067890',
-    },
-    amountType: 'SEND',
-    amount: '100',
-    currency: 'USD',
-    feesAmount: '0.5',
-    feesCurrency: 'USD',
-    transactionType: 'TRANSFER',
-    initiator: 'PAYER',
-    initiatorType: 'CONSUMER',
-};
-
 const newTransfer = {
     transferId: uuid(),
     quote: {
@@ -173,6 +230,70 @@ const newTransfer = {
     transactionType,
 };
 
+const bulkTransfer = {
+    bulkTransferId,
+    from: {
+        idType,
+        idValue,
+    },
+    bulkQuote: {
+        bulkQuoteId: idValue,
+        individualQuotes: [
+            {
+                quoteId: uuid(),
+                transactionId: randName,
+                transferAmount: amount,
+                transferAmountCurrency: currency,
+            },
+        ],
+    },
+    individualTransfers: [
+        {
+            transferId: uuid(),
+            to: {
+                idType,
+                idValue: '67890',
+            },
+            amountType,
+            currency,
+            amount,
+            transactionType,
+        },
+    ],
+};
+
+const newBulkTransfer = {
+    bulkTransferId: uuid(),
+    from: {
+        idType,
+        idValue,
+    },
+    bulkQuote: {
+        bulkQuoteId: uuid(),
+        individualQuotes: [
+            {
+                quoteId: uuid(),
+                transactionId: randName,
+                transferAmount: amount,
+                transferAmountCurrency: currency,
+            },
+        ],
+    },
+    individualTransfers: [
+        {
+            transferId: uuid(),
+            to: {
+                idType,
+                idValue: '67890',
+            },
+            amountType,
+            currency,
+            amount,
+            transactionType,
+        },
+    ],
+};
+
 const transferWithoutQuote = {
     transferId,
     currency,
@@ -187,15 +308,20 @@ test('constants', async (t) => {
 
 module.exports = {
     transfer,
-    quote,
-    transactionrequest,
-    party,
-    partyCreate,
-    newQuote,
     newTransfer,
     transferWithoutQuote,
+    bulkTransfer,
+    newBulkTransfer,
+    bulkTransferId,
+    quote,
+    newQuote,
+    bulkQuote,
+    newBulkQuote,
+    transactionrequest,
+    transactionRequestId,
+    party,
+    partyCreate,
     idType,
     idValue,
     transferId,
-    transactionRequestId,
 };
