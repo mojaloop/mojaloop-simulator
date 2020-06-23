@@ -1,11 +1,4 @@
 FROM alpine
-
-WORKDIR /src/
-
-RUN apk add curl jq
-
-COPY ./insert_MSISDNS /src/
-
-RUN chmod +x /src/insert_MSISDNS
-
-CMD . ./insert_MSISDNS
+RUN apk add --no-cache --upgrade bash curl jq
+COPY insert_msisdns.sh /insert_msisdns.sh
+CMD ["sh", "/insert_msisdns.sh"]
