@@ -1,4 +1,4 @@
-FROM node:12.18.0-alpine as builder
+FROM node:12.18.2-alpine as builder
 
 ARG CREATED
 ARG SOURCE
@@ -16,15 +16,11 @@ LABEL org.opencontainers.image.authors="kamuela.franco@modusbox.com"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 
 WORKDIR /opt/onboard-central-ledger
-COPY init/onboard-central-ledger/package.json \
-    init/onboard-central-ledger/package-lock.json \
-    init/onboard-central-ledger/lib.js \
-    init/onboard-central-ledger/ onboard-dfsp.js \
-    /opt/onboard-central-ledger/
+COPY package* *.js /opt/onboard-central-ledger/
 
 RUN ["npm", "ci", "--production"]
 
-FROM node:12.18.0-alpine
+FROM node:12.18.2-alpine
 WORKDIR /opt/onboard-central-ledger
 
 COPY --from=builder /opt/onboard-central-ledger .
