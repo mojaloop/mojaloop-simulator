@@ -30,20 +30,20 @@ function log(message) {
   console.log(`[${timestamp}] ${message}`);
 }
 
-log(`ENV: AUTH_BEARER_TOKEN:\t${process.env.AUTH_BEARER_TOKEN}`);
-log(`ENV: BASE_CENTRAL_LEDGER_ADMIN:\t${process.env.BASE_CENTRAL_LEDGER_ADMIN}`);
-log(`ENV: DFSP_CALLBACK_URL:\t${process.env.DFSP_CALLBACK_URL}`);
-log(`ENV: DFSP_CURRENCY:\t${process.env.DFSP_CURRENCY}`);
-log(`ENV: DFSP_NAME:\t${process.env.DFSP_NAME}`);
-log(`ENV: DFSP_PARTY_ID:\t${process.env.DFSP_PARTY_ID}`);
-log(`ENV: DFSP_PARTY_ID_TYPE:\t${process.env.DFSP_PARTY_ID_TYPE}`);
-log(`ENV: FUNDS_IN_PREPARE_AMOUNT:\t${process.env.FUNDS_IN_PREPARE_AMOUNT}`);
-log(`ENV: HOST_CENTRAL_LEDGER:\t${process.env.HOST_CENTRAL_LEDGER}`);
-log(`ENV: HUB_OPERATOR_NAME:\t${process.env.HUB_OPERATOR_NAME}`);
-log(`ENV: INITIAL_POSITION:\t${process.env.INITIAL_POSITION}`);
-log(`ENV: NDC_ADJUSTMENT_EMAIL:\t${process.env.NDC_ADJUSTMENT_EMAIL}`);
-log(`ENV: NDC_THRESHOLD_BREACH_EMAIL:\t${process.env.NDC_THRESHOLD_BREACH_EMAIL}`);
-log(`ENV: NET_DEBIT_CAP:\t${process.env.NET_DEBIT_CAP}`);
+log(`ENV: AUTH_BEARER_TOKEN:\t\t\t\t${process.env.AUTH_BEARER_TOKEN}`);
+log(`ENV: BASE_CENTRAL_LEDGER_ADMIN:\t\t\t${process.env.BASE_CENTRAL_LEDGER_ADMIN}`);
+log(`ENV: DFSP_CALLBACK_URL:\t\t\t\t${process.env.DFSP_CALLBACK_URL}`);
+log(`ENV: DFSP_CURRENCY:\t\t\t\t\t${process.env.DFSP_CURRENCY}`);
+log(`ENV: DFSP_NAME:\t\t\t\t\t${process.env.DFSP_NAME}`);
+log(`ENV: DFSP_PARTY_ID:\t\t\t\t\t${process.env.DFSP_PARTY_ID}`);
+log(`ENV: DFSP_PARTY_ID_TYPE:\t\t\t\t${process.env.DFSP_PARTY_ID_TYPE}`);
+log(`ENV: FUNDS_IN_PREPARE_AMOUNT:\t\t\t${process.env.FUNDS_IN_PREPARE_AMOUNT}`);
+log(`ENV: HOST_CENTRAL_LEDGER:\t\t\t\t${process.env.HOST_CENTRAL_LEDGER}`);
+log(`ENV: HUB_OPERATOR_NAME:\t\t\t\t${process.env.HUB_OPERATOR_NAME}`);
+log(`ENV: INITIAL_POSITION:\t\t\t\t${process.env.INITIAL_POSITION}`);
+log(`ENV: NDC_ADJUSTMENT_EMAIL:\t\t\t\t${process.env.NDC_ADJUSTMENT_EMAIL}`);
+log(`ENV: NDC_THRESHOLD_BREACH_EMAIL:\t\t\t${process.env.NDC_THRESHOLD_BREACH_EMAIL}`);
+log(`ENV: NET_DEBIT_CAP:\t\t\t\t\t${process.env.NET_DEBIT_CAP}`);
 log(`ENV: SETTLEMENT_TRANSFER_POSITION_CHANGE_EMAIL:\t${process.env.SETTLEMENT_TRANSFER_POSITION_CHANGE_EMAIL}`);
 
 const amount = process.env.FUNDS_IN_PREPARE_AMOUNT;
@@ -59,7 +59,7 @@ const hostCentralLedger = process.env.HOST_CENTRAL_LEDGER;
 const initialPosition = parseInt(process.env.INITIAL_POSITION, 10);
 log(`LOC: initialPosition:\t${initialPosition}`);
 const netDebitCap = parseInt(process.env.NET_DEBIT_CAP, 10);
-log(`LOC: netDebitCap:\t${netDebitCap}`);
+log(`LOC: netDebitCap:\t\t${netDebitCap}`);
 const ndcAdjustmentEmail = process.env.NDC_ADJUSTMENT_EMAIL;
 const ndcThresholdBreachEmail = process.env.NDC_THRESHOLD_BREACH_EMAIL;
 const settlementTransferPositionChangeEmail = process.env.SETTLEMENT_TRANSFER_POSITION_CHANGE_EMAIL;
