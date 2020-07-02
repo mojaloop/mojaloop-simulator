@@ -78,7 +78,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addDfsp');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addDfsp:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -96,7 +97,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addInitialPositionAndLimits');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addInitialPositionAndLimits:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -128,7 +130,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->depositFunds');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->depositFunds:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -146,7 +149,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addCallbackParticipantPut');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackParticipantPut:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -164,7 +168,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addCallbackParticipantPutError');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackParticipantPutError:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -181,7 +186,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addCallbackParticipantPutBatch');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackParticipantPutBatch:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -198,7 +204,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addCallbackParticipantPutBatchError');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackParticipantPutBatchError:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -216,7 +223,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addCallbackPartiesGet');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackPartiesGet:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -235,7 +243,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addCallbackPartiesPut');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackPartiesPut:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -254,7 +263,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addCallbackPartiesPutError');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackPartiesPutError:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -270,7 +280,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addCallbackQuotes');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackQuotes:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -286,7 +297,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addCallbackTransferPost');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackTransferPost:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -303,7 +315,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addCallbackTransferPut');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackTransferPut:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -320,7 +333,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->addCallbackTransferError');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackTransferError:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -336,7 +350,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->setEmailNetDebitCapAdjustment');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->setEmailNetDebitCapAdjustment:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -352,7 +367,8 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->setEmailSettlementTransferPositionChange');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->setEmailSettlementTransferPositionChange:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
+    return;
   }
 
   try {
@@ -368,7 +384,7 @@ async function onboardDfsp() {
     log('EXE: SUCC: sendRequest->setEmailNetDebitCapThresholdBreach');
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->setEmailNetDebitCapThresholdBreach:\t${message}`);
-    process.exit(-1);
+    process.exitCode = 1;
   }
 }
 
