@@ -111,6 +111,7 @@ async function onboardDfsp() {
       fspiopSource,
     }));
     log('EXE: SUCC: sendRequest->getDfspAccounts');
+    log(`LOC: hubAccounts:\t${hubAccounts}`);
 
     const settlementAccountId = settlementIdFromHubAccounts(hubAccounts);
     log(`LOC: settlementAccountId:\t${settlementAccountId}`);
