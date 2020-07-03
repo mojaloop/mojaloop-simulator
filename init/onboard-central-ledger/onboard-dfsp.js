@@ -67,7 +67,7 @@ const settlementTransferPositionChangeEmail = process.env.SETTLEMENT_TRANSFER_PO
 async function onboardDfsp() {
   try {
     log('EXE: INIT: sendRequest->addDfsp');
-    await sendRequest(addDfsp({
+    const response = await sendRequest(addDfsp({
       dfspName,
       dfspCurrency,
       authToken,
@@ -75,7 +75,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->addDfsp');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addDfsp');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addDfsp:\t${message}`);
     process.exitCode = 1;
@@ -84,7 +88,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->addInitialPositionAndLimits');
-    await sendRequest(addInitialPositionAndLimits({
+    const response = await sendRequest(addInitialPositionAndLimits({
       dfspName,
       dfspCurrency,
       netDebitCap,
@@ -94,7 +98,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->addInitialPositionAndLimits');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addInitialPositionAndLimits');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addInitialPositionAndLimits:\t${message}`);
     process.exitCode = 1;
@@ -103,32 +111,39 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->getDfspAccounts');
-    const hubAccounts = await sendRequest(getDfspAccounts({
+    const response = await sendRequest(getDfspAccounts({
       dfspName,
       authToken,
       hostCentralLedger,
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->getDfspAccounts');
-    log(`LOC: hubAccounts:\t${hubAccounts}`);
-
-    const settlementAccountId = settlementIdFromHubAccounts(hubAccounts);
-    log(`LOC: settlementAccountId:\t${settlementAccountId}`);
-
-    log('EXE: INIT: sendRequest->depositFunds');
-    await sendRequest(depositFunds({
-      dfspName,
-      dfspCurrency,
-      amount,
-      transferId: uuid.v4(),
-      settlementAccountId,
-      authToken,
-      hostCentralLedger,
-      baseCentralLedgerAdmin,
-      fspiopSource,
-    }));
-    log('EXE: SUCC: sendRequest->depositFunds');
+    if (response.ok) {
+      const dfspAccounts = await response.json();
+      log('EXE: SUCC: sendRequest->getDfspAccounts');
+      log(`LOC: dfspAccounts:\t${JSON.stringify(dfspAccounts)}`);
+      const settlementAccountId = settlementIdFromHubAccounts(dfspAccounts);
+      log(`LOC: settlementAccountId:\t${settlementAccountId}`);
+      log('EXE: INIT: sendRequest->depositFunds');
+      const innerResponse = await sendRequest(depositFunds({
+        dfspName,
+        dfspCurrency,
+        amount,
+        transferId: uuid.v4(),
+        settlementAccountId,
+        authToken,
+        hostCentralLedger,
+        baseCentralLedgerAdmin,
+        fspiopSource,
+      }));
+      if (innerResponse.ok) {
+        log('EXE: SUCC: sendRequest->depositFunds');
+      } else {
+        throw new Error('Response not OK/2XX');
+      }
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->depositFunds:\t${message}`);
     process.exitCode = 1;
@@ -137,7 +152,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->addCallbackParticipantPut');
-    await sendRequest(addCallbackParticipantPut({
+    const response = await sendRequest(addCallbackParticipantPut({
       dfspName,
       dfspCallbackUrl,
       dfspPartyId,
@@ -147,7 +162,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->addCallbackParticipantPut');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addCallbackParticipantPut');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackParticipantPut:\t${message}`);
     process.exitCode = 1;
@@ -156,7 +175,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->addCallbackParticipantPutError');
-    await sendRequest(addCallbackParticipantPutError({
+    const response = await sendRequest(addCallbackParticipantPutError({
       dfspName,
       dfspCallbackUrl,
       dfspPartyId,
@@ -166,7 +185,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->addCallbackParticipantPutError');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addCallbackParticipantPutError');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackParticipantPutError:\t${message}`);
     process.exitCode = 1;
@@ -175,7 +198,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->addCallbackParticipantPutBatch');
-    await sendRequest(addCallbackParticipantPutBatch({
+    const response = await sendRequest(addCallbackParticipantPutBatch({
       dfspName,
       dfspCallbackUrl,
       requestId: uuid.v4(),
@@ -184,7 +207,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->addCallbackParticipantPutBatch');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addCallbackParticipantPutBatch');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackParticipantPutBatch:\t${message}`);
     process.exitCode = 1;
@@ -193,7 +220,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->addCallbackParticipantPutBatchError');
-    await sendRequest(addCallbackParticipantPutBatchError({
+    const response = await sendRequest(addCallbackParticipantPutBatchError({
       dfspName,
       dfspCallbackUrl,
       requestId: uuid.v4(),
@@ -202,7 +229,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->addCallbackParticipantPutBatchError');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addCallbackParticipantPutBatchError');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackParticipantPutBatchError:\t${message}`);
     process.exitCode = 1;
@@ -211,7 +242,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->addCallbackPartiesGet');
-    await sendRequest(addCallbackPartiesGet({
+    const response = await sendRequest(addCallbackPartiesGet({
       dfspName,
       dfspCallbackUrl,
       dfspPartyId,
@@ -221,7 +252,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->addCallbackPartiesGet');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addCallbackPartiesGet');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackPartiesGet:\t${message}`);
     process.exitCode = 1;
@@ -230,7 +265,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->addCallbackPartiesPut');
-    await sendRequest(addCallbackPartiesPut({
+    const response = await sendRequest(addCallbackPartiesPut({
       dfspName,
       dfspCallbackUrl,
       dfspPartyId,
@@ -240,8 +275,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-
-    log('EXE: SUCC: sendRequest->addCallbackPartiesPut');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addCallbackPartiesPut');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackPartiesPut:\t${message}`);
     process.exitCode = 1;
@@ -250,7 +288,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->addCallbackPartiesPutError');
-    await sendRequest(addCallbackPartiesPutError({
+    const response = await sendRequest(addCallbackPartiesPutError({
       dfspName,
       dfspCallbackUrl,
       dfspPartyId,
@@ -260,8 +298,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-
-    log('EXE: SUCC: sendRequest->addCallbackPartiesPutError');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addCallbackPartiesPutError');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackPartiesPutError:\t${message}`);
     process.exitCode = 1;
@@ -270,7 +311,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->addCallbackQuotes');
-    await sendRequest(addCallbackQuotes({
+    const response = await sendRequest(addCallbackQuotes({
       dfspName,
       dfspCallbackUrl,
       authToken,
@@ -278,7 +319,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->addCallbackQuotes');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addCallbackQuotes');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackQuotes:\t${message}`);
     process.exitCode = 1;
@@ -287,7 +332,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->addCallbackTransferPost');
-    await sendRequest(addCallbackTransferPost({
+    const response = await sendRequest(addCallbackTransferPost({
       dfspName,
       dfspCallbackUrl,
       authToken,
@@ -295,7 +340,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->addCallbackTransferPost');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addCallbackTransferPost');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackTransferPost:\t${message}`);
     process.exitCode = 1;
@@ -304,7 +353,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->addCallbackTransferPut');
-    await sendRequest(addCallbackTransferPut({
+    const response = await sendRequest(addCallbackTransferPut({
       dfspName,
       dfspCallbackUrl,
       transferId: uuid.v4(),
@@ -313,7 +362,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->addCallbackTransferPut');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addCallbackTransferPut');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackTransferPut:\t${message}`);
     process.exitCode = 1;
@@ -322,7 +375,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->addCallbackTransferError');
-    await sendRequest(addCallbackTransferError({
+    const response = await sendRequest(addCallbackTransferError({
       dfspName,
       dfspCallbackUrl,
       transferId: uuid.v4(),
@@ -331,7 +384,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->addCallbackTransferError');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->addCallbackTransferError');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackTransferError:\t${message}`);
     process.exitCode = 1;
@@ -340,7 +397,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->setEmailNetDebitCapAdjustment');
-    await sendRequest(setEmailNetDebitCapAdjustment({
+    const response = await sendRequest(setEmailNetDebitCapAdjustment({
       dfspName,
       email: ndcAdjustmentEmail,
       authToken,
@@ -348,7 +405,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->setEmailNetDebitCapAdjustment');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->setEmailNetDebitCapAdjustment');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->setEmailNetDebitCapAdjustment:\t${message}`);
     process.exitCode = 1;
@@ -357,7 +418,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->setEmailSettlementTransferPositionChange');
-    await sendRequest(setEmailSettlementTransferPositionChange({
+    const response = await sendRequest(setEmailSettlementTransferPositionChange({
       dfspName,
       email: settlementTransferPositionChangeEmail,
       authToken,
@@ -365,7 +426,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->setEmailSettlementTransferPositionChange');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->setEmailSettlementTransferPositionChange');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->setEmailSettlementTransferPositionChange:\t${message}`);
     process.exitCode = 1;
@@ -374,7 +439,7 @@ async function onboardDfsp() {
 
   try {
     log('EXE: INIT: sendRequest->setEmailNetDebitCapThresholdBreach');
-    await sendRequest(setEmailNetDebitCapThresholdBreach({
+    const response = await sendRequest(setEmailNetDebitCapThresholdBreach({
       dfspName,
       email: ndcThresholdBreachEmail,
       authToken,
@@ -382,7 +447,11 @@ async function onboardDfsp() {
       baseCentralLedgerAdmin,
       fspiopSource,
     }));
-    log('EXE: SUCC: sendRequest->setEmailNetDebitCapThresholdBreach');
+    if (response.ok) {
+      log('EXE: SUCC: sendRequest->setEmailNetDebitCapThresholdBreach');
+    } else {
+      throw new Error('Response not OK/2XX');
+    }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->setEmailNetDebitCapThresholdBreach:\t${message}`);
     process.exitCode = 1;
