@@ -78,7 +78,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addDfsp');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addDfsp:\t${message}`);
@@ -101,7 +102,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addInitialPositionAndLimits');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addInitialPositionAndLimits:\t${message}`);
@@ -139,10 +141,12 @@ async function onboardDfsp() {
       if (innerResponse.ok) {
         log('EXE: SUCC: sendRequest->depositFunds');
       } else {
-        throw new Error('Response not OK/2XX');
+        const innerError = await innerResponse.json();
+        throw new Error(`Response not OK/2XX: ${JSON.stringify(innerError)}`);
       }
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->depositFunds:\t${message}`);
@@ -165,7 +169,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addCallbackParticipantPut');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackParticipantPut:\t${message}`);
@@ -188,7 +193,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addCallbackParticipantPutError');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackParticipantPutError:\t${message}`);
@@ -210,7 +216,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addCallbackParticipantPutBatch');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackParticipantPutBatch:\t${message}`);
@@ -232,7 +239,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addCallbackParticipantPutBatchError');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackParticipantPutBatchError:\t${message}`);
@@ -255,7 +263,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addCallbackPartiesGet');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackPartiesGet:\t${message}`);
@@ -278,7 +287,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addCallbackPartiesPut');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackPartiesPut:\t${message}`);
@@ -301,7 +311,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addCallbackPartiesPutError');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackPartiesPutError:\t${message}`);
@@ -322,7 +333,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addCallbackQuotes');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackQuotes:\t${message}`);
@@ -343,7 +355,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addCallbackTransferPost');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackTransferPost:\t${message}`);
@@ -365,7 +378,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addCallbackTransferPut');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackTransferPut:\t${message}`);
@@ -387,7 +401,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->addCallbackTransferError');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addCallbackTransferError:\t${message}`);
@@ -408,7 +423,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->setEmailNetDebitCapAdjustment');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->setEmailNetDebitCapAdjustment:\t${message}`);
@@ -429,7 +445,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->setEmailSettlementTransferPositionChange');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->setEmailSettlementTransferPositionChange:\t${message}`);
@@ -450,7 +467,8 @@ async function onboardDfsp() {
     if (response.ok) {
       log('EXE: SUCC: sendRequest->setEmailNetDebitCapThresholdBreach');
     } else {
-      throw new Error('Response not OK/2XX');
+      const error = await response.json();
+      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->setEmailNetDebitCapThresholdBreach:\t${message}`);
