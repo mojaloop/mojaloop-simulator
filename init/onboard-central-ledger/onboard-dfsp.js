@@ -79,7 +79,13 @@ async function onboardDfsp() {
       log('EXE: SUCC: sendRequest->addDfsp');
     } else {
       const error = await response.json();
-      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
+      // Allow re-registering of the same DFSP name and currency
+      if (response.status === 400 && error.code === '3000'
+        && /currency.*already.*registered/.test(error.errorDescription)) {
+        log(`EXE: FAIL: sendRequest->addDfsp:\t${JSON.stringify(error)}`);
+      } else {
+        throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
+      }
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addDfsp:\t${message}`);
