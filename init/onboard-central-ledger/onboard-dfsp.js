@@ -80,7 +80,7 @@ async function onboardDfsp() {
     } else {
       const error = await response.json();
       // Allow re-registering of the same DFSP name and currency
-      if (response.status === 400 && error.code === '3000'
+      if (response.status === 400 && error.errorCode === '3000'
         && /currency.*already.*registered/.test(error.errorDescription)) {
         log(`EXE: FAIL: sendRequest->addDfsp:\t${JSON.stringify(error)}`);
       } else {
