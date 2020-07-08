@@ -25,4 +25,4 @@ WORKDIR /opt/onboard-central-ledger
 
 COPY --from=builder /opt/onboard-central-ledger .
 
-CMD ["npm", "start"]
+CMD ["node", "onboard-dfsp.js"]
