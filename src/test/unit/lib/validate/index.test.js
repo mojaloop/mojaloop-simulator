@@ -31,7 +31,7 @@ const uuid = require('uuid/v1');
 const Validate = require('@internal/validate');
 const { testLogger } = require('../../TestUtils');
 
-const simApiSpec = yaml.load('./simulator/api.yaml');
+const simApiSpec = yaml.load('../simulator/api.yaml');
 
 
 test('Validates a simple request', async (t) => {

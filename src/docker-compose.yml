@@ -10,13 +10,13 @@ services:
      - "3000:3000"
      - "3001:3001"
      - "3003:3003"
-   depends_on:
-     - scheme-adapter
- scheme-adapter:
-   image: "mojaloop/sdk-scheme-adapter:latest"
-   env_file: ./scheme-adapter.env
-   ports:
-     - "3500:3000"
-     - "3501:4000"
-   depends_on:
-     - redis
+  #  depends_on:
+  #    - scheme-adapter
+#  scheme-adapter:
+#    image: "mojaloop/sdk-scheme-adapter:latest"
+#    env_file: ./scheme-adapter.env
+#    ports:
+#      - "3500:3000"
+#      - "3501:4000"
+#    depends_on:
+#      - redis
