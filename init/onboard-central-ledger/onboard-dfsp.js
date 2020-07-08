@@ -57,9 +57,9 @@ const dfspName = process.env.DFSP_NAME;
 const fspiopSource = process.env.HUB_OPERATOR_NAME;
 const hostCentralLedger = process.env.HOST_CENTRAL_LEDGER;
 const initialPosition = parseInt(process.env.INITIAL_POSITION, 10);
-log(`LOC: initialPosition:\t${initialPosition}`);
+log(`LOC: initialPosition:\t\t\t\t${initialPosition}`);
 const netDebitCap = parseInt(process.env.NET_DEBIT_CAP, 10);
-log(`LOC: netDebitCap:\t\t${netDebitCap}`);
+log(`LOC: netDebitCap:\t\t\t\t\t${netDebitCap}`);
 const ndcAdjustmentEmail = process.env.NDC_ADJUSTMENT_EMAIL;
 const ndcThresholdBreachEmail = process.env.NDC_THRESHOLD_BREACH_EMAIL;
 const settlementTransferPositionChangeEmail = process.env.SETTLEMENT_TRANSFER_POSITION_CHANGE_EMAIL;
@@ -80,9 +80,10 @@ async function onboardDfsp() {
     } else {
       const error = await response.json();
       // Allow re-registering of the same DFSP name and currency
-      if (response.status === 400 && error.errorCode === '3000'
-        && /currency.*already.*registered/.test(error.errorDescription)) {
-        log(`EXE: FAIL: sendRequest->addDfsp:\t${JSON.stringify(error)}`);
+      if (response.status === 400 && error.errorInformation.errorCode === '3000'
+        && /already/.test(error.errorInformation.errorDescription)) {
+        log(`EXE: FAIL: sendRequest->addDfsp:\t\t\t${JSON.stringify(error)}`);
+        log('EXE: INFO: Allowed failure:\t\t\t\tProceeding with next request');
       } else {
         throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
       }
@@ -109,7 +110,14 @@ async function onboardDfsp() {
       log('EXE: SUCC: sendRequest->addInitialPositionAndLimits');
     } else {
       const error = await response.json();
-      throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
+      // Allow re-registering
+      if (response.status === 500 && error.errorInformation.errorCode === '2001'
+      && /already/.test(error.errorInformation.errorDescription)) {
+        log(`EXE: FAIL: sendRequest->addInitialPositionAndLimits:\t${JSON.stringify(error)}`);
+        log('EXE: INFO: Allowed failure:\t\t\t\tProceeding with next request');
+      } else {
+        throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
+      }
     }
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->addInitialPositionAndLimits:\t${message}`);
@@ -129,9 +137,11 @@ async function onboardDfsp() {
     if (response.ok) {
       const dfspAccounts = await response.json();
       log('EXE: SUCC: sendRequest->getDfspAccounts');
-      log(`LOC: dfspAccounts:\t${JSON.stringify(dfspAccounts)}`);
-      const settlementAccountId = settlementIdFromHubAccounts(dfspAccounts);
-      log(`LOC: settlementAccountId:\t${settlementAccountId}`);
+      log(`LOC: dfspAccounts:\t\t\t\t\t${JSON.stringify(dfspAccounts)}`);
+      log('EXE: INIT: settlementAccountIdFromHubAccounts');
+      const settlementAccountId = settlementIdFromHubAccounts(dfspAccounts, dfspCurrency);
+      log('EXE: SUCC: settlementAccountIdFromHubAccounts');
+      log(`LOC: settlementAccountId:\t\t\t\t${settlementAccountId}`);
       log('EXE: INIT: sendRequest->depositFunds');
       const innerResponse = await sendRequest(depositFunds({
         dfspName,
@@ -155,7 +165,11 @@ async function onboardDfsp() {
       throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
-    log(`EXE: FAIL: sendRequest->depositFunds:\t${message}`);
+    if (/property/.test(message)) {
+      log(`EXE: FAIL: settlementAccountIdFromHubAccounts:\t${message}`);
+    } else {
+      log(`EXE: FAIL: sendRequest->depositFunds:\t\t${message}`);
+    }
     process.exitCode = 1;
     return;
   }
