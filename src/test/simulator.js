@@ -28,7 +28,7 @@ const Model = require('../models/model');
 const { map } = require('../simulator/handlers');
 const {
     transfer, transferWithoutQuote, quote, transactionrequest, party, idType, idValue,
-    transactionRequestId,
+    transactionRequestId, authorizationRequest,
 } = require('./constants');
 const { ApiErrorCodes } = require('../models/errors');
 
@@ -84,6 +84,15 @@ test('create a transactionrequest', async (t) => {
     t.context.request = { body: transactionrequest };
     await map['/transactionrequests'].post(t.context);
     t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('get signed challenge', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: authorizationRequest };
+    await map['/signchallenge'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.assert({}.hasOwnProperty.call(t.context.response.body, 'pinValue'));
     t.is(t.context.response.status, 200);
 });
 
