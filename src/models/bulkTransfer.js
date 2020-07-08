@@ -62,6 +62,9 @@ module.exports = class BulkTransfer {
     async create(bulkTransferRequest) {
         const { bulkTransferId } = bulkTransferRequest;
         const response = { bulkTransferId };
+        response.individualTransferResults = bulkTransferRequest.individualTransfers.map(
+            (transfer) => ({ transferId: transfer.transferId }),
+        );
         const reqStr = JSON.stringify(bulkTransferRequest);
         const resStr = JSON.stringify(response);
 
