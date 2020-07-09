@@ -223,12 +223,16 @@ jobs:
           name: Build Docker onboard-msisnds image
           command: >
             echo "Building Docker image: onboard-msisnds"
+
             docker build
             --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
-            --build-arg VERSION="$RELEASE_TAG"
+            --build-arg VERSION="local"
             --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
             --build-arg VCS_REF="$CIRCLE_SHA1"
             -t docker-msisdns:local ./init/onboard-msisdn-oracle/
+      - run:
+          name: Show active images
+          command: docker image ls
       - run:
           name: Save docker image to workspace
           command: docker save -o /tmp/docker-msisdns.tar docker-msisdns:local
