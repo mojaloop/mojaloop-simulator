@@ -231,9 +231,6 @@ jobs:
             --build-arg VCS_REF="$CIRCLE_SHA1"
             -t docker-msisdns:local ./init/onboard-msisdn-oracle/
       - run:
-          name: Show active images
-          command: docker image ls
-      - run:
           name: Save docker image to workspace
           command: docker save -o /tmp/docker-msisdns.tar docker-msisdns:local
       - persist_to_workspace:
