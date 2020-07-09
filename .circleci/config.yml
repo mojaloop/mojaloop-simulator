@@ -202,10 +202,10 @@ jobs:
             echo "Building Docker image: $CIRCLE_TAG"
 
             docker build
-            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="$RELEASE_TAG"
-            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg VCS_REF="$CIRCLE_SHA1"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
             -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG .
       - run:
           name: Save docker image to workspace
@@ -214,6 +214,29 @@ jobs:
           root: /tmp
           paths:
             - ./docker-image.tar
+
+  build-onboard-central-ledger:
+    executor: default-machine
+    steps:
+      - checkout
+      - run:
+          name: Build Docker onboard-central-ledger $CIRCLE_TAG image
+          command: >
+            echo "Building Docker image: onboard-central-ledger $CIRCLE_TAG"
+
+            docker build
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
+            --build-arg VERSION="$RELEASE_TAG"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
+            -t $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG .
+      - run:
+          name: Save docker image to workspace
+          command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - ./docker-onboard-central-ledger.tar
 
   build-onboard-msisdn-oracle:
     executor: default-machine
@@ -225,10 +248,10 @@ jobs:
             echo "Building Docker image: onboard-msisdn-oracle $CIRCLE_TAG"
 
             docker build
-            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="$RELEASE_TAG"
-            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg VCS_REF="$CIRCLE_SHA1"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
             -t $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG .
       - run:
           name: Save docker image to workspace
@@ -248,10 +271,10 @@ jobs:
             echo "Building Docker image: local"
 
             docker build
-            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="local"
-            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg VCS_REF="$CIRCLE_SHA1"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
             -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local .
       - run:
           name: Save docker image to workspace
@@ -260,6 +283,29 @@ jobs:
           root: /tmp
           paths:
             - ./docker-image.tar
+
+  build-local-onboard-central-ledger:
+    executor: default-machine
+    steps:
+      - checkout
+      - run:
+          name: Build Docker onboard-central-ledger local image for testing
+          command: >
+            echo "Building Docker image: onboard-central-ledger local"
+
+            docker build
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
+            --build-arg VERSION="local"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
+            -t $DOCKER_ORG/onboard-central-ledger:local ./init/onboard-central-ledger/
+      - run:
+          name: Save docker image to workspace
+          command: docker save -o /tmp/docker-onboard-central-ledger.tar $DOCKER_ORG/onboard-central-ledger:local
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - ./docker-onboard-central-ledger.tar
 
   build-local-onboard-msisdn-oracle:
     executor: default-machine
@@ -271,10 +317,10 @@ jobs:
             echo "Building Docker image: onboard-msisdn-oracle local"
 
             docker build
-            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="local"
-            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg VCS_REF="$CIRCLE_SHA1"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
             -t $DOCKER_ORG/onboard-msisdn-oracle:local ./init/onboard-msisdn-oracle/
       - run:
           name: Save docker image to workspace
@@ -384,6 +430,39 @@ jobs:
               -H 'cache-control: no-cache' \
               -d "{\"text\": \"*${CIRCLE_PROJECT_REPONAME}* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
 
+  publish-onboard-central-ledger:
+    executor: default-machine
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image for onboard-central-ledger from workspace
+          command: docker load -i /tmp/docker-onboard-central-ledger.tar
+      - run:
+          name: Login to Docker Hub
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run:
+          name: Setup environment vars for release/snapshot
+          command: ./.circleci/_set_up_deploy_envs.sh
+      - run:
+          name: Re-tag pre built image
+          command: |
+            docker tag $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG $DOCKER_ORG/onboard-central-ledger:$RELEASE_TAG
+      - run:
+          name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub for onboard-central-ledger
+          command: |
+            echo "Publishing $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG"
+            docker push $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG
+      - run:
+          name: Slack announcement for tag releases
+          command: |
+            curl -X POST \
+              $SLACK_WEBHOOK_ANNOUNCEMENT \
+              -H 'Content-type: application/json' \
+              -H 'cache-control: no-cache' \
+              -d "{\"text\": \"*onboard-central-ledger* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
+
   publish-onboard-msisdn-oracle:
     executor: default-machine
     steps:
@@ -487,6 +566,18 @@ workflows:
                 - /hotfix*/
       - build-local:
           context: org-global
+          requires:
+            - setup
+          filters:
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+                - /hotfix*/
+      - build-local-onboard-central-ledger:
+          context: org-global
+          requires:
+            - setup
           filters:
             branches:
               ignore:
@@ -495,6 +586,8 @@ workflows:
                 - /hotfix*/
       - build-local-onboard-msisdn-oracle:
           context: org-global
+          requires:
+            - setup
           filters:
             branches:
               ignore:
@@ -531,6 +624,16 @@ workflows:
             branches:
               ignore:
                 - /.*/
+      - build-onboard-central-ledger:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+            branches:
+              ignore:
+                - /.*/
       - build-onboard-msisdn-oracle:
           context: org-global
           requires:
@@ -552,10 +655,23 @@ workflows:
             branches:
               ignore:
                 - /.*/
+      - publish-onboard-central-ledger:
+          context: org-global
+          requires:
+            - build
+            - build-onboard-central-ledger
+            - build-onboard-msisdn-oracle
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+            branches:
+              ignore:
+                - /.*/
       - publish-onboard-msisdn-oracle:
           context: org-global
           requires:
             - build
+            - build-onboard-central-ledger
             - build-onboard-msisdn-oracle
           filters:
             tags:
@@ -567,6 +683,7 @@ workflows:
           context: org-global
           requires:
             - publish
+            - publish-onboard-central-ledger
             - publish-onboard-msisdn-oracle
           filters:
             tags:
