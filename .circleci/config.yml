@@ -472,7 +472,8 @@ workflows:
                 - /hotfix*/
       - build-onboard-msidns:
           context: org-global
-          requires: build-local
+          requires:
+            - build-local
           filters:
             branches:
               ignore:
