@@ -165,7 +165,8 @@ async function onboardDfsp() {
       throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
     }
   } catch ({ message }) {
-    // Identify an issue with settlementAccountIdFromHubAccounts with a pattern match
+    // Testing indicates this regex will match a settlementAccountIdFromHubAccounts error, but not a
+    // depositFunds error
     if (/property/.test(message)) {
       // So that a more specific failure can be logged
       log(`EXE: FAIL: settlementAccountIdFromHubAccounts:\t${message}`);
