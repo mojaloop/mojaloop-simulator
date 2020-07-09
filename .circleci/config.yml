@@ -220,18 +220,18 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Build Docker $CIRCLE_TAG image
+          name: Build Docker onboard-msisnds-local image
           command: >
-            echo "Building Docker image: $CIRCLE_TAG"
+            echo "Building Docker image: onboard-msisnds-local"
             docker build
             --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="$RELEASE_TAG"
             --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
             --build-arg VCS_REF="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$CIRCLE_TAG ./init/onboard-msisdn-oracle/
+            -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:onboard-msisnds-local ./init/onboard-msisdn-oracle/
       - run:
           name: Save docker image to workspace
-          command: docker save -o /tmp/docker-image-onboard-central-ledger.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$CIRCLE_TAG
+          command: docker save -o /tmp/docker-image-onboard-central-ledger.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:onboard-msisnds-local
       - persist_to_workspace:
           root: /tmp
           paths:
@@ -379,14 +379,12 @@ jobs:
       - run:
           name: Re-tag pre built image
           command: |
-            docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$CIRCLE_TAG $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$RELEASE_TAG
+            docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:onboard-msisnds-local $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$RELEASE_TAG
       - run:
           name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub for onboard-msisdns
           command: |
             echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$CIRCLE_TAG"
             docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$CIRCLE_TAG
-            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$RELEASE_TAG"
-            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$RELEASE_TAG
       - run:
           name: Slack announcement for tag releases
           command: |
