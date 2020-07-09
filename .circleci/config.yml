@@ -566,6 +566,8 @@ workflows:
                 - /hotfix*/
       - build-local:
           context: org-global
+          requires:
+            - setup
           filters:
             branches:
               ignore:
@@ -574,6 +576,8 @@ workflows:
                 - /hotfix*/
       - build-local-onboard-central-ledger:
           context: org-global
+          requires:
+            - setup
           filters:
             branches:
               ignore:
@@ -582,6 +586,8 @@ workflows:
                 - /hotfix*/
       - build-local-onboard-msisdn-oracle:
           context: org-global
+          requires:
+            - setup
           filters:
             branches:
               ignore:
