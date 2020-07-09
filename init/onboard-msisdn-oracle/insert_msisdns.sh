@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -ex
+set -eux
 
 CURRENT_DATE=$(date)
 for participantMSISDN in $(echo "${MSISDN_LIST}" | jq -c '.[]'); do
