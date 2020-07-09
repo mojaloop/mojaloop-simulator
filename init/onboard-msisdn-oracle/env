@@ -1,3 +1,0 @@
-PATHFINDER_ORACLE_HOST=pathfinder-oracle.ext-svcs.svc.cluster.local
-MSISDN_LIST=[{"MSISDN":"17039811907","currency":"XOF"}]
-SIM_NAME=payeefsp
