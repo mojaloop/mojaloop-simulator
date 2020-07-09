@@ -231,7 +231,7 @@ jobs:
             -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:onboard-msisnds-local ./init/onboard-msisdn-oracle/
       - run:
           name: Save docker image to workspace
-          command: docker save -o /tmp/docker-image-onboard-central-ledger.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:onboard-msisnds-local
+          command: docker save -o /tmp/docker-image-onboard-msisdns.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:onboard-msisnds-local
       - persist_to_workspace:
           root: /tmp
           paths:
