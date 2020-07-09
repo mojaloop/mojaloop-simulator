@@ -202,10 +202,10 @@ jobs:
             echo "Building Docker image: $CIRCLE_TAG"
 
             docker build
-            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="$RELEASE_TAG"
-            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg VCS_REF="$CIRCLE_SHA1"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
             -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG .
       - run:
           name: Save docker image to workspace
@@ -225,10 +225,10 @@ jobs:
             echo "Building Docker image: onboard-central-ledger $CIRCLE_TAG"
 
             docker build
-            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="$RELEASE_TAG"
-            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg VCS_REF="$CIRCLE_SHA1"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
             -t $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG .
       - run:
           name: Save docker image to workspace
@@ -248,10 +248,10 @@ jobs:
             echo "Building Docker image: onboard-msisdn-oracle $CIRCLE_TAG"
 
             docker build
-            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="$RELEASE_TAG"
-            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg VCS_REF="$CIRCLE_SHA1"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
             -t $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG .
       - run:
           name: Save docker image to workspace
@@ -271,10 +271,10 @@ jobs:
             echo "Building Docker image: local"
 
             docker build
-            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="local"
-            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg VCS_REF="$CIRCLE_SHA1"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
             -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local .
       - run:
           name: Save docker image to workspace
@@ -294,10 +294,10 @@ jobs:
             echo "Building Docker image: onboard-central-ledger local"
 
             docker build
-            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="local"
-            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg VCS_REF="$CIRCLE_SHA1"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
             -t $DOCKER_ORG/onboard-central-ledger:local ./init/onboard-central-ledger/
       - run:
           name: Save docker image to workspace
@@ -317,10 +317,10 @@ jobs:
             echo "Building Docker image: onboard-msisdn-oracle local"
 
             docker build
-            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="local"
-            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg VCS_REF="$CIRCLE_SHA1"
+            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+            --build-arg REVISION="$CIRCLE_SHA1"
             -t $DOCKER_ORG/onboard-msisdn-oracle:local ./init/onboard-msisdn-oracle/
       - run:
           name: Save docker image to workspace
