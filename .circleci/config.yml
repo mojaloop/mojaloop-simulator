@@ -232,7 +232,7 @@ jobs:
             -t $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG .
       - run:
           name: Save docker image to workspace
-          command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG
+          command: docker save -o /tmp/docker-onboard-central-ledger.tar $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG
       - persist_to_workspace:
           root: /tmp
           paths:
