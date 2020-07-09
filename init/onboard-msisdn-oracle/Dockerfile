@@ -11,7 +11,7 @@ LABEL org.opencontainers.image.url="https://mojaloop.io/"
 LABEL org.opencontainers.image.source=${SOURCE}
 LABEL org.opencontainers.image.version=${VERSION}
 LABEL org.opencontainers.image.revision=${REVISION}
-LABEL org.opencontainers.image.title="onboard-msisdns"
+LABEL org.opencontainers.image.title="onboard-msisdn-oracle"
 LABEL org.opencontainers.image.authors="aaron.reynoza@modusbox.com"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 

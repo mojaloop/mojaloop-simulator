@@ -214,30 +214,29 @@ jobs:
           root: /tmp
           paths:
             - ./docker-image.tar
-  
-  build-onboard-msidns:
+
+  build-onboard-msisdn-oracle:
     executor: default-machine
     steps:
       - checkout
       - run:
-          name: Build Docker onboard-msisnds image
+          name: Build Docker onboard-msisdn-oracle $CIRCLE_TAG image
           command: >
-            echo "Building Docker image: onboard-msisnds"
+            echo "Building Docker image: onboard-msisdn-oracle $CIRCLE_TAG"
 
             docker build
             --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
-            --build-arg VERSION="local"
+            --build-arg VERSION="$RELEASE_TAG"
             --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
             --build-arg VCS_REF="$CIRCLE_SHA1"
-            -t docker-msisdns:local ./init/onboard-msisdn-oracle/
+            -t $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG .
       - run:
           name: Save docker image to workspace
-          command: docker save -o /tmp/docker-msisdns.tar docker-msisdns:local
+          command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG
       - persist_to_workspace:
           root: /tmp
           paths:
-            - ./docker-msisdns.tar
-
+            - ./docker-onboard-msisdn-oracle.tar
 
   build-local:
     executor: default-machine
@@ -261,6 +260,29 @@ jobs:
           root: /tmp
           paths:
             - ./docker-image.tar
+
+  build-local-onboard-msisdn-oracle:
+    executor: default-machine
+    steps:
+      - checkout
+      - run:
+          name: Build Docker onboard-msisdn-oracle local image for testing
+          command: >
+            echo "Building Docker image: onboard-msisdn-oracle local"
+
+            docker build
+            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg VERSION="local"
+            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
+            --build-arg VCS_REF="$CIRCLE_SHA1"
+            -t $DOCKER_ORG/onboard-msisdn-oracle:local ./init/onboard-msisdn-oracle/
+      - run:
+          name: Save docker image to workspace
+          command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar $DOCKER_ORG/onboard-msisdn-oracle:local
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - ./docker-onboard-msisdn-oracle.tar
 
   license-scan:
     executor: default-machine
@@ -362,15 +384,15 @@ jobs:
               -H 'cache-control: no-cache' \
               -d "{\"text\": \"*${CIRCLE_PROJECT_REPONAME}* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
 
-  publish-onboard-msisdns:
+  publish-onboard-msisdn-oracle:
     executor: default-machine
     steps:
       - checkout
       - attach_workspace:
           at: /tmp
       - run:
-          name: Load the pre-built docker image for onboard-msisdns from workspace
-          command: docker load -i /tmp/docker-msisdns.tar
+          name: Load the pre-built docker image for onboard-msisdn-oracle from workspace
+          command: docker load -i /tmp/docker-onboard-msisdn-oracle.tar
       - run:
           name: Login to Docker Hub
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
@@ -380,12 +402,12 @@ jobs:
       - run:
           name: Re-tag pre built image
           command: |
-            docker tag docker-msisdns.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$RELEASE_TAG
+            docker tag docker-onboard-msisdn-oracle.tar $DOCKER_ORG/onboard-msisdn-oracle:$RELEASE_TAG
       - run:
-          name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub for onboard-msisdns
+          name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub for onboard-msisdn-oracle
           command: |
-            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$CIRCLE_TAG"
-            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$CIRCLE_TAG
+            echo "Publishing $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG"
+            docker push $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG
       - run:
           name: Slack announcement for tag releases
           command: |
@@ -393,7 +415,7 @@ jobs:
               $SLACK_WEBHOOK_ANNOUNCEMENT \
               -H 'Content-type: application/json' \
               -H 'cache-control: no-cache' \
-              -d "{\"text\": \"*${CIRCLE_PROJECT_REPONAME}-onboard-msisdns* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
+              -d "{\"text\": \"*onboard-msisdn-oracle* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
 
   deploy:
     executor: deploy-kube/helm-kube
@@ -471,10 +493,8 @@ workflows:
                 - /feature*/
                 - /bugfix*/
                 - /hotfix*/
-      - build-onboard-msidns:
+      - build-local-onboard-msisdn-oracle:
           context: org-global
-          requires:
-            - build-local
           filters:
             branches:
               ignore:
@@ -509,20 +529,30 @@ workflows:
             branches:
               ignore:
                 - /.*/
-      - publish:
+      - build-onboard-msisdn-oracle:
           context: org-global
-          requires:
-            - build
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
             branches:
               ignore:
                 - /.*/
-      - publish-onboard-msisdns:
+      - publish:
           context: org-global
           requires:
             - build
+            - build-onboard-msisdn-oracle
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+            branches:
+              ignore:
+                - /.*/
+      - publish-onboard-msisdn-oracle:
+          context: org-global
+          requires:
+            - build
+            - build-onboard-msisdn-oracle
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
@@ -533,6 +563,7 @@ workflows:
           context: org-global
           requires:
             - publish
+            - publish-onboard-msisdn-oracle
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
