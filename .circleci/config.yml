@@ -202,10 +202,10 @@ jobs:
             echo "Building Docker image: $CIRCLE_TAG"
 
             docker build
-            --build-arg=BUILD_DATE="$(date -u --iso-8601=seconds)"
-            --build-arg=VERSION="$RELEASE_TAG"
-            --build-arg=VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg=VCS_REF="$CIRCLE_SHA1"
+            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg VERSION="$RELEASE_TAG"
+            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
+            --build-arg VCS_REF="$CIRCLE_SHA1"
             -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG .
       - run:
           name: Save docker image to workspace
@@ -224,10 +224,10 @@ jobs:
           command: >
             echo "Building Docker image: $CIRCLE_TAG"
             docker build
-            --build-arg=BUILD_DATE="$(date -u --iso-8601=seconds)"
-            --build-arg=VERSION="$RELEASE_TAG"
-            --build-arg=VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg=VCS_REF="$CIRCLE_SHA1"
+            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg VERSION="$RELEASE_TAG"
+            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
+            --build-arg VCS_REF="$CIRCLE_SHA1"
             -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME-onboard-msisdns:$CIRCLE_TAG ./init/onboard-msisdn-oracle/
       - run:
           name: Save docker image to workspace
@@ -248,10 +248,10 @@ jobs:
             echo "Building Docker image: local"
 
             docker build
-            --build-arg=BUILD_DATE="$(date -u --iso-8601=seconds)"
-            --build-arg=VERSION="local"
-            --build-arg=VCS_URL="$CIRCLE_REPOSITORY_URL"
-            --build-arg=VCS_REF="$CIRCLE_SHA1"
+            --build-arg BUILD_DATE="$(date -u --iso-8601=seconds)"
+            --build-arg VERSION="local"
+            --build-arg VCS_URL="$CIRCLE_REPOSITORY_URL"
+            --build-arg VCS_REF="$CIRCLE_SHA1"
             -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local .
       - run:
           name: Save docker image to workspace
