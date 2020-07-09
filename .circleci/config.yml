@@ -402,7 +402,7 @@ jobs:
       - run:
           name: Re-tag pre built image
           command: |
-            docker tag docker-onboard-msisdn-oracle.tar $DOCKER_ORG/onboard-msisdn-oracle:$RELEASE_TAG
+            docker tag $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG $DOCKER_ORG/onboard-msisdn-oracle:$RELEASE_TAG
       - run:
           name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub for onboard-msisdn-oracle
           command: |
@@ -523,6 +523,8 @@ workflows:
                 - /hotfix*/
       - build:
           context: org-global
+          requires:
+            - setup
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
@@ -531,6 +533,8 @@ workflows:
                 - /.*/
       - build-onboard-msisdn-oracle:
           context: org-global
+          requires:
+            - setup
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
