@@ -23,6 +23,7 @@
 'use strict';
 
 const util = require('util');
+const crypto = require('crypto');
 require('dotenv').config();
 const { getStackOrInspect } = require('@internal/log');
 const { ApiErrorCodes } = require('../models/errors.js');
@@ -77,6 +78,20 @@ const getOTPById = async (ctx) => {
     }
 };
 
+const getSignedChallenge = async (ctx) => {
+    try {
+        const res = {
+            pinValue: crypto.randomBytes(256).toString('base64').slice(0, 64),
+            counter: '1',
+        };
+        ctx.state.logger.log(`getSignedChallenge is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
 
 const postTransfers = async (ctx) => {
     try {
@@ -143,6 +158,9 @@ const map = {
     },
     '/transfers': {
         post: postTransfers,
+    },
+    '/signchallenge': {
+        post: getSignedChallenge,
     },
     '/otp/{requestToPayId}': {
         get: getOTPById,
