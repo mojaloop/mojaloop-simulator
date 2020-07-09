@@ -1,30 +1,9 @@
 {
   "decisions": {
-    "1300|nyc>istanbul-reports>handlebars": {
-      "madeAt": 0,
-      "decision": "fix"
-    },
-    "1316|nyc>istanbul-reports>handlebars": {
-      "madeAt": 0,
-      "decision": "fix"
-    },
-    "1324|nyc>istanbul-reports>handlebars": {
-      "madeAt": 0,
-      "decision": "fix"
-    },
-    "1325|nyc>istanbul-reports>handlebars": {
-      "madeAt": 0,
-      "decision": "fix"
-    },
-    "1500|npm-audit-resolver>yargs-unparser>yargs>yargs-parser": {
-      "decision": "ignore",
-      "madeAt": 1591787086979,
-      "expiresAt": 1592391879076
-    },
     "1500|npm-audit-resolver>audit-resolve-core>yargs-parser": {
       "decision": "ignore",
-      "madeAt": 1591787090589,
-      "expiresAt": 1592391879076
+      "madeAt": 1594258444388,
+      "expiresAt": 1594863234907
     }
   },
   "rules": {},
