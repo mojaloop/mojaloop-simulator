@@ -69,3 +69,5 @@ goldenpayeefsp
 
 #vscode configs
 .vscode/
+/init/.DS_Store
+/.DS_Store
