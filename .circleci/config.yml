@@ -275,10 +275,10 @@ jobs:
             --build-arg VERSION="local"
             --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
             --build-arg REVISION="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local .
+            -t mojaloop/$CIRCLE_PROJECT_REPONAME:local .
       - run:
           name: Save docker image to workspace
-          command: docker save -o /tmp/docker-image.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local
+          command: docker save -o /tmp/docker-image.tar mojaloop/$CIRCLE_PROJECT_REPONAME:local
       - persist_to_workspace:
           root: /tmp
           paths:
@@ -298,10 +298,10 @@ jobs:
             --build-arg VERSION="local"
             --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
             --build-arg REVISION="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/onboard-central-ledger:local ./init/onboard-central-ledger/
+            -t mojaloop/onboard-central-ledger:local ./init/onboard-central-ledger/
       - run:
           name: Save docker image to workspace
-          command: docker save -o /tmp/docker-onboard-central-ledger.tar $DOCKER_ORG/onboard-central-ledger:local
+          command: docker save -o /tmp/docker-onboard-central-ledger.tar mojaloop/onboard-central-ledger:local
       - persist_to_workspace:
           root: /tmp
           paths:
@@ -321,10 +321,10 @@ jobs:
             --build-arg VERSION="local"
             --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
             --build-arg REVISION="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/onboard-msisdn-oracle:local ./init/onboard-msisdn-oracle/
+            -t mojaloop/onboard-msisdn-oracle:local ./init/onboard-msisdn-oracle/
       - run:
           name: Save docker image to workspace
-          command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar $DOCKER_ORG/onboard-msisdn-oracle:local
+          command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar mojaloop/onboard-msisdn-oracle:local
       - persist_to_workspace:
           root: /tmp
           paths:
@@ -343,7 +343,7 @@ jobs:
           <<: *defaults_license_scanner
       - run:
           name: Run the license-scanner
-          command: cd /tmp/license-scanner && mode=docker dockerImages=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:local make run
+          command: cd /tmp/license-scanner && mode=docker dockerImages=mojaloop/$CIRCLE_PROJECT_REPONAME:local make run
       - store_artifacts:
           path: /tmp/license-scanner/results
           prefix: licenses
@@ -363,7 +363,7 @@ jobs:
           command: docker load -i /tmp/docker-image.tar
       - anchore/analyze_local_image:
           dockerfile_path: ./Dockerfile
-          image_name: ${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:local
+          image_name: mojaloop/${CIRCLE_PROJECT_REPONAME}:local
           # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
           policy_failure: false
           timeout: '500'
@@ -381,12 +381,12 @@ jobs:
               printf "\n%s\n" "The following vulnerabilities were found:"
               jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
             fi
-      - run:
-          name: Upload Anchore reports to s3
-          command: |
-            aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
-            aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
-            aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+#       - run:
+#           name: Upload Anchore reports to s3
+#           command: |
+#             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+#             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+#             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
 
             # TODO: Enable this when we want to increase the strictness of our security policies
             # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
