@@ -41,5 +41,4 @@ const ApiErrorCodes = {
     VALIDATION_ERROR: { statusCode: '7003', message: 'Request was malformed' },
 };
 
-
 module.exports = { ApiErrorCodes };

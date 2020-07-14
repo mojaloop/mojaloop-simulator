@@ -25,7 +25,7 @@
 /* eslint-disable no-unused-vars */
 const test = require('ava');
 const { stringify } = require('querystring');
-const uuid = require('uuid/v1');
+const uuid = require('uuid').v1;
 
 const { map } = require('../reports/handlers');
 const Model = require('../models/model');
@@ -51,7 +51,6 @@ test.beforeEach(async (t) => {
     // eslint-disable-next-line no-param-reassign
     t.context = { state: {}, request: {}, response: {} };
 });
-
 
 test('get reports', async (t) => {
     // eslint-disable-next-line no-param-reassign

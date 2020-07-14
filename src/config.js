@@ -39,7 +39,6 @@ async function readFile(...args) {
     return p;
 }
 
-
 // TODO: implement toString, toJSON toAnythingElse methods on config so that secrets can't be
 // printed
 const config = {
@@ -58,7 +57,6 @@ const config = {
         testApi: 3003,
     },
 };
-
 
 const setConfig = async (cfg) => {
     config.tls.mutualTLS.enabled = cfg.MUTUAL_TLS_ENABLED.toLowerCase() !== 'false';
@@ -80,9 +78,7 @@ const setConfig = async (cfg) => {
     config.ports.testApi = cfg.TEST_API_LISTEN_PORT || config.ports.testApi;
 };
 
-
 const getConfig = () => config;
-
 
 module.exports = {
     getConfig,

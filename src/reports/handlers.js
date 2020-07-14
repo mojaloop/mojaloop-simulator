@@ -31,7 +31,6 @@ const { quoteTable } = require('../models/constants');
 
 require('dotenv').config();
 
-
 /**
  * Parses all quotes and returns responses.
  *

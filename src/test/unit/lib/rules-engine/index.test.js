@@ -30,7 +30,6 @@ const RulesEngine = require('@internal/rules-engine');
 const { testLogger } = require('../../TestUtils');
 const rules = require('../../../../rules.json');
 
-
 test('Sets up the rules engine with empty rules', (t) => {
     // Arrange
     const emptyRules = [];

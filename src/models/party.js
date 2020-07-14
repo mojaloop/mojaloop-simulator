@@ -30,7 +30,6 @@
 
 const { partyTable, partyExtensionTable } = require('./constants');
 
-
 /**
  * @typedef {Object} Party
  *
@@ -142,7 +141,6 @@ module.exports = class Party {
             });
         }
     }
-
 
     /**
     * Updates a party
