@@ -847,7 +847,6 @@ components:
       type: object
       required:
         - bulkTransferId
-        - from
         - individualTransfers
       properties:
         bulkTransferId:
@@ -868,7 +867,6 @@ components:
       description: Data model for individual transfer in a bulk transfer request
       required:
         - transferId
-        - to
         - amount
         - currency
       properties:
