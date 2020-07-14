@@ -35,8 +35,6 @@ log(`ENV: BASE_CENTRAL_LEDGER_ADMIN:\t\t\t${process.env.BASE_CENTRAL_LEDGER_ADMI
 log(`ENV: DFSP_CALLBACK_URL:\t\t\t\t${process.env.DFSP_CALLBACK_URL}`);
 log(`ENV: DFSP_CURRENCY:\t\t\t\t\t${process.env.DFSP_CURRENCY}`);
 log(`ENV: DFSP_NAME:\t\t\t\t\t${process.env.DFSP_NAME}`);
-log(`ENV: DFSP_PARTY_ID:\t\t\t\t\t${process.env.DFSP_PARTY_ID}`);
-log(`ENV: DFSP_PARTY_ID_TYPE:\t\t\t\t${process.env.DFSP_PARTY_ID_TYPE}`);
 log(`ENV: FUNDS_IN_PREPARE_AMOUNT:\t\t\t${process.env.FUNDS_IN_PREPARE_AMOUNT}`);
 log(`ENV: HOST_CENTRAL_LEDGER:\t\t\t\t${process.env.HOST_CENTRAL_LEDGER}`);
 log(`ENV: HUB_OPERATOR_NAME:\t\t\t\t${process.env.HUB_OPERATOR_NAME}`);
@@ -51,8 +49,6 @@ const authToken = process.env.AUTH_BEARER_TOKEN;
 const baseCentralLedgerAdmin = process.env.BASE_CENTRAL_LEDGER_ADMIN;
 const dfspCallbackUrl = process.env.DFSP_CALLBACK_URL;
 const dfspCurrency = process.env.DFSP_CURRENCY;
-const dfspPartyIdType = process.env.DFSP_PARTY_ID_TYPE;
-const dfspPartyId = process.env.DFSP_PARTY_ID;
 const dfspName = process.env.DFSP_NAME;
 const fspiopSource = process.env.HUB_OPERATOR_NAME;
 const hostCentralLedger = process.env.HOST_CENTRAL_LEDGER;
@@ -182,8 +178,6 @@ async function onboardDfsp() {
     const response = await sendRequest(addCallbackParticipantPut({
       dfspName,
       dfspCallbackUrl,
-      dfspPartyId,
-      dfspPartyIdType,
       authToken,
       hostCentralLedger,
       baseCentralLedgerAdmin,
@@ -206,8 +200,6 @@ async function onboardDfsp() {
     const response = await sendRequest(addCallbackParticipantPutError({
       dfspName,
       dfspCallbackUrl,
-      dfspPartyId,
-      dfspPartyIdType,
       authToken,
       hostCentralLedger,
       baseCentralLedgerAdmin,
@@ -230,7 +222,6 @@ async function onboardDfsp() {
     const response = await sendRequest(addCallbackParticipantPutBatch({
       dfspName,
       dfspCallbackUrl,
-      requestId: uuid.v4(),
       authToken,
       hostCentralLedger,
       baseCentralLedgerAdmin,
@@ -253,7 +244,6 @@ async function onboardDfsp() {
     const response = await sendRequest(addCallbackParticipantPutBatchError({
       dfspName,
       dfspCallbackUrl,
-      requestId: uuid.v4(),
       authToken,
       hostCentralLedger,
       baseCentralLedgerAdmin,
@@ -276,8 +266,6 @@ async function onboardDfsp() {
     const response = await sendRequest(addCallbackPartiesGet({
       dfspName,
       dfspCallbackUrl,
-      dfspPartyId,
-      dfspPartyIdType,
       authToken,
       hostCentralLedger,
       baseCentralLedgerAdmin,
@@ -300,8 +288,6 @@ async function onboardDfsp() {
     const response = await sendRequest(addCallbackPartiesPut({
       dfspName,
       dfspCallbackUrl,
-      dfspPartyId,
-      dfspPartyIdType,
       authToken,
       hostCentralLedger,
       baseCentralLedgerAdmin,
@@ -324,8 +310,6 @@ async function onboardDfsp() {
     const response = await sendRequest(addCallbackPartiesPutError({
       dfspName,
       dfspCallbackUrl,
-      dfspPartyId,
-      dfspPartyIdType,
       authToken,
       hostCentralLedger,
       baseCentralLedgerAdmin,
@@ -392,7 +376,6 @@ async function onboardDfsp() {
     const response = await sendRequest(addCallbackTransferPut({
       dfspName,
       dfspCallbackUrl,
-      transferId: uuid.v4(),
       authToken,
       hostCentralLedger,
       baseCentralLedgerAdmin,
@@ -415,7 +398,6 @@ async function onboardDfsp() {
     const response = await sendRequest(addCallbackTransferError({
       dfspName,
       dfspCallbackUrl,
-      transferId: uuid.v4(),
       authToken,
       hostCentralLedger,
       baseCentralLedgerAdmin,
