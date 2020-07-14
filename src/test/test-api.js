@@ -26,7 +26,7 @@
 'use strict';
 
 const test = require('ava');
-const Model = require('../../src/models/model');
+const Model = require('../models/model');
 const handlers = require('../test-api/handlers');
 const { ops, party, partyCreate } = require('./constants');
 
