@@ -226,14 +226,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/authorizationsPostRequest'
+              $ref: '#/components/schemas/AuthorizationsPostRequest'
       responses:
         200:
           description: Response containing details of the challenge
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/U2FPinValue'
         400:
           description: Malformed or missing required headers or parameters
           content:
@@ -242,6 +238,39 @@ paths:
                 $ref: '#/components/schemas/errorResponse'
         500:
           description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+  /authorizations:
+    post:
+      tags:
+        - Authorizations
+      description: The HTTP request `POST /authorizations` is used to request the Payer to enter the applicable credentials in the PISP system.
+      summary: /authorizations
+      operationId: AuthorizationsPost
+      requestBody:
+        description: Perform authorization
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorizationsPostRequest'
+      responses:
+        200:
+          description: 'post accepted'
+          content:
+            application/json:
+              schema:
+                type: object
+        400:
+          description: 'invalid request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: 'internal server error'
           content:
             application/json:
               schema:
@@ -945,8 +974,8 @@ components:
         - expiration
         - ilpPacket
         - condition        
-    authorizationsPostRequest:
-      title: authorizationsPostRequest
+    AuthorizationsPostRequest:
+      title: AuthorizationsPostRequest
       type: object
       description: POST /authorizations Request object
       properties:
