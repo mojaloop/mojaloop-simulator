@@ -176,10 +176,10 @@ jobs:
   setup:
     executor: default-docker
     steps:
-      - checkout
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       # - run:
           # name: Build dependencies
           # command: apk add --no-cache -t build-dependencies make gcc g++ python libtool autoconf automake
@@ -201,10 +201,10 @@ jobs:
   test-unit:
     executor: default-docker
     steps:
-      - checkout
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "./src/package.json" }}
       - run:
@@ -232,10 +232,10 @@ jobs:
   test-coverage:
     executor: default-docker
     steps:
-      - checkout
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       - run:
           name: Install AWS CLI dependencies
           command: *defaults_awsCliDependencies
@@ -270,10 +270,10 @@ jobs:
   vulnerability-check:
     executor: default-docker
     steps:
-      - checkout
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "./src/package.json" }}
       - run:
@@ -291,10 +291,10 @@ jobs:
   audit-licenses:
     executor: default-docker
     steps:
-      - checkout
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       - run:
           <<: *defaults_license_scanner
       - restore_cache:
