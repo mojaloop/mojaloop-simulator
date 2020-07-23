@@ -1,6 +1,6 @@
 {
   "name": "mojaloop-simulator",
-  "version": "10.6.5",
+  "version": "10.6.6",
   "description": "A canonical test example implementation of the parties, transfers and quotes resources of  the Mojaloop API",
   "license": "Apache-2.0",
   "main": "index.js",
