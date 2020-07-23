@@ -648,6 +648,7 @@ workflows:
           context: org-global
           requires:
             - build
+            - build-onboard-central-ledger
             - build-onboard-msisdn-oracle
           filters:
             tags:
