@@ -229,7 +229,7 @@ jobs:
             --build-arg VERSION="$RELEASE_TAG"
             --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
             --build-arg REVISION="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG .
+            -t $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG ./init/onboard-central-ledger/
       - run:
           name: Save docker image to workspace
           command: docker save -o /tmp/docker-onboard-central-ledger.tar $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG
@@ -252,7 +252,7 @@ jobs:
             --build-arg VERSION="$RELEASE_TAG"
             --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
             --build-arg REVISION="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG .
+            -t $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG ./init/onboard-msisdn-oracle/
       - run:
           name: Save docker image to workspace
           command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG
