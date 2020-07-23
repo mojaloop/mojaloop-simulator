@@ -1,6 +1,6 @@
 {
   "name": "onboard-central-ledger",
-  "version": "10.6.5",
+  "version": "10.6.6",
   "description": "",
   "main": "onboard-dfsp.js",
   "dependencies": {
