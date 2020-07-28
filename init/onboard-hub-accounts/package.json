@@ -1,0 +1,24 @@
+{
+  "name": "onboard-hub-accounts",
+  "version": "11.0.2",
+  "description": "",
+  "main": "onboard-hub-accounts.js",
+  "dependencies": {
+    "@mojaloop/finance-portal-lib": "0.0.20-snapshot",
+    "node-fetch": "^2.6.0",
+    "uuid": "^8.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.21.2"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "start": "node onboard-hub-accounts.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Matt Kingston <matt.kingston@modusbox.com>",
+  "license": "Apache-2.0"
+}
