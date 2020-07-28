@@ -12,7 +12,7 @@ LABEL org.opencontainers.image.source=${SOURCE}
 LABEL org.opencontainers.image.version=${VERSION}
 LABEL org.opencontainers.image.revision=${REVISION}
 LABEL org.opencontainers.image.title="onboard-central-ledger"
-LABEL org.opencontainers.image.authors="kamuela.franco@modusbox.com"
+LABEL org.opencontainers.image.authors="matt.kingston@modusbox.com"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 
 WORKDIR /opt/onboard-central-ledger
