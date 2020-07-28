@@ -25,4 +25,4 @@ WORKDIR /opt/onboard-central-ledger
 
 COPY --from=builder /opt/onboard-central-ledger .
 
-CMD ["node", "onboard-hub.js"]
+CMD ["node", "onboard-hub-accounts.js"]
