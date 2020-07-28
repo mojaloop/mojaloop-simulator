@@ -31,7 +31,6 @@ function log(message) {
 }
 
 log(`ENV: AUTH_BEARER_TOKEN:\t\t\t\t${process.env.AUTH_BEARER_TOKEN}`);
-log(`ENV: BASE_CENTRAL_LEDGER_ADMIN:\t\t\t${process.env.BASE_CENTRAL_LEDGER_ADMIN}`);
 log(`ENV: DFSP_CALLBACK_URL:\t\t\t\t${process.env.DFSP_CALLBACK_URL}`);
 log(`ENV: DFSP_CURRENCY:\t\t\t\t\t${process.env.DFSP_CURRENCY}`);
 log(`ENV: DFSP_NAME:\t\t\t\t\t${process.env.DFSP_NAME}`);
@@ -46,7 +45,6 @@ log(`ENV: SETTLEMENT_TRANSFER_POSITION_CHANGE_EMAIL:\t${process.env.SETTLEMENT_T
 
 const amount = process.env.FUNDS_IN_PREPARE_AMOUNT;
 const authToken = process.env.AUTH_BEARER_TOKEN;
-const baseCentralLedgerAdmin = process.env.BASE_CENTRAL_LEDGER_ADMIN;
 const dfspCallbackUrl = process.env.DFSP_CALLBACK_URL;
 const dfspCurrency = process.env.DFSP_CURRENCY;
 const dfspName = process.env.DFSP_NAME;
@@ -68,7 +66,6 @@ async function onboardDfsp() {
       dfspCurrency,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -99,7 +96,6 @@ async function onboardDfsp() {
       initialPosition,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -127,7 +123,6 @@ async function onboardDfsp() {
       dfspName,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -147,7 +142,6 @@ async function onboardDfsp() {
         settlementAccountId,
         authToken,
         hostCentralLedger,
-        baseCentralLedgerAdmin,
         fspiopSource,
       }));
       if (innerResponse.ok) {
@@ -180,7 +174,6 @@ async function onboardDfsp() {
       dfspCallbackUrl,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -202,7 +195,6 @@ async function onboardDfsp() {
       dfspCallbackUrl,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -224,7 +216,6 @@ async function onboardDfsp() {
       dfspCallbackUrl,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -246,7 +237,6 @@ async function onboardDfsp() {
       dfspCallbackUrl,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -268,7 +258,6 @@ async function onboardDfsp() {
       dfspCallbackUrl,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -290,7 +279,6 @@ async function onboardDfsp() {
       dfspCallbackUrl,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -312,7 +300,6 @@ async function onboardDfsp() {
       dfspCallbackUrl,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -334,7 +321,6 @@ async function onboardDfsp() {
       dfspCallbackUrl,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -356,7 +342,6 @@ async function onboardDfsp() {
       dfspCallbackUrl,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -378,7 +363,6 @@ async function onboardDfsp() {
       dfspCallbackUrl,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -400,7 +384,6 @@ async function onboardDfsp() {
       dfspCallbackUrl,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -422,7 +405,6 @@ async function onboardDfsp() {
       email: ndcAdjustmentEmail,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -444,7 +426,6 @@ async function onboardDfsp() {
       email: settlementTransferPositionChangeEmail,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
@@ -466,7 +447,6 @@ async function onboardDfsp() {
       email: ndcThresholdBreachEmail,
       authToken,
       hostCentralLedger,
-      baseCentralLedgerAdmin,
       fspiopSource,
     }));
     if (response.ok) {
