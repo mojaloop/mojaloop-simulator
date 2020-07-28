@@ -1,7 +1,8 @@
 const uuid = require('uuid');
 const {
   onboarding: {
-    createHubAccounts
+    createHubAccount,
+    sendRequest,
   },
 } = require('@mojaloop/finance-portal-lib');
 
@@ -27,15 +28,13 @@ const fspiopSource = process.env.HUB_OPERATOR_NAME;
 async function onboardHubAccounts() {
   try {
     log('EXE: INIT: sendRequest->createHubAccounts');
-    const requests = accounts.map((acc) => createHubAccounts({ authToken, fspiopSource, ...acc }));
-
-    // Deliberately sequential
-    requests.forEach((req) => {
-      const response = await sendRequest(createHubAccounts({
+    // Deliberately sequential to be more predictable and make debugging a little easier
+    await accounts.reduce((promise, acc) => promise.then(async () => {
+      const response = await sendRequest(createHubAccount({
         authToken,
-        hostCentralLedger,
-        baseCentralLedgerAdmin,
         fspiopSource,
+        hostCentralLedger,
+        ...acc
       }));
       if (response.ok) {
         log('EXE: SUCC: sendRequest->createHubAccounts');
@@ -47,13 +46,13 @@ async function onboardHubAccounts() {
           error.errorInformation.errorCode === '3003' &&
           /already/.test(error.errorInformation.errorDescription)
         ) {
-          log(`EXE: FAIL: sendRequest->createHubAccounts:\t\t\t${JSON.stringify(error)}`);
-          log('EXE: INFO: Allowed failure:\t\t\t\tContinuing');
+          log(`EXE: FAIL: sendRequest->createHubAccounts:\n${JSON.stringify(error)}`);
+          log('EXE: INFO: Allowed failure. Continuing.');
         } else {
           throw new Error(`Response not OK/2XX: ${JSON.stringify(error)}`);
         }
       }
-    })
+    }) , Promise.resolve());
 
   } catch ({ message }) {
     log(`EXE: FAIL: sendRequest->createHubAccounts:\t${message}`);
