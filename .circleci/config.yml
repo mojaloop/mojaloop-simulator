@@ -653,6 +653,16 @@ workflows:
                 - /feature*/
                 - /bugfix*/
                 - /hotfix*/
+      - build-local-onboard-hub-accounts:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+                - /hotfix*/
       - build-local-onboard-central-ledger:
           context: org-global
           requires:
@@ -703,6 +713,16 @@ workflows:
             branches:
               ignore:
                 - /.*/
+      - build-onboard-hub-accounts:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+            branches:
+              ignore:
+                - /.*/
       - build-onboard-central-ledger:
           context: org-global
           requires:
@@ -735,12 +755,26 @@ workflows:
             branches:
               ignore:
                 - /.*/
+      - publish-onboard-hub-accounts:
+          context: org-global
+          requires:
+            - build
+            - build-onboard-central-ledger
+            - build-onboard-msisdn-oracle
+            - build-onboard-hub-accounts
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+            branches:
+              ignore:
+                - /.*/
       - publish-onboard-central-ledger:
           context: org-global
           requires:
             - build
             - build-onboard-central-ledger
             - build-onboard-msisdn-oracle
+            - build-onboard-hub-accounts
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
@@ -753,6 +787,7 @@ workflows:
             - build
             - build-onboard-central-ledger
             - build-onboard-msisdn-oracle
+            - build-onboard-hub-accounts
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
@@ -765,6 +800,7 @@ workflows:
             - publish
             - publish-onboard-central-ledger
             - publish-onboard-msisdn-oracle
+            - publish-onboard-hub-accounts
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
