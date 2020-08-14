@@ -170,6 +170,58 @@ jobs:
           path: ./audit/results
           prefix: audit
 
+  vulnerability-check-onboard-hub-accounts:
+    executor: default-docker
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
+            - src/lib/log/node_modules
+            - src/lib/validate/node_modules
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - run:
+          name: Update NPM install (using `npm ci`)
+          command: cd init/onboard-hub-accounts && npm ci
+      - run:
+          name: Create dir for test results
+          command: mkdir -p ./audit/results
+      - run:
+          name: Check for new npm vulnerabilities
+          command: cd src && npm run audit:check --silent -- --json > ../audit/results/auditResults.json
+      - store_artifacts:
+          path: ./audit/results
+          prefix: audit
+
+  vulnerability-check-onboard-central-ledger:
+    executor: default-docker
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
+            - src/lib/log/node_modules
+            - src/lib/validate/node_modules
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - run:
+          name: Update NPM install (using `npm ci`)
+          command: cd init/onboard-central-ledger && npm ci
+      - run:
+          name: Create dir for test results
+          command: mkdir -p ./audit/results
+      - run:
+          name: Check for new npm vulnerabilities
+          command: cd src && npm run audit:check --silent -- --json > ../audit/results/auditResults.json
+      - store_artifacts:
+          path: ./audit/results
+          prefix: audit
+
   audit-licenses:
     executor: default-docker
     steps:
@@ -444,6 +496,156 @@ jobs:
       - store_artifacts:
           path: anchore-reports
 
+  image-scan-onboard-hub-accounts:
+    executor: anchore/anchore_engine
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run:
+          name: Install AWS CLI dependencies
+          command: *defaults_awsCliDependencies
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: docker load -i /tmp/docker-onboard-hub-accounts.tar
+      - anchore/analyze_local_image:
+          dockerfile_path: ./Dockerfile
+          image_name: mojaloop/onboard-hub-accounts:local
+          # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
+          policy_failure: false
+          timeout: '500'
+      - run:
+          name: Evaluate Failures.
+          command: |
+            if [[ ! $(which jq) ]]; then
+              (set +o pipefail; apk add jq || apt-get install -y jq || yum install -y jq)
+            fi
+            if [[ $(ls anchore-reports/*content-os*.json 2> /dev/null) ]]; then
+              printf "\n%s\n" "The following OS packages are installed:"
+              jq '[.content | sort_by(.package) | .[] | {package: .package, version: .version}]' anchore-reports/*content-os*.json
+            fi
+            if [[ $(ls anchore-reports/*vuln*.json 2> /dev/null) ]]; then
+              printf "\n%s\n" "The following vulnerabilities were found:"
+              jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
+            fi
+            #       - run:
+            #           name: Upload Anchore reports to s3
+            #           command: |
+            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+            #             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+
+            # TODO: Enable this when we want to increase the strictness of our security policies
+            # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
+            # echo "FailCount is: ${failCount}"
+            # if [ $failCount -gt 0 ]; then
+            #   printf "Failed with a policy failure count of: ${failCount}"
+            #   exit 1
+          # fi
+      - store_artifacts:
+          path: anchore-reports
+
+  image-scan-onboard-central-ledger:
+    executor: anchore/anchore_engine
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run:
+          name: Install AWS CLI dependencies
+          command: *defaults_awsCliDependencies
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: docker load -i /tmp/docker-onboard-central-ledger.tar
+      - anchore/analyze_local_image:
+          dockerfile_path: ./Dockerfile
+          image_name: mojaloop/onboard-central-ledger:local
+          # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
+          policy_failure: false
+          timeout: '500'
+      - run:
+          name: Evaluate Failures.
+          command: |
+            if [[ ! $(which jq) ]]; then
+              (set +o pipefail; apk add jq || apt-get install -y jq || yum install -y jq)
+            fi
+            if [[ $(ls anchore-reports/*content-os*.json 2> /dev/null) ]]; then
+              printf "\n%s\n" "The following OS packages are installed:"
+              jq '[.content | sort_by(.package) | .[] | {package: .package, version: .version}]' anchore-reports/*content-os*.json
+            fi
+            if [[ $(ls anchore-reports/*vuln*.json 2> /dev/null) ]]; then
+              printf "\n%s\n" "The following vulnerabilities were found:"
+              jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
+            fi
+            #       - run:
+            #           name: Upload Anchore reports to s3
+            #           command: |
+            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+            #             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+
+            # TODO: Enable this when we want to increase the strictness of our security policies
+            # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
+            # echo "FailCount is: ${failCount}"
+            # if [ $failCount -gt 0 ]; then
+            #   printf "Failed with a policy failure count of: ${failCount}"
+            #   exit 1
+          # fi
+      - store_artifacts:
+          path: anchore-reports
+
+  image-scan-onboard-msisdn-oracle:
+    executor: anchore/anchore_engine
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run:
+          name: Install AWS CLI dependencies
+          command: *defaults_awsCliDependencies
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: docker load -i /tmp/docker-onboard-msisdn-oracle.tar
+      - anchore/analyze_local_image:
+          dockerfile_path: ./Dockerfile
+          image_name: mojaloop/onboard-msisdn-oracle:local
+          # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
+          policy_failure: false
+          timeout: '500'
+      - run:
+          name: Evaluate Failures.
+          command: |
+            if [[ ! $(which jq) ]]; then
+              (set +o pipefail; apk add jq || apt-get install -y jq || yum install -y jq)
+            fi
+            if [[ $(ls anchore-reports/*content-os*.json 2> /dev/null) ]]; then
+              printf "\n%s\n" "The following OS packages are installed:"
+              jq '[.content | sort_by(.package) | .[] | {package: .package, version: .version}]' anchore-reports/*content-os*.json
+            fi
+            if [[ $(ls anchore-reports/*vuln*.json 2> /dev/null) ]]; then
+              printf "\n%s\n" "The following vulnerabilities were found:"
+              jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
+            fi
+            #       - run:
+            #           name: Upload Anchore reports to s3
+            #           command: |
+            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+            #             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+
+            # TODO: Enable this when we want to increase the strictness of our security policies
+            # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
+            # echo "FailCount is: ${failCount}"
+            # if [ $failCount -gt 0 ]; then
+            #   printf "Failed with a policy failure count of: ${failCount}"
+            #   exit 1
+          # fi
+      - store_artifacts:
+          path: anchore-reports
+
   publish:
     executor: default-machine
     steps:
@@ -633,6 +835,26 @@ workflows:
                 - /feature*/
                 - /bugfix*/
                 - /hotfix*/
+      - vulnerability-check-onboard-hub-accounts:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+                - /hotfix*/
+      - vulnerability-check-onboard-central-ledger:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+                - /hotfix*/
       - audit-licenses:
           context: org-global
           requires:
@@ -697,6 +919,36 @@ workflows:
           context: org-global
           requires:
             - build-local
+          filters:
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+                - /hotfix*/
+      - image-scan-onboard-hub-accounts:
+          context: org-global
+          requires:
+            - build-local-onboard-hub-accounts
+          filters:
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+                - /hotfix*/
+      - image-scan-onboard-central-ledger:
+          context: org-global
+          requires:
+            - build-local-onboard-central-ledger
+          filters:
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+                - /hotfix*/
+      - image-scan-onboard-msisdn-oracle:
+          context: org-global
+          requires:
+            - build-local-onboard-msisdn-oracle
           filters:
             branches:
               ignore:
