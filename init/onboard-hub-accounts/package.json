@@ -1,10 +1,10 @@
 {
-  "name": "onboard-central-ledger",
+  "name": "onboard-hub-accounts",
   "version": "11.0.3",
   "description": "",
-  "main": "onboard-dfsp.js",
+  "main": "onboard-hub-accounts.js",
   "dependencies": {
-    "@mojaloop/finance-portal-lib": "0.0.19-snapshot",
+    "@mojaloop/finance-portal-lib": "0.0.20-snapshot",
     "node-fetch": "^2.6.0",
     "uuid": "^8.2.0"
   },
@@ -16,9 +16,9 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "start": "node onboard-dfsp.js",
+    "start": "node onboard-hub-accounts.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Kamuela Franco <kamuela.franco@modusbox.com>",
+  "author": "Matt Kingston <matt.kingston@modusbox.com>",
   "license": "Apache-2.0"
 }
