@@ -15,6 +15,14 @@ A diagram showing the logical architecture of the simulator in a test scenario c
 
 # Use
 
+## Deploy with Helm and init containers (optional)
+Three init containers,
+- [onboard-hub-accounts](https://github.com/mojaloop/mojaloop-simulator/tree/master/init/onboard-hub-accounts)
+- [onboard-central-ledger](https://github.com/mojaloop/mojaloop-simulator/tree/master/init/onboard-central-ledger)
+- [onboard-msisdn-oracle](https://github.com/mojaloop/mojaloop-simulator/tree/master/init/onboard-msisdn-oracle)
+
+provided for optional use, may make an automated deployment via Helm chart easier than otherwise.
+
 ## Pre-requisites
   1. docker
   2. docker-compose
