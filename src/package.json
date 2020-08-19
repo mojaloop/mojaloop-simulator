@@ -6,10 +6,10 @@
   "main": "index.js",
   "author": "Matt Kingston, ModusBox Inc.",
   "contributors": [
+    "Aaron Reynoza <aaron.reynoza@modusbox.com>",
     "Kamuela Franco <kamuela.franco@modusbox.com>",
     "Matt Kingston <matt.kingston@modusbox.com>",
     "Steven Oderayi <steven.oderayi@modusbox.com>",
-    "Aaron Reynoza <aaron.reynoza@modusbox.com>",
     "Valentin Genev <valentin.genev@modusbox.com>",
     "ModusBox",
     "Mowali"
