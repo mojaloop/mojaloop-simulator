@@ -1,0 +1,139 @@
+prefix: ""
+
+# As per:
+# https://github.com/mojaloop/helm/blob/4afd91b4d4c976e1f8d60495c677f1ba48b30192/mojaloop-simulator/values.yaml#L130-L134
+ingress:
+  ingressPathRewriteRegex: /
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+
+defaults:
+  config:
+    backend:
+      env:
+        FEE_MULTIPLIER: "0.00"
+    schemeAdapter:
+      image:
+        tag: v10.6.3
+      env:
+        VALIDATE_INBOUND_JWS: "true"
+        PEER_ENDPOINT: "interop-switch.huboperator.live"
+        JWS_SIGN: "true"
+        AUTO_ACCEPT_QUOTES: "true"
+        AUTO_ACCEPT_PARTY: "true"
+        EXPIRY_SECONDS: 30
+        REQUEST_PROCESSING_TIMEOUT_SECONDS: 20
+        USE_QUOTE_SOURCE_FSP_AS_TRANSFER_PAYEE_FSP: "true"
+        REJECT_TRANSFERS_ON_EXPIRED_QUOTES: "true"
+        ILP_SECRET: "Use2DwOwCea6VobuFScu3IcoEviS3Oth"
+  ingress:
+    enabled: true
+    hosts:
+      - "interop-switch.huboperator.live"
+
+simulators:
+  payerfsp:
+    config:
+      backend:    # These are optional keys covering
+        rules: [] # rules-engine configured rules
+      schemeAdapter:
+        initContainers:
+          - name: onboard-hub-accounts
+            image: &hub_account_onboard_image mojaloop/onboard-hub-accounts:v11.0.3
+            env:
+              - name: AUTH_BEARER_TOKEN
+                value: "6e35ccb3-ec22-51c9-b768-d12c3d289442"
+              - name: HOST_CENTRAL_LEDGER
+                value: "http://centralledger-service.ext-svcs.svc.cluster.local"
+              - name: HUB_OPERATOR_NAME
+                value: "hub_operator"
+              - name: ACCOUNTS
+                value: '[{ "type": "HUB_MULTILATERAL_SETTLEMENT", "currency": "USD" },{ "type": "HUB_RECONCILIATION", "currency": "USD" }]'
+          - name: onboard-central-ledger
+            image: &central_ledger_onboard_image mojaloop/onboard-central-ledger:v11.0.3
+            env:
+              - name: AUTH_BEARER_TOKEN
+                value: "6e35ccb3-ec22-51c9-b768-d12c3d289442"
+              - name: DFSP_CALLBACK_URL
+                value: "https://dfsp.huboperator.live:9999/payerfsp"
+              - name: DFSP_CURRENCY
+                value: "USD"
+              - name: DFSP_NAME
+                value: "payerfsp"
+              - name: FUNDS_IN_PREPARE_AMOUNT
+                value: "10000"
+              - name: HOST_CENTRAL_LEDGER
+                value: "http://centralledger-service.ext-svcs.svc.cluster.local"
+              - name: HUB_OPERATOR_NAME
+                value: "hub_operator"
+              - name: INITIAL_POSITION
+                value: "0"
+              - name: NET_DEBIT_CAP
+                value: "10000"
+              - name: NDC_ADJUSTMENT_EMAIL
+                value: "hub.operator@domain.com"
+              - name: NDC_THRESHOLD_BREACH_EMAIL
+                value: "hub.operator@domain.com"
+              - name: SETTLEMENT_TRANSFER_POSITION_CHANGE_EMAIL
+                value: "hub.operator@domain.com"
+          - name: onboard-msisdn-oracle
+            image: &msisdn_onboard_image mojaloop/onboard-msisdn-oracle:v11.0.3
+            env:
+              - name: HOST_PATHFINDER_ORACLE
+                value: pathfinder-oracle.ext-svcs.svc.cluster.local
+              - name: MSISDN_LIST
+                value: '[{"MSISDN":"12345678901","currency":"USD"}]'
+              - name: DFSP_NAME
+                value: payerfsp
+
+  payeefsp:
+    config:
+      schemeAdapter:
+        initContainers:
+          - name: onboard-hub-accounts
+            image: *hub_account_onboard_image
+            env:
+              - name: AUTH_BEARER_TOKEN
+                value: "6e35ccb3-ec22-51c9-b768-d12c3d289442"
+              - name: HOST_CENTRAL_LEDGER
+                value: "http://centralledger-service.ext-svcs.svc.cluster.local"
+              - name: HUB_OPERATOR_NAME
+                value: "hub_operator"
+              - name: ACCOUNTS
+                value: '[{ "type": "HUB_MULTILATERAL_SETTLEMENT", "currency": "XOF" },{ "type": "HUB_RECONCILIATION", "currency": "XOF" }]'
+          - name: onboard-central-ledger
+            image: *central_ledger_onboard_image
+            env:
+              - name: AUTH_BEARER_TOKEN
+                value: "6e35ccb3-ec22-51c9-b768-d12c3d289442"
+              - name: DFSP_CALLBACK_URL
+                value: "https://dfsp.huboperator.live:9999/payeefsp"
+              - name: DFSP_CURRENCY
+                value: "XOF"
+              - name: DFSP_NAME
+                value: "payeefsp"
+              - name: FUNDS_IN_PREPARE_AMOUNT
+                value: "10000"
+              - name: HOST_CENTRAL_LEDGER
+                value: "http://centralledger-service.ext-svcs.svc.cluster.local"
+              - name: HUB_OPERATOR_NAME
+                value: "hub_operator"
+              - name: INITIAL_POSITION
+                value: "0"
+              - name: NET_DEBIT_CAP
+                value: "10000"
+              - name: NDC_ADJUSTMENT_EMAIL
+                value: "hub.operator@domain.com"
+              - name: NDC_THRESHOLD_BREACH_EMAIL
+                value: "hub.operator@domain.com"
+              - name: SETTLEMENT_TRANSFER_POSITION_CHANGE_EMAIL
+                value: "hub.operator@domain.com"
+          - name: onboard-msisdn-oracle
+            image: *msisdn_onboard_image
+            env:
+              - name: HOST_PATHFINDER_ORACLE
+                value: pathfinder-oracle.ext-svcs.svc.cluster.local
+              - name: MSISDN_LIST
+                value: '[{"MSISDN":"23456789012","currency":"USD"}]'
+              - name: DFSP_NAME
+                value: payeefsp
