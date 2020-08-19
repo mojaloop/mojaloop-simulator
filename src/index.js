@@ -53,9 +53,9 @@ const { setConfig, getConfig } = require('./config.js');
 const Model = require('./models/model');
 
 
-const simApiSpec = yaml.load('./src/simulator/api.yaml');
-const reportApiSpec = yaml.load('./src/reports/api.yaml');
-const testApiSpec = yaml.load('./src/test-api/api.yaml');
+const simApiSpec = yaml.load('./simulator/api.yaml');
+const reportApiSpec = yaml.load('./reports/api.yaml');
+const testApiSpec = yaml.load('./test-api/api.yaml');
 
 const simulator = new Koa();
 const report = new Koa();
