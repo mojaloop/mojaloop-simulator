@@ -34,8 +34,8 @@ defaults:
 simulators:
   payerfsp:
     config:
-      backend:
-        rules: [] # Optional rules-engine configured rules, see https://github.com/mojaloop/quoting-service/blob/d74ea2d238f88ef0a227eff91ff040ca265ceee5/config/rules.example.json
+      backend:    # These are optional keys covering
+        rules: [] # rules-engine configured rules
       schemeAdapter:
         initContainers:
           - name: onboard-hub-accounts
