@@ -21,7 +21,7 @@ Three init containers,
 - [onboard-central-ledger](https://github.com/mojaloop/mojaloop-simulator/tree/master/init/onboard-central-ledger)
 - [onboard-msisdn-oracle](https://github.com/mojaloop/mojaloop-simulator/tree/master/init/onboard-msisdn-oracle)
 
-provided for optional use, may make an automated deployment via Helm chart easier than otherwise.
+are provided for optional use and may make an automated deployment via Helm chart easier than otherwise. Please see the [example](docs/values-sims.example.yaml) config.
 
 ## Pre-requisites
   1. docker
