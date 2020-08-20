@@ -266,3 +266,20 @@ test('postBulkQuotes should handle 500 errors', async (t) => {
     t.deepEqual(t.context.response, expected, 'Response did not match expected');
     t.pass();
 });
+
+test('putTransfersById should handle request', async (t) => {
+    // Arrange
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { transferId: '1234' } };
+    // eslint-disable-next-line no-throw-literal, no-param-reassign
+    t.context.request = {
+        body: {
+            completedTimestamp: '2017-11-15T14:16:09.663+01:00',
+            transferState: 'COMMITTED',
+        },
+    };
+    await map['/transfers/{transferId}'].put(t.context);
+    const expected = t.context.request.body;
+    t.deepEqual(t.context.response, { body: { ...expected }, status: 200 }, 'response is received');
+    t.pass();
+});

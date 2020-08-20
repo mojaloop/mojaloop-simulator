@@ -30,7 +30,6 @@ require('dotenv').config();
 const { getStackOrInspect } = require('@internal/log');
 const { ApiErrorCodes } = require('../models/errors.js');
 
-
 const getParticipantsByTypeAndId = async (ctx) => {
     try {
         const { idValue, idType } = ctx.state.path.params;
@@ -47,7 +46,6 @@ const getParticipantsByTypeAndId = async (ctx) => {
         ctx.response.status = 500;
     }
 };
-
 
 const getPartiesByTypeAndId = async (ctx) => {
     // TODO: check that the provided type was MSISDN? Or just encode that in the API spec..
@@ -80,7 +78,6 @@ const getOTPById = async (ctx) => {
     }
 };
 
-
 const postTransfers = async (ctx) => {
     try {
         const res = await ctx.state.model.transfer.create(ctx.request.body);
@@ -94,6 +91,20 @@ const postTransfers = async (ctx) => {
     }
 };
 
+const putTransfersById = async (ctx) => {
+    try {
+        const res = await ctx.state.model.transfer.update(ctx.state.path.params.transferId, {
+            ...ctx.request.body,
+        });
+        ctx.state.logger.log(`putTransfersById is returning body: ${util.inspect(res)}`);
+        ctx.response.body = ctx.request.body;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in putTransfersById: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
 
 const postQuotes = async (ctx) => {
     try {
@@ -120,7 +131,6 @@ const postBulkQuotes = async (ctx) => {
         ctx.response.status = 500;
     }
 };
-
 
 const getBulkQuoteById = async (ctx) => {
     try {
@@ -221,6 +231,9 @@ const map = {
     },
     '/otp/{requestToPayId}': {
         get: getOTPById,
+    },
+    '/transfers/{transferId}': {
+        put: putTransfersById,
     },
 };
 

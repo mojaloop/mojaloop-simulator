@@ -183,6 +183,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/errorResponse'
 
+  /transfers/{transferId}:
+    put:
+      summary: Receive notification for a specific transfer
+      description: The HTTP request `PUT /transfers/{transferId}` is used to receive notification for transfer being fulfiled when the FSP is a Payee
+      tags:
+        - Transfers
+      parameters:
+        - $ref: '#/components/schemas/transferId'
+      requestBody:
+        description: An incoming notification for fulfiled transfer
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/fulfilNotification'
+      responses:
+        200:
+          description: The notification was accepted
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
+
   /otp/{requestToPayId}:
     get:
       summary: Requests OTP 
@@ -958,6 +983,60 @@ components:
         message:
           type: string
           description: Error message text
+    
+    extensionList:
+      type: array
+      items:
+        $ref: '#/components/schemas/extensionItem'
+      minItems: 0
+      maxItems: 16
+
+    extensionItem:
+      type: object
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 32
+        value:
+          type: string
+          minLength: 1
+          maxLength: 128
+
+    transferState:
+      type: string
+      enum:
+        - RECEIVED
+        - RESERVED
+        - COMMITTED
+        - ABORTED
+      description: >
+        Below are the allowed values for the enumeration
+        - RECEIVED DFSP has received the transfer.
+        - RESERVED DFSP has reserved the transfer.
+        - COMMITTED DFSP has successfully performed the transfer.
+        - ABORTED DFSP has aborted the transfer due a rejection or failure to perform the transfer.
+
+    fulfilNotification:
+      title: TransfersIDPatchResponse
+      type: object
+      description: PUT /transfers/{transferId} object
+      properties:
+        completedTimestamp:
+          $ref: '#/components/schemas/timestamp'
+          description: Time and date when the transaction was completed.
+          example: "2020-05-19T08:38:08.699-04:00"
+        transferState:
+          $ref: '#/components/schemas/transferState'
+          description: State of the transfer.
+          example: COMMITTED
+        extensionList:
+          $ref: '#/components/schemas/extensionList'
+          description: Optional extension, specific to deployment.
+      required:
+        - completedTimestamp
+        - transferState
+
 
 
 
