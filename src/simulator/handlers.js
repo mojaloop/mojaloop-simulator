@@ -95,7 +95,6 @@ const putTransfersById = async (ctx) => {
     try {
         const res = await ctx.state.model.transfer.update(ctx.state.path.params.transferId, {
             ...ctx.request.body,
-            homeTransactionId: ctx.state.path.params.transferId,
         });
         ctx.state.logger.log(`putTransfersById is returning body: ${util.inspect(res)}`);
         ctx.response.body = ctx.request.body;
