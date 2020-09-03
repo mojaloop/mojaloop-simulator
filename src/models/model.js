@@ -79,7 +79,8 @@ module.exports = class Model {
    * Initialises db.
    *
    * @async
-   * @param {String} databaseFilepath SqliteDB file path
+   * @param {String} databaseFilepath   SqliteDB file path
+   * @param [{Object}] parties          Array of party objects to create after db initialisation
    * @throws {Error}
    */
     async init({ databaseFilepath, parties }) {
@@ -87,29 +88,25 @@ module.exports = class Model {
             throw new Error('Attempted to initialise database twice');
         }
 
-        try {
-            this.db = await sqlite.open(databaseFilepath);
-            await this.db.run('PRAGMA foreign_keys = true');
-            await this.db.run(createPartyTable);
-            await this.db.run(createQuoteTable);
-            await this.db.run(createTransactionRequestTable);
-            await this.db.run(createTransferTable);
-            await this.db.run(createPartyExtensionTable);
-            await this.db.run(createBulkQuoteTable);
-            await this.db.run(createBulkTransferTable);
+        this.db = await sqlite.open(databaseFilepath);
+        await this.db.run('PRAGMA foreign_keys = true');
+        await this.db.run(createPartyTable);
+        await this.db.run(createQuoteTable);
+        await this.db.run(createTransactionRequestTable);
+        await this.db.run(createTransferTable);
+        await this.db.run(createPartyExtensionTable);
+        await this.db.run(createBulkQuoteTable);
+        await this.db.run(createBulkTransferTable);
 
-            this.party = new Party(this.db);
-            this.quote = new Quote(this.db);
-            this.bulkQuote = new BulkQuote(this.db);
-            this.transactionrequest = new TransactionRequest(this.db);
-            this.transfer = new Transfer(this.db);
-            this.bulkTransfer = new BulkTransfer(this.db);
+        this.party = new Party(this.db);
+        this.quote = new Quote(this.db);
+        this.bulkQuote = new BulkQuote(this.db);
+        this.transactionrequest = new TransactionRequest(this.db);
+        this.transfer = new Transfer(this.db);
+        this.bulkTransfer = new BulkTransfer(this.db);
 
-            if (parties) {
-                await Promise.all(parties.map((p) => this.party.create(p)));
-            }
-        } catch (err) {
-            throw new Error(err);
+        if (parties) {
+            await Promise.all(parties.map((p) => this.party.create(p)));
         }
     }
 };
