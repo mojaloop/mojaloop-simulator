@@ -79,9 +79,7 @@ const setConfig = async (cfg) => {
     config.ports.simulatorApi = cfg.SIMULATOR_API_LISTEN_PORT || config.ports.simulatorApi;
     config.ports.reportApi = cfg.REPORT_API_LISTEN_PORT || config.ports.reportApi;
     config.ports.testApi = cfg.TEST_API_LISTEN_PORT || config.ports.testApi;
-    if (cfg.PARTIES) {
-        config.parties = JSON.parse(cfg.PARTIES);
-    }
+    config.parties = cfg.PARTIES || [];
 };
 
 
