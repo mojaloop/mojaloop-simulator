@@ -64,6 +64,7 @@ const testApi = new Koa();
 (async function start() {
     // Set up the config from the environment
     await setConfig(process.env);
+    const conf = getConfig();
 
     // Set up a logger for each running server
     const space = Number(process.env.LOG_INDENT);
@@ -81,7 +82,7 @@ const testApi = new Koa();
 
     // Initialise the model
     const model = new Model();
-    await model.init(process.env.MODEL_DATABASE);
+    await model.init({ databaseFilePath: process.env.MODEL_DATABASE, parties: conf.parties });
 
     // Log raw to console as a last resort- if the logging framework crashes
     const failSafe = async (ctx, next) => {
@@ -257,7 +258,6 @@ const testApi = new Koa();
 
     // If config specifies TLS, start an HTTPS server; otherwise HTTP
     let simServer;
-    const conf = getConfig();
     const simulatorPort = conf.ports.simulatorApi;
     const reportPort = conf.ports.reportApi;
     const testApiPort = conf.ports.testApi;
