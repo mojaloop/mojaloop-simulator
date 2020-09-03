@@ -82,7 +82,7 @@ const testApi = new Koa();
 
     // Initialise the model
     const model = new Model();
-    await model.init({ databaseFilePath: process.env.MODEL_DATABASE, parties: conf.parties });
+    await model.init({ databaseFilepath: process.env.MODEL_DATABASE, parties: conf.parties });
 
     // Log raw to console as a last resort- if the logging framework crashes
     const failSafe = async (ctx, next) => {
