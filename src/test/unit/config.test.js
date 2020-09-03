@@ -52,6 +52,7 @@ test('Sets the basic config', async (t) => {
             reportApi: 3002,
             testApi: 3003,
         },
+        parties: [],
     };
 
     // Act

@@ -39,7 +39,7 @@ const {
 
 test.beforeEach(async (t) => {
     const model = new Model();
-    await model.init(':memory:');
+    await model.init({ databaseFilepath: ':memory:' });
     // eslint-disable-next-line no-param-reassign
     t.context = { model };
 });
@@ -395,7 +395,7 @@ test('throws if we try to init the db incorrectly', async (t) => {
     });
 
     // Assert
-    t.is(error.message, 'TypeError: Argument 0 must be a string', 'Invalid error message.');
+    t.is(error.message, 'Cannot destructure property \'databaseFilepath\' of \'undefined\' as it is undefined.', 'Invalid error message.');
 });
 
 test('does nothing if trying to close a non existent db', async (t) => {

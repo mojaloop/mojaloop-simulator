@@ -116,7 +116,7 @@ const testOps = [
 
 test.beforeEach(async (t) => {
     const model = new Model();
-    await model.init(':memory:');
+    await model.init({ databaseFilepath: ':memory:' });
     // eslint-disable-next-line no-param-reassign
     t.context = { state: { model, logger: console }, response: {} };
 });

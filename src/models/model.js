@@ -82,7 +82,7 @@ module.exports = class Model {
    * @param {String} databaseFilepath SqliteDB file path
    * @throws {Error}
    */
-    async init(databaseFilepath) {
+    async init({ databaseFilepath, parties }) {
         if (this.db) {
             throw new Error('Attempted to initialise database twice');
         }
@@ -104,6 +104,10 @@ module.exports = class Model {
             this.transactionrequest = new TransactionRequest(this.db);
             this.transfer = new Transfer(this.db);
             this.bulkTransfer = new BulkTransfer(this.db);
+
+            if (parties) {
+                await Promise.all(parties.map((p) => this.party.create(p)));
+            }
         } catch (err) {
             throw new Error(err);
         }
