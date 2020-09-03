@@ -114,15 +114,40 @@ const testOps = [
 
 ];
 
+const preconfiguredParties = [
+    {
+        ...party,
+        idValue: '123457',
+    },
+    {
+        ...party,
+        idValue: '123458',
+    },
+    {
+        ...party,
+        idValue: '123459',
+    },
+    {
+        ...party,
+        idValue: '123456',
+    },
+];
+
 test.beforeEach(async (t) => {
     const model = new Model();
-    await model.init({ databaseFilepath: ':memory:' });
+    await model.init({ databaseFilepath: ':memory:', parties: preconfiguredParties });
     // eslint-disable-next-line no-param-reassign
     t.context = { state: { model, logger: console }, response: {} };
 });
 
 test.afterEach(async (t) => {
     await t.context.state.model.close();
+});
+
+test.only('preconfigured parties should pre-exist', async (t) => {
+    await handlers.map['/repository/parties'].get(t.context);
+    const byId = (a, b) => Number(a.idValue) - Number(b.idValue);
+    t.deepEqual(t.context.response.body.sort(byId), preconfiguredParties.sort(byId));
 });
 
 test('should return 200 when reading a party', async (t) => {
