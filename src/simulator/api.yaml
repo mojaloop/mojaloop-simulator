@@ -275,7 +275,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
-
+  /verify-authorization:
+    post:
+      tags:
+        - Authorizations
+      description: The HTTP request `POST /verify-authorization` is used to verify signed authorization received from PISP.
+      summary: /verify-authorization
+      operationId: VerifyAuthorizationsPost
+      requestBody:
+        description: Perform verification of signed authorization
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: 'post accepted'
+          content:
+            application/json:
+              schema:
+                type: object
+        400:
+          description: 'invalid request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: 'internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
 components:
   schemas:
   
@@ -1130,7 +1162,52 @@ components:
           type: string
           description: Error message text
 
+    AuthenticationInfo:
+      title: AuthenticationInfo
+      type: object
+      description: Data model for the complex type AuthenticationInfo
+      properties:
+        authentication:
+          $ref: '#/components/schemas/AuthenticationType'
+          description: Type of authentication.
+        authenticationValue:
+          $ref: '#/components/schemas/AuthenticationValue'
+          description: Authentication value.
+      required:
+        - authentication
+        - authenticationValue
 
+    VerifyAuthorizationsPostRequest:
+      title: AuthorizationsIDPutResponse
+      type: object
+      description: 'POST /verify-authorizations'
+      properties:
+        authenticationInfo:
+          $ref: '#/components/schemas/AuthenticationInfo'
+          description: 'OTP or QR Code if entered, otherwise empty.'
+        responseType:
+          $ref: '#/components/schemas/AuthorizationResponse'
+          description: >-
+            Enum containing response information; if the customer entered the
+            authentication value, rejected the transaction, or requested a
+            resend of the authentication value.
+        transactionRequestId:
+          $ref: '#/components/schemas/transactionRequestId'
+      required:
+        - responseType
+        - authenticationInfo
+        - transactionRequestId
 
-
+    AuthorizationResponse:
+      title: AuthorizationResponse
+      type: string
+      enum:
+        - ENTERED
+        - REJECTED
+        - RESEND
+      description: >-
+        Below are the allowed values for the enumeration - ENTERED Consumer
+        entered the authentication value. - REJECTED Consumer rejected the
+        transaction. - RESEND Consumer requested to resend the authentication
+        value.
 
