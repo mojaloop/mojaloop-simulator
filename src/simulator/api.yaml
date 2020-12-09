@@ -52,6 +52,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/errorResponse'
 
+  /participants/{idType}/{idValue}/{subIdValue}:
+    get:
+      summary: Asks for the FSPID of the scheme participant that can handle transfers for the specified identifier type, value and subId value
+      tags:
+        - Participants
+      parameters:
+        - name: idType
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idType'
+        - name: idValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idValue'
+        - name: subIdValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/subIdValue'
+      responses:
+        200:
+          description: Response containing details of the requested party
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/participantsResponse'
+        404:
+          description: The party specified by the provided identifier type and value/subId is not known to the server
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
   /parties/{idType}/{idValue}:
     get:
       summary: Requests information relating to a transfer party identified by the specified identifier type and value
@@ -68,6 +111,49 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/idValue'
+      responses:
+        200:
+          description: Response containing details of the requested party
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transferParty'
+        404:
+          description: The party specified by the provided identifier type and value is not known to the server
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
+  /parties/{idType}/{idValue}/{subIdValue}:
+    get:
+      summary: Requests information relating to a transfer party identified by the specified identifier type, value and subId value
+      tags:
+        - Parties
+      parameters:
+        - name: idType
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idType'
+        - name: idValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idValue'
+        - name: subIdValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/subIdValue'
       responses:
         200:
           description: Response containing details of the requested party
@@ -664,6 +750,11 @@ components:
       minLength: 1
       maxLength: 128
       
+    subIdValue:
+      type: string
+      minLength: 1
+      maxLength: 128
+      
     money:
       pattern: ^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$
       type: string
@@ -715,6 +806,9 @@ components:
         idValue:
           type: string
           description: The identifier string used to identify the sender
+        subIdValue:
+          type: string
+          description: The sub identifier string used to identify the sender
         displayName:
           type: string
           description: Display name of the sender if known
