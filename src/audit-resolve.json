@@ -4,6 +4,36 @@
       "decision": "ignore",
       "madeAt": 1594258444388,
       "expiresAt": 1594863234907
+    },
+    "1589|sqlite>sqlite3>node-pre-gyp>rc>ini": {
+      "decision": "ignore",
+      "madeAt": 1607553157718,
+      "expiresAt": 1610145105148
+    },
+    "1589|00unidentified>sqlite>sqlite3>node-pre-gyp>rc>ini": {
+      "decision": "ignore",
+      "madeAt": 1607553157718,
+      "expiresAt": 1610145105148
+    },
+    "1589|00unidentified>00unidentified>sqlite>sqlite3>node-pre-gyp>rc>ini": {
+      "decision": "ignore",
+      "madeAt": 1607553157718,
+      "expiresAt": 1610145105148
+    },
+    "1589|ava>update-notifier>latest-version>package-json>registry-auth-token>rc>ini": {
+      "decision": "ignore",
+      "madeAt": 1607553157718,
+      "expiresAt": 1610145105148
+    },
+    "1589|ava>update-notifier>latest-version>package-json>registry-url>rc>ini": {
+      "decision": "ignore",
+      "madeAt": 1607553157718,
+      "expiresAt": 1610145105148
+    },
+    "1589|ava>update-notifier>is-installed-globally>global-dirs>ini": {
+      "decision": "ignore",
+      "madeAt": 1607553157718,
+      "expiresAt": 1610145105148
     }
   },
   "rules": {},
