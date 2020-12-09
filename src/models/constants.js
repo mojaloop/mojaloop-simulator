@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS ${partyTable} (
 // below index is a workaround to avoid the duplicates since sqlite treats every null as a unique value
 // thus allowing to insert multiple records for same the idValue having subIdValue as NULL
 const createPartyTableUniqueIndex = `
-CREATE UNIQUE INDEX idx_party_unique ON ${partyTable} (
+CREATE UNIQUE INDEX IF NOT EXISTS idx_party_unique ON ${partyTable} (
     idValue,
     IFNULL(subIdValue, '')
 )
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS ${partyExtensionTable} (
 // below index is a workaround to avoid the duplicates since sqlite treats every null as a unique value
 // thus allowing to insert multiple records for same the idValue/key having subIdValue as NULL
 const createPartyExtensionTableUniqueIndex = `
-CREATE UNIQUE INDEX idx_party_extension_unique ON ${partyExtensionTable} (
+CREATE UNIQUE INDEX IF NOT EXISTS idx_party_extension_unique ON ${partyExtensionTable} (
     idValue,
     IFNULL(subIdValue, ''),
     key
