@@ -38,12 +38,14 @@ const BulkTransfer = require('./bulkTransfer');
 
 const {
     createPartyTable,
+    createPartyTableUniqueIndex,
     createQuoteTable,
     createBulkQuoteTable,
     createTransferTable,
     createBulkTransferTable,
     createTransactionRequestTable,
     createPartyExtensionTable,
+    createPartyExtensionTableUniqueIndex,
 } = require('./constants');
 
 /**
@@ -91,10 +93,12 @@ module.exports = class Model {
         this.db = await sqlite.open(databaseFilepath);
         await this.db.run('PRAGMA foreign_keys = true');
         await this.db.run(createPartyTable);
+        await this.db.run(createPartyTableUniqueIndex);
         await this.db.run(createQuoteTable);
         await this.db.run(createTransactionRequestTable);
         await this.db.run(createTransferTable);
         await this.db.run(createPartyExtensionTable);
+        await this.db.run(createPartyExtensionTableUniqueIndex);
         await this.db.run(createBulkQuoteTable);
         await this.db.run(createBulkTransferTable);
 
