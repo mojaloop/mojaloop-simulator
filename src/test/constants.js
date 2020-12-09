@@ -60,7 +60,7 @@ const partyWithSubIdValue = {
     dateOfBirth: '1970-01-01T00:00:00.000Z',
     idType,
     idValue,
-    subIdValue
+    subIdValue,
 };
 
 const partyCreate = {
