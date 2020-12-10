@@ -38,19 +38,40 @@ CREATE TABLE IF NOT EXISTS ${partyTable} (
     lastName TEXT,
     dateOfBirth TEXT,
     idType TEXT,
-    idValue TEXT NOT NULL PRIMARY KEY,
+    idValue TEXT NOT NULL,
+    subIdValue TEXT,
     CHECK(idValue <> '')
 )
 `;
+
+// below index is a workaround to avoid the duplicates since sqlite treats every null as a unique value
+// thus allowing to insert multiple records for same the idValue having subIdValue as NULL
+const createPartyTableUniqueIndex = `
+CREATE UNIQUE INDEX IF NOT EXISTS idx_party_unique ON ${partyTable} (
+    idValue,
+    IFNULL(subIdValue, '')
+)
+`;
+
 const createPartyExtensionTable = `
 CREATE TABLE IF NOT EXISTS ${partyExtensionTable} (
     idValue TEXT NOT NULL,
+    subIdValue TEXT,
     key TEXT NOT NULL,
-    value TEXT NOT NULL,
-    PRIMARY KEY (idValue, key),
-    FOREIGN KEY (idValue) REFERENCES party(idValue) ON DELETE CASCADE
+    value TEXT NOT NULL
 )
 `;
+
+// below index is a workaround to avoid the duplicates since sqlite treats every null as a unique value
+// thus allowing to insert multiple records for same the idValue/key having subIdValue as NULL
+const createPartyExtensionTableUniqueIndex = `
+CREATE UNIQUE INDEX IF NOT EXISTS idx_party_extension_unique ON ${partyExtensionTable} (
+    idValue,
+    IFNULL(subIdValue, ''),
+    key
+)
+`;
+
 const createQuoteTable = `
 CREATE TABLE IF NOT EXISTS ${quoteTable} (
     id TEXT NOT NULL PRIMARY KEY,
@@ -114,4 +135,6 @@ module.exports = {
     createTransferTable,
     createTransactionRequestTable,
     createPartyExtensionTable,
+    createPartyTableUniqueIndex,
+    createPartyExtensionTableUniqueIndex,
 };

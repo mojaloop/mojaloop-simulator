@@ -34,7 +34,7 @@ const { cloneDeep } = require('./unit/TestUtils');
 const {
     transfer, quote, newQuote, bulkQuote, newBulkQuote, transactionrequest, party, newTransfer,
     bulkTransfer, newBulkTransfer, bulkTransferId, idType, idValue, partyCreate, transferId,
-    transactionRequestId,
+    transactionRequestId, partyWithSubIdValue, partyCreateWithSubIdValue, subIdValue,
 } = require('./constants');
 
 test.beforeEach(async (t) => {
@@ -69,6 +69,17 @@ test('create and retrieve all parties', async (t) => {
     t.pass();
 });
 
+test('create and retrieve all parties with subIdValue', async (t) => {
+    const { model } = t.context;
+
+    await model.party.create(partyCreateWithSubIdValue);
+    const res = await model.party.getAll();
+    if (!res) {
+        t.fail('Result not found');
+    }
+    t.pass();
+});
+
 test('create and retrieve all parties duplicates', async (t) => {
     const { model } = t.context;
     await model.party.create(partyCreate);
@@ -85,6 +96,17 @@ test('create and retrieve a party', async (t) => {
 
     await model.party.create(partyCreate);
     const res = await model.party.get(idType, idValue);
+    if (!res) {
+        t.fail('Result not found');
+    }
+    t.pass();
+});
+
+test('create and retrieve a party with subIdValue', async (t) => {
+    const { model } = t.context;
+
+    await model.party.create(partyCreateWithSubIdValue);
+    const res = await model.party.get(idType, idValue, subIdValue);
     if (!res) {
         t.fail('Result not found');
     }
@@ -114,8 +136,74 @@ test('create and update a party', async (t) => {
     };
     await model.party.create(partyCreate);
     const orig = await model.party.get(idType, idValue);
-    await model.party.update(idType, idValue, newParty);
+    await model.party.update(newParty, idType, idValue);
     const changed = await model.party.get(idType, idValue);
+    t.notDeepEqual({ orig }, { changed });
+});
+
+test('create and update a party without extensionList', async (t) => {
+    const { model } = t.context;
+    const newParty = {
+        displayName: 'randName',
+        firstName: 'hello',
+        middleName: 'world',
+        lastName: 'lambda',
+        dateOfBirth: '1970-01-01T00:00:00.000Z',
+        idType,
+        idValue,
+    };
+    await model.party.create(partyCreate);
+    const orig = await model.party.get(idType, idValue);
+    await model.party.update(newParty, idType, idValue);
+    const changed = await model.party.get(idType, idValue);
+    t.notDeepEqual({ orig }, { changed });
+});
+
+test('create and update a party with subIdValue', async (t) => {
+    const { model } = t.context;
+    const newParty = {
+        displayName: 'randName',
+        firstName: 'hello',
+        middleName: 'world',
+        lastName: 'lambda',
+        dateOfBirth: '1970-01-01T00:00:00.000Z',
+        idType,
+        idValue,
+        subIdValue,
+        extensionList: [
+            {
+                key: 'accountType',
+                value: 'Wallet',
+            },
+            {
+                key: 'accountNumber',
+                value: '12345343',
+            },
+        ],
+    };
+    await model.party.create(partyCreateWithSubIdValue);
+    const orig = await model.party.get(idType, idValue, subIdValue);
+    await model.party.update(newParty, idType, idValue, subIdValue);
+    const changed = await model.party.get(idType, idValue, subIdValue);
+    t.notDeepEqual({ orig }, { changed });
+});
+
+test('create and update a party with subIdValue without extensionList', async (t) => {
+    const { model } = t.context;
+    const newParty = {
+        displayName: 'randName',
+        firstName: 'hello',
+        middleName: 'world',
+        lastName: 'lambda',
+        dateOfBirth: '1970-01-01T00:00:00.000Z',
+        idType,
+        idValue,
+        subIdValue,
+    };
+    await model.party.create(partyWithSubIdValue);
+    const orig = await model.party.get(idType, idValue, subIdValue);
+    await model.party.update(newParty, idType, idValue, subIdValue);
+    const changed = await model.party.get(idType, idValue, subIdValue);
     t.notDeepEqual({ orig }, { changed });
 });
 
@@ -126,12 +214,28 @@ test('retrieve a participant', async (t) => {
     t.truthy(res);
 });
 
+test('retrieve a participant with subIdValue', async (t) => {
+    const { model } = t.context;
+    await model.party.create(partyWithSubIdValue);
+    const res = await model.party.get(idType, idValue, subIdValue);
+    t.truthy(res);
+});
+
 test('create and delete a party', async (t) => {
     const { model } = t.context;
     await model.party.create(partyCreate);
     await model.party.get(idType, idValue);
     await model.party.delete(idType, idValue);
     const deleted = await model.party.get(idType, idValue);
+    t.is(deleted, undefined);
+});
+
+test('create and delete a party with subIdValue', async (t) => {
+    const { model } = t.context;
+    await model.party.create(partyCreateWithSubIdValue);
+    await model.party.get(idType, idValue, subIdValue);
+    await model.party.delete(idType, idValue, subIdValue);
+    const deleted = await model.party.get(idType, idValue, subIdValue);
     t.is(deleted, undefined);
 });
 

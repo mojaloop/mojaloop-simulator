@@ -78,7 +78,7 @@ paths:
       description: Deletes a party
       responses:
         '204':
-          description: The party was created
+          description: The party was deleted
         '500':
           description: An error occured processing the request
       parameters:
@@ -92,6 +92,66 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/idValue'
+
+  /repository/parties/{idType}/{idValue}/{subIdValue}:
+    put:
+      description: Modifies a party (subId)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Party'
+      responses:
+        '204':
+          description: Party was created
+        '400':
+          description: The request was malformed
+        '500':
+          description: An error occured processing the request
+      parameters:
+        - name: idType
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idType'
+        - name: idValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idValue'
+        - name: subIdValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/subIdValue'
+    get:
+      description: Get an existing party
+      responses:
+        '200':
+          description: Party data is returned
+    delete:
+      description: Deletes a party
+      responses:
+        '204':
+          description: The party was deleted
+        '500':
+          description: An error occured processing the request
+      parameters:
+        - name: idType
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idType'
+        - name: idValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idValue'
+        - name: subIdValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/subIdValue'
 
 components:
   schemas:
@@ -186,6 +246,10 @@ components:
           type: string
           minLength: 1
           maxLength: 128
+        subIdValue:
+          type: string
+          minLength: 1
+          maxLength: 128
         extensionList:
           $ref: '#/components/schemas/ExtensionList'
     Extension:
@@ -220,6 +284,10 @@ components:
         - IBAN
         - ALIAS
     idValue:
+      type: string
+      minLength: 1
+      maxLength: 128
+    subIdValue:
       type: string
       minLength: 1
       maxLength: 128
