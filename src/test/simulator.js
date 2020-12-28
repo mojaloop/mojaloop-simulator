@@ -18,12 +18,15 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Mowali
+
+ * ModusBox <https://modusbox.com>
+ - Steven Oderayi <steven.oderayi@modusbox.com>
  --------------
  ******/
 'use strict';
 
 const test = require('ava');
-
+const { cloneDeep } = require('./unit/TestUtils');
 const Model = require('../models/model');
 const { map } = require('../simulator/handlers');
 const {
@@ -35,7 +38,7 @@ const { ApiErrorCodes } = require('../models/errors');
 
 test.beforeEach(async (t) => {
     const model = new Model();
-    await model.init(':memory:');
+    await model.init({ databaseFilepath: ':memory:' });
     // eslint-disable-next-line no-param-reassign
     t.context = {
         state: { model, logger: console }, response: {},
@@ -71,10 +74,44 @@ test('create a quote', async (t) => {
     t.is(t.context.response.status, 200);
 });
 
+test('create a bulk quote', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: cloneDeep(bulkQuote) };
+    await map['/bulkQuotes'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('get a bulk quote', async (t) => {
+    await t.context.state.model.bulkQuote.create(bulkQuote);
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { idValue } };
+    await map['/bulkQuotes/{idValue}'].get(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
 test('create a transfer', async (t) => {
     // eslint-disable-next-line no-param-reassign
     t.context.request = { body: transfer };
     await map['/transfers'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('create a bulk transfer', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: cloneDeep(bulkTransfer) };
+    await map['/bulkTransfers'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('get a bulk transfer', async (t) => {
+    await t.context.state.model.bulkTransfer.create(bulkTransfer);
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { idValue: bulkTransferId } };
+    await map['/bulkTransfers/{idValue}'].get(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
 });
@@ -139,10 +176,43 @@ test('should return 500 while posting a non valid transfer object', async (t) =>
     t.is(t.context.response.status, 500);
 });
 
+test('should return 500 while posting a non valid bulk quote object', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: { hello: 'world' } };
+    await map['/bulkQuotes'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 500);
+});
+
+test('should return 500 while posting a non valid bulk transfer object', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: { hello: 'world' } };
+    await map['/bulkTransfers'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 500);
+});
+
 test('should return 404 while getting a non existing participant', async (t) => {
     // eslint-disable-next-line no-param-reassign
     t.context.state.path = { params: { idValue: 'invalidID0001', idType: 'invalidType' } };
     await map['/participants/{idType}/{idValue}'].get(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 404);
+});
+
+test('should return 404 while getting a non existent bulk quote', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { idValue: 'invalidID0001' } };
+    await map['/bulkQuotes/{idValue}'].get(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 404);
+});
+
+
+test('should return 404 while getting a non existent bulk transfer', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { idValue: 'invalidID0001' } };
+    await map['/bulkTransfers/{idValue}'].get(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 404);
 });
@@ -182,5 +252,43 @@ test('postQuotes should handle 500 errors', async (t) => {
     await map['/quoterequests'].post(t.context);
     // Assert
     t.deepEqual(t.context.response, expected, 'Response did not match expected');
+    t.pass();
+});
+
+test('postBulkQuotes should handle 500 errors', async (t) => {
+    // Arrange
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { idValue, idType } };
+    // eslint-disable-next-line no-throw-literal, no-param-reassign
+    t.context.state.model.bulkQuote.create = () => { throw 'Bad error!'; };
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: cloneDeep(bulkQuote) };
+
+    const expected = {
+        body: ApiErrorCodes.SERVER_ERROR,
+        status: 500,
+    };
+
+    // Act
+    await map['/bulkQuotes'].post(t.context);
+    // Assert
+    t.deepEqual(t.context.response, expected, 'Response did not match expected');
+    t.pass();
+});
+
+test('putTransfersById should handle request', async (t) => {
+    // Arrange
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { transferId: '1234' } };
+    // eslint-disable-next-line no-throw-literal, no-param-reassign
+    t.context.request = {
+        body: {
+            completedTimestamp: '2017-11-15T14:16:09.663+01:00',
+            transferState: 'COMMITTED',
+        },
+    };
+    await map['/transfers/{transferId}'].put(t.context);
+    const expected = t.context.request.body;
+    t.deepEqual(t.context.response, { body: { ...expected }, status: 200 }, 'response is received');
     t.pass();
 });

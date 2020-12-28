@@ -1,12 +1,16 @@
 {
   "name": "mojaloop-simulator",
-  "version": "9.4.1",
+  "version": "11.3.0",
   "description": "A canonical test example implementation of the parties, transfers and quotes resources of  the Mojaloop API",
   "license": "Apache-2.0",
   "main": "index.js",
   "author": "Matt Kingston, ModusBox Inc.",
   "contributors": [
+    "Aaron Reynoza <aaron.reynoza@modusbox.com>",
+    "Kamuela Franco <kamuela.franco@modusbox.com>",
     "Matt Kingston <matt.kingston@modusbox.com>",
+    "Steven Oderayi <steven.oderayi@modusbox.com>",
+    "Valentin Genev <valentin.genev@modusbox.com>",
     "ModusBox",
     "Mowali"
   ],
@@ -48,7 +52,7 @@
     "koa": "2.11.0",
     "koa-body": "4.1.1",
     "mustache": "4.0.0",
-    "node-fetch": "2.6.0",
+    "node-fetch": "2.6.1",
     "sqlite": "3.0.3",
     "yamljs": "0.3.0"
   },

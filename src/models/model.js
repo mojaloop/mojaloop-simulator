@@ -31,15 +31,21 @@
 const sqlite = require('sqlite');
 const Party = require('./party');
 const Quote = require('./quote');
+const BulkQuote = require('./bulkQuote');
 const TransactionRequest = require('./transactionrequest');
 const Transfer = require('./transfer');
+const BulkTransfer = require('./bulkTransfer');
 
 const {
     createPartyTable,
-    createTransferTable,
+    createPartyTableUniqueIndex,
     createQuoteTable,
+    createBulkQuoteTable,
+    createTransferTable,
+    createBulkTransferTable,
     createTransactionRequestTable,
     createPartyExtensionTable,
+    createPartyExtensionTableUniqueIndex,
     createAccountTable,
 } = require('./constants');
 
@@ -55,8 +61,10 @@ module.exports = class Model {
         this.db = null;
         this.party = null;
         this.quote = null;
+        this.bulkQuote = null;
         this.transactionrequest = null;
         this.transfer = null;
+        this.bulkTransfer = null;
     }
 
     /**
@@ -74,30 +82,37 @@ module.exports = class Model {
    * Initialises db.
    *
    * @async
-   * @param {String} databaseFilepath SqliteDB file path
+   * @param {String} databaseFilepath   SqliteDB file path
+   * @param [{Object}] parties          Array of party objects to create after db initialisation
    * @throws {Error}
    */
-    async init(databaseFilepath) {
+    async init({ databaseFilepath, parties }) {
         if (this.db) {
             throw new Error('Attempted to initialise database twice');
         }
 
-        try {
-            this.db = await sqlite.open(databaseFilepath);
-            await this.db.run('PRAGMA foreign_keys = true');
-            await this.db.run(createPartyTable);
-            await this.db.run(createQuoteTable);
-            await this.db.run(createTransactionRequestTable);
-            await this.db.run(createTransferTable);
-            await this.db.run(createPartyExtensionTable);
-            await this.db.run(createAccountTable);
+        this.db = await sqlite.open(databaseFilepath);
+        await this.db.run('PRAGMA foreign_keys = true');
+        await this.db.run(createPartyTable);
+        await this.db.run(createPartyTableUniqueIndex);
+        await this.db.run(createQuoteTable);
+        await this.db.run(createTransactionRequestTable);
+        await this.db.run(createTransferTable);
+        await this.db.run(createPartyExtensionTable);
+        await this.db.run(createPartyExtensionTableUniqueIndex);
+        await this.db.run(createBulkQuoteTable);
+        await this.db.run(createBulkTransferTable);
+        await this.db.run(createAccountTable);
 
-            this.party = new Party(this.db);
-            this.quote = new Quote(this.db);
-            this.transactionrequest = new TransactionRequest(this.db);
-            this.transfer = new Transfer(this.db);
-        } catch (err) {
-            throw new Error(err);
+        this.party = new Party(this.db);
+        this.quote = new Quote(this.db);
+        this.bulkQuote = new BulkQuote(this.db);
+        this.transactionrequest = new TransactionRequest(this.db);
+        this.transfer = new Transfer(this.db);
+        this.bulkTransfer = new BulkTransfer(this.db);
+
+        if (parties) {
+            await Promise.all(parties.map((p) => this.party.create(p)));
         }
     }
 };

@@ -61,4 +61,42 @@ const putTransfers = async (transferId, body) => {
     return res.json();
 };
 
-module.exports = { postTransfers, putTransfers };
+/**
+ * Endpoint call to outbound bulk transfer request initiation
+ *
+ * @param {Object} body bulk transfer body
+ * @returns {Promise.<Object>}     response
+ */
+const postBulkTransfers = async (body) => {
+    const res = await fetch(`${OUTBOUND_ENDPOINT}/bulkTransfers`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+    });
+
+    return res.json();
+};
+
+/**
+ * Endpoint call to outbound bulk quote request initiation
+ *
+ * @param {Object} body bulk quote body
+ * @returns {Promise.<Object>}  response
+ */
+const postBulkQuotes = async (body) => {
+    const res = await fetch(`${OUTBOUND_ENDPOINT}/bulkQuotes`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+    });
+
+    return res.json();
+};
+
+
+module.exports = {
+    postTransfers,
+    putTransfers,
+    postBulkTransfers,
+    postBulkQuotes,
+};

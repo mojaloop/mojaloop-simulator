@@ -19,6 +19,9 @@
 
  - Name Surname <name.surname@gatesfoundation.com>
  * Mowali
+
+ * ModusBox <https://modusbox.com>
+ - Steven Oderayi <steven.oderayi@modusbox.com>
  --------------
  ******/
 'use strict';
@@ -85,6 +88,7 @@ async function rewriteContentTypeHeader(ctx, next) {
 (async function start() {
     // Set up the config from the environment
     await setConfig(process.env);
+    const conf = getConfig();
 
     // Set up a logger for each running server
     const space = Number(process.env.LOG_INDENT);
@@ -102,7 +106,7 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     // Initialise the model
     const model = new Model();
-    await model.init(process.env.MODEL_DATABASE);
+    await model.init({ databaseFilepath: process.env.MODEL_DATABASE, parties: conf.parties });
 
     // Log raw to console as a last resort- if the logging framework crashes
     const failSafe = async (ctx, next) => {
@@ -280,10 +284,9 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     // If config specifies TLS, start an HTTPS server; otherwise HTTP
     let simServer;
-    const conf = getConfig();
-    const simulatorPort = 3000;
-    const reportPort = 3002;
-    const testApiPort = 3003;
+    const simulatorPort = conf.ports.simulatorApi;
+    const reportPort = conf.ports.reportApi;
+    const testApiPort = conf.ports.testApi;
 
     if (conf.tls.mutualTLS.enabled || conf.tls.enabled) {
         if (!(conf.tls.creds.ca && conf.tls.creds.cert && conf.tls.creds.key)) {

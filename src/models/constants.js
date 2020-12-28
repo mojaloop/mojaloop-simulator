@@ -27,6 +27,8 @@ const partyTable = 'party';
 const quoteTable = 'quote';
 const transactionRequestTable = 'transactionRequest';
 const transferTable = 'transfer';
+const bulkQuoteTable = 'bulkQuote';
+const bulkTransferTable = 'bulkTransfer';
 const partyExtensionTable = 'partyExtension';
 
 const createPartyTable = `
@@ -37,21 +39,52 @@ CREATE TABLE IF NOT EXISTS ${partyTable} (
     lastName TEXT,
     dateOfBirth TEXT,
     idType TEXT,
-    idValue TEXT NOT NULL PRIMARY KEY,
+    idValue TEXT NOT NULL,
+    subIdValue TEXT,
     CHECK(idValue <> '')
 )
 `;
+
+// below index is a workaround to avoid the duplicates since sqlite treats every null as a unique value
+// thus allowing to insert multiple records for same the idValue having subIdValue as NULL
+const createPartyTableUniqueIndex = `
+CREATE UNIQUE INDEX IF NOT EXISTS idx_party_unique ON ${partyTable} (
+    idValue,
+    IFNULL(subIdValue, '')
+)
+`;
+
 const createPartyExtensionTable = `
 CREATE TABLE IF NOT EXISTS ${partyExtensionTable} (
     idValue TEXT NOT NULL,
+    subIdValue TEXT,
     key TEXT NOT NULL,
-    value TEXT NOT NULL,
-    PRIMARY KEY (idValue, key),
-    FOREIGN KEY (idValue) REFERENCES party(idValue) ON DELETE CASCADE
+    value TEXT NOT NULL
 )
 `;
+
+// below index is a workaround to avoid the duplicates since sqlite treats every null as a unique value
+// thus allowing to insert multiple records for same the idValue/key having subIdValue as NULL
+const createPartyExtensionTableUniqueIndex = `
+CREATE UNIQUE INDEX IF NOT EXISTS idx_party_extension_unique ON ${partyExtensionTable} (
+    idValue,
+    IFNULL(subIdValue, ''),
+    key
+)
+`;
+
 const createQuoteTable = `
 CREATE TABLE IF NOT EXISTS ${quoteTable} (
+    id TEXT NOT NULL PRIMARY KEY,
+    request TEXT,
+    response TEXT,
+    created TIMESTAMP
+    CHECK(id <> '')
+)
+`;
+
+const createBulkQuoteTable = `
+CREATE TABLE IF NOT EXISTS ${bulkQuoteTable} (
     id TEXT NOT NULL PRIMARY KEY,
     request TEXT,
     response TEXT,
@@ -79,6 +112,15 @@ CREATE TABLE IF NOT EXISTS ${transferTable} (
 )
 `;
 
+const createBulkTransferTable = `
+CREATE TABLE IF NOT EXISTS ${bulkTransferTable} (
+    id TEXT NOT NULL PRIMARY KEY,
+    request TEXT,
+    response TEXT,
+    CHECK(id <> '')
+)
+`;
+
 const createAccountTable = `
 CREATE TABLE IF NOT EXISTS ${partyAccountsTable} (
     address TEXT NOT NULL PRIMARY KEY,
@@ -92,14 +134,23 @@ CREATE TABLE IF NOT EXISTS ${partyAccountsTable} (
 module.exports = {
     partyTable,
     quoteTable,
+    bulkQuoteTable,
+    transferTable,
+    bulkTransferTable,
     transactionRequestTable,
+    partyExtensionTable,
     createPartyTable,
     createQuoteTable,
+    createBulkQuoteTable,
+    createBulkTransferTable,
+    createTransferTable,
     createTransactionRequestTable,
     createTransferTable,
     transferTable,
     partyExtensionTable,
     createPartyExtensionTable,
+    createPartyTableUniqueIndex,
+    createPartyExtensionTableUniqueIndex,
     partyAccountsTable,
     createAccountTable,
 };

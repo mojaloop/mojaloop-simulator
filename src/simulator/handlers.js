@@ -18,6 +18,9 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Mowali
+
+ * ModusBox
+ - Steven Oderayi <steven.oderayi@modusbox.com>
  --------------
  ******/
 'use strict';
@@ -31,8 +34,8 @@ const { ApiErrorCodes } = require('../models/errors.js');
 
 const getParticipantsByTypeAndId = async (ctx) => {
     try {
-        const { idValue, idType } = ctx.state.path.params;
-        const res = await ctx.state.model.party.get(idType, idValue);
+        const { idValue, idType, subIdValue } = ctx.state.path.params;
+        const res = await ctx.state.model.party.get(idType, idValue, subIdValue);
         if (!res) {
             ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
             ctx.response.status = 404;
@@ -50,8 +53,8 @@ const getParticipantsByTypeAndId = async (ctx) => {
 const getPartiesByTypeAndId = async (ctx) => {
     // TODO: check that the provided type was MSISDN? Or just encode that in the API spec..
     try {
-        const { idValue, idType } = ctx.state.path.params;
-        const res = await ctx.state.model.party.get(idType, idValue);
+        const { idValue, idType, subIdValue } = ctx.state.path.params;
+        const res = await ctx.state.model.party.get(idType, idValue, subIdValue);
         if (!res) {
             ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
             ctx.response.status = 404;
@@ -106,6 +109,21 @@ const postTransfers = async (ctx) => {
     }
 };
 
+const putTransfersById = async (ctx) => {
+    try {
+        const res = await ctx.state.model.transfer.update(ctx.state.path.params.transferId, {
+            ...ctx.request.body,
+        });
+        ctx.state.logger.log(`putTransfersById is returning body: ${util.inspect(res)}`);
+        ctx.response.body = ctx.request.body;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in putTransfersById: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
 
 const postQuotes = async (ctx) => {
     try {
@@ -115,6 +133,36 @@ const postQuotes = async (ctx) => {
         ctx.response.status = 200;
     } catch (err) {
         ctx.state.logger.log(`Error in postQuotes: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
+const postBulkQuotes = async (ctx) => {
+    try {
+        const res = await ctx.state.model.bulkQuote.create(ctx.request.body);
+        ctx.state.logger.log(`postBulkQuotes is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in postBulkQuotes: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
+const getBulkQuoteById = async (ctx) => {
+    try {
+        const { idValue } = ctx.state.path.params;
+        const res = await ctx.state.model.bulkQuote.get(idValue);
+        if (!res) {
+            ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
+            ctx.response.status = 404;
+            return;
+        }
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -133,6 +181,35 @@ const postTransactionRequests = async (ctx) => {
     }
 };
 
+const postBulkTransfers = async (ctx) => {
+    try {
+        const res = await ctx.state.model.bulkTransfer.create(ctx.request.body);
+        ctx.state.logger.log(`postBulkTransfers is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in postBulkTransfers: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
+const getBulkTransferById = async (ctx) => {
+    try {
+        const { idValue } = ctx.state.path.params;
+        const res = await ctx.state.model.bulkTransfer.get(idValue);
+        if (!res) {
+            ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
+            ctx.response.status = 404;
+            return;
+        }
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
 
 const healthCheck = async (ctx) => {
     ctx.response.status = 200;
@@ -147,11 +224,23 @@ const map = {
     '/participants/{idType}/{idValue}': {
         get: getParticipantsByTypeAndId,
     },
+    '/participants/{idType}/{idValue}/{subIdValue}': {
+        get: getParticipantsByTypeAndId,
+    },
     '/parties/{idType}/{idValue}': {
+        get: getPartiesByTypeAndId,
+    },
+    '/parties/{idType}/{idValue}/{subIdValue}': {
         get: getPartiesByTypeAndId,
     },
     '/quoterequests': {
         post: postQuotes,
+    },
+    '/bulkQuotes': {
+        post: postBulkQuotes,
+    },
+    '/bulkQuotes/{idValue}': {
+        get: getBulkQuoteById,
     },
     '/transactionrequests': {
         post: postTransactionRequests,
@@ -159,11 +248,21 @@ const map = {
     '/transfers': {
         post: postTransfers,
     },
+    '/bulkTransfers': {
+        post: postBulkTransfers,
+    },
+    '/bulkTransfers/{idValue}': {
+        get: getBulkTransferById,
+    },
+    },
     '/signchallenge': {
         post: getSignedChallenge,
     },
     '/otp/{requestToPayId}': {
         get: getOTPById,
+    },
+    '/transfers/{transferId}': {
+        put: putTransfersById,
     },
 };
 
