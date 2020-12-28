@@ -126,8 +126,7 @@ CREATE TABLE IF NOT EXISTS ${partyAccountsTable} (
     address TEXT NOT NULL PRIMARY KEY,
     currency TEXT NOT NULL,
     description TEXT NOT NULL,
-    idValue TEXT NOT NULL,
-    FOREIGN KEY (idValue) REFERENCES party(idValue) ON DELETE CASCADE
+    idValue TEXT NOT NULL
 )
 `;
 
@@ -143,11 +142,8 @@ module.exports = {
     createQuoteTable,
     createBulkQuoteTable,
     createBulkTransferTable,
-    createTransferTable,
     createTransactionRequestTable,
     createTransferTable,
-    transferTable,
-    partyExtensionTable,
     createPartyExtensionTable,
     createPartyTableUniqueIndex,
     createPartyExtensionTableUniqueIndex,

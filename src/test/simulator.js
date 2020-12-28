@@ -31,7 +31,7 @@ const Model = require('../models/model');
 const { map } = require('../simulator/handlers');
 const {
     transfer, transferWithoutQuote, quote, transactionrequest, party, idType, idValue,
-    transactionRequestId, authorizationRequest,
+    transactionRequestId, bulkQuote, bulkTransfer, bulkTransferId, authorizationRequest,
 } = require('./constants');
 const { ApiErrorCodes } = require('../models/errors');
 

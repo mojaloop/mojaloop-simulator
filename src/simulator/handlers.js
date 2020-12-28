@@ -254,7 +254,6 @@ const map = {
     '/bulkTransfers/{idValue}': {
         get: getBulkTransferById,
     },
-    },
     '/signchallenge': {
         post: getSignedChallenge,
     },

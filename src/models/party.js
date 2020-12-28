@@ -55,16 +55,16 @@ module.exports = class Party {
         let res;
         if (!subIdValue) {
             res = await this.db.all(`
-            SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value, pa.address, pa.currency, pa.description  
-            FROM ${partyTable} p 
-            LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue 
+            SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value, pa.address, pa.currency, pa.description
+            FROM ${partyTable} p
+            LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue
             LEFT JOIN ${partyAccountsTable} pa ON p.idValue = pa.idValue
             WHERE p.idType = ? AND p.idValue = ? AND p.subIdValue IS NULL AND pe.subIdValue IS NULL`, [idType, idValue]);
         } else {
             res = await this.db.all(`
-            SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value, pa.address, pa.currency, pa.description  
-            FROM ${partyTable} p 
-            LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue  AND p.subIdValue = pe.subIdValue 
+            SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value, pa.address, pa.currency, pa.description
+            FROM ${partyTable} p
+            LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue  AND p.subIdValue = pe.subIdValue
             LEFT JOIN ${partyAccountsTable} pa ON p.idValue = pa.idValue
             WHERE p.idType = ? AND p.idValue = ? AND p.subIdValue = ?`, [idType, idValue, subIdValue]);
         }
