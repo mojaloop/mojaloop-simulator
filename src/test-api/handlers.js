@@ -24,13 +24,19 @@
 
 const util = require('util');
 const Mustache = require('mustache');
-
-const { postTransfers, putTransfers } = require('./client');
+const {
+    postTransfers,
+    putTransfers,
+    postBulkTransfers,
+    postBulkQuotes,
+} = require('./client');
 const { ApiErrorCodes } = require('../models/errors');
 
 const supportedOperations = {
     POST_TRANSFERS: 'postTransfers',
     PUT_TRANSFERS: 'putTransfers',
+    POST_BULK_TRANSFERS: 'postBulkTransfers',
+    POST_BULK_QUOTES: 'postBulkQuotes',
 };
 
 
@@ -70,13 +76,13 @@ const readParties = async (ctx) => {
 
 const readParty = async (ctx) => {
     try {
-        const { idValue, idType } = ctx.state.path.params;
+        const { idValue, idType, subIdValue } = ctx.state.path.params;
         if (!idValue || !idType) {
             ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
             ctx.response.status = 400;
             return;
         }
-        const res = await ctx.state.model.party.get(idType, idValue);
+        const res = await ctx.state.model.party.get(idType, idValue, subIdValue);
         if (!res) {
             ctx.response.body = '';
             ctx.response.status = 404;
@@ -91,7 +97,7 @@ const readParty = async (ctx) => {
 };
 
 const updateParty = async (ctx) => {
-    const { idValue, idType } = ctx.state.path.params;
+    const { idValue, idType, subIdValue } = ctx.state.path.params;
     const model = ctx.request.body;
     if (!idValue || !idType) {
         ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
@@ -100,7 +106,7 @@ const updateParty = async (ctx) => {
     }
 
     try {
-        await ctx.state.model.party.update(idType, idValue, model);
+        await ctx.state.model.party.update(model, idType, idValue, subIdValue);
         ctx.response.status = 204;
         return;
     } catch (err) {
@@ -110,7 +116,7 @@ const updateParty = async (ctx) => {
 };
 
 const deleteParty = async (ctx) => {
-    const { idValue, idType } = ctx.state.path.params;
+    const { idValue, idType, subIdValue } = ctx.state.path.params;
     if (!idValue || !idType) {
         ctx.response.body = ApiErrorCodes.MISSING_ID_VALUE;
         ctx.response.status = 500;
@@ -118,7 +124,7 @@ const deleteParty = async (ctx) => {
     }
 
     try {
-        await ctx.state.model.party.delete(idType, idValue);
+        await ctx.state.model.party.delete(idType, idValue, subIdValue);
         ctx.response.status = 204;
         return;
     } catch (err) {
@@ -173,6 +179,16 @@ const handleOps = async (logger, model, ops) => {
                 const response = await model.putTransfers(renderedParams.transferId, renderedBody);
                 acc[op.name] = { result: response };
             }
+
+            if (op.operation === supportedOperations.POST_BULK_TRANSFERS) {
+                const response = await model.postBulkTransfers(renderedBody);
+                acc[op.name] = { result: response };
+            }
+
+            if (op.operation === supportedOperations.POST_BULK_QUOTES) {
+                const response = await model.postBulkQuotes(renderedBody);
+                acc[op.name] = { result: response };
+            }
         } catch (error) {
             acc[op.name] = { error };
         }
@@ -190,6 +206,8 @@ const handleScenarios = async (ctx) => {
         const res = await handleOps(ctx.state.logger, {
             postTransfers,
             putTransfers,
+            postBulkTransfers,
+            postBulkQuotes,
         }, ctx.request.body);
 
         ctx.state.logger.log(`Scenario operations returned: ${util.inspect(res)}`);
@@ -218,6 +236,11 @@ const map = {
         post: createParty,
     },
     '/repository/parties/{idType}/{idValue}': {
+        put: updateParty,
+        delete: deleteParty,
+        get: readParty,
+    },
+    '/repository/parties/{idType}/{idValue}/{subIdValue}': {
         put: updateParty,
         delete: deleteParty,
         get: readParty,

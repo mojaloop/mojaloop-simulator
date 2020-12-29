@@ -3,6 +3,8 @@ version: 2.1
 orbs:
   anchore: anchore/anchore-engine@1.6.0
 
+# TODO: Further evaluate what changes need to be pulled from master.
+#       File has not been updated to v11.3.0
 ##
 # defaults
 #

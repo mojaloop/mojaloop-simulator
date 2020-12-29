@@ -19,13 +19,16 @@
  - Name Surname <name.surname@gatesfoundation.com>
  * Vessels Tech
  - Lewis Daly <lewis@vesselstech.com>
+
+ * ModusBox <https://modusbox.com>
+ - Steven Oderayi <steven.oderayi@modusbox.com>
  --------------
  ******/
 'use strict';
 
 const test = require('ava');
 const { setConfig, getConfig } = require('../../config');
-
+const { party } = require('../constants');
 
 // Note: these were originally 3 different tests, which I had to combine into 1
 // because of the way that ava tries to run the tests in paralell, which was causing
@@ -36,14 +39,20 @@ test('Sets the basic config', async (t) => {
     const env = {
         MUTUAL_TLS_ENABLED: 'false',
         HTTPS_ENABLED: 'false',
+        PARTIES: JSON.stringify([party, party, party]),
     };
     const expected = {
-        tls:
-        {
+        tls: {
             enabled: false,
             mutualTLS: { enabled: false },
             creds: { ca: null, cert: null, key: null },
         },
+        ports: {
+            simulatorApi: 3000,
+            reportApi: 3002,
+            testApi: 3003,
+        },
+        parties: [party, party, party],
     };
 
     // Act

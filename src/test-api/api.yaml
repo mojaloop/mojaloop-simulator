@@ -78,7 +78,7 @@ paths:
       description: Deletes a party
       responses:
         '204':
-          description: The party was created
+          description: The party was deleted
         '500':
           description: An error occured processing the request
       parameters:
@@ -93,12 +93,72 @@ paths:
           schema:
             $ref: '#/components/schemas/idValue'
 
+  /repository/parties/{idType}/{idValue}/{subIdValue}:
+    put:
+      description: Modifies a party (subId)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Party'
+      responses:
+        '204':
+          description: Party was created
+        '400':
+          description: The request was malformed
+        '500':
+          description: An error occured processing the request
+      parameters:
+        - name: idType
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idType'
+        - name: idValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idValue'
+        - name: subIdValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/subIdValue'
+    get:
+      description: Get an existing party
+      responses:
+        '200':
+          description: Party data is returned
+    delete:
+      description: Deletes a party
+      responses:
+        '204':
+          description: The party was deleted
+        '500':
+          description: An error occured processing the request
+      parameters:
+        - name: idType
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idType'
+        - name: idValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/idValue'
+        - name: subIdValue
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/subIdValue'
+
 components:
   schemas:
     Scenario:
       title: Scenario
       type: object
-      description: An outbound transfer scenario
+      description: An outbound transfer, bulk transfer or bulk quote scenario
       required:
         - name
         - operation
@@ -111,7 +171,7 @@ components:
         body:
           type: object
           description: >-
-            This object should be either a POST /transfers or PUT /transfers
+            This object should be either a POST /transfers, PUT /transfers, POST /bulkTransfers or POST /bulkQuotes
             request body as per the SDK outbound API specification
         params:
           $ref: '#/components/schemas/ScenarioOperationParameters'
@@ -122,17 +182,32 @@ components:
       enum:
         - postTransfers
         - putTransfers
+        - postBulkTransfers
+        - postBulkQuotes
     ScenarioOperationParameters:
-      type: object
       description: Parameters to pass into the scenario operation
-      required:
-        - transferId
-      properties:
-        transferId:
-          type: string
-          description: >-
-            Transfer ID e.g. in the case of putTransfers operation this is the
-            ID of the transfer to complete
+      type: object
+      oneOf:
+        - properties:
+            transferId:
+              type: string
+              description: >-
+                Transfer ID e.g. in the case of putTransfers operation this is the
+                ID of the transfer to complete
+          required:
+            - transferId
+        - properties:
+            bulkTransferId:
+              type: string
+              description: Bulk transfer ID
+          required:
+            - bulkTransferId
+        - properties:
+            bulkQuoteId:
+              type: string
+              description: Bulk quote ID
+          required:
+            - bulkQuoteId
     Party:
       title: Party
       type: object
@@ -168,6 +243,10 @@ components:
             - IBAN
             - ALIAS
         idValue:
+          type: string
+          minLength: 1
+          maxLength: 128
+        subIdValue:
           type: string
           minLength: 1
           maxLength: 128
@@ -231,6 +310,10 @@ components:
         - IBAN
         - ALIAS
     idValue:
+      type: string
+      minLength: 1
+      maxLength: 128
+    subIdValue:
       type: string
       minLength: 1
       maxLength: 128

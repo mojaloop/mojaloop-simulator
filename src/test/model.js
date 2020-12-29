@@ -18,6 +18,9 @@
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
  * Mowali
+
+ * ModusBox <https://modusbox.com>
+ - Steven Oderayi <steven.oderayi@modusbox.com>
  --------------
  ******/
 'use strict';
@@ -25,14 +28,18 @@
 const test = require('ava');
 
 const Model = require('../models/model');
+
+const { cloneDeep } = require('./unit/TestUtils');
+
 const {
-    transfer, quote, transactionrequest, party, newQuote, newTransfer, idType, idValue, partyCreate,
-    transferId, transactionRequestId,
+    transfer, quote, newQuote, bulkQuote, newBulkQuote, transactionrequest, party, newTransfer,
+    bulkTransfer, newBulkTransfer, bulkTransferId, idType, idValue, partyCreate, transferId,
+    transactionRequestId, partyWithSubIdValue, partyCreateWithSubIdValue, subIdValue,
 } = require('./constants');
 
 test.beforeEach(async (t) => {
     const model = new Model();
-    await model.init(':memory:');
+    await model.init({ databaseFilepath: ':memory:' });
     // eslint-disable-next-line no-param-reassign
     t.context = { model };
 });
@@ -61,6 +68,18 @@ test('create and retrieve all parties', async (t) => {
     }
     t.pass();
 });
+
+test('create and retrieve all parties with subIdValue', async (t) => {
+    const { model } = t.context;
+
+    await model.party.create(partyCreateWithSubIdValue);
+    const res = await model.party.getAll();
+    if (!res) {
+        t.fail('Result not found');
+    }
+    t.pass();
+});
+
 test('create and retrieve all parties duplicates', async (t) => {
     const { model } = t.context;
     await model.party.create(partyCreate);
@@ -77,6 +96,17 @@ test('create and retrieve a party', async (t) => {
 
     await model.party.create(partyCreate);
     const res = await model.party.get(idType, idValue);
+    if (!res) {
+        t.fail('Result not found');
+    }
+    t.pass();
+});
+
+test('create and retrieve a party with subIdValue', async (t) => {
+    const { model } = t.context;
+
+    await model.party.create(partyCreateWithSubIdValue);
+    const res = await model.party.get(idType, idValue, subIdValue);
     if (!res) {
         t.fail('Result not found');
     }
@@ -118,8 +148,74 @@ test('create and update a party', async (t) => {
     };
     await model.party.create(partyCreate);
     const orig = await model.party.get(idType, idValue);
-    await model.party.update(idType, idValue, newParty);
+    await model.party.update(newParty, idType, idValue);
     const changed = await model.party.get(idType, idValue);
+    t.notDeepEqual({ orig }, { changed });
+});
+
+test('create and update a party without extensionList', async (t) => {
+    const { model } = t.context;
+    const newParty = {
+        displayName: 'randName',
+        firstName: 'hello',
+        middleName: 'world',
+        lastName: 'lambda',
+        dateOfBirth: '1970-01-01T00:00:00.000Z',
+        idType,
+        idValue,
+    };
+    await model.party.create(partyCreate);
+    const orig = await model.party.get(idType, idValue);
+    await model.party.update(newParty, idType, idValue);
+    const changed = await model.party.get(idType, idValue);
+    t.notDeepEqual({ orig }, { changed });
+});
+
+test('create and update a party with subIdValue', async (t) => {
+    const { model } = t.context;
+    const newParty = {
+        displayName: 'randName',
+        firstName: 'hello',
+        middleName: 'world',
+        lastName: 'lambda',
+        dateOfBirth: '1970-01-01T00:00:00.000Z',
+        idType,
+        idValue,
+        subIdValue,
+        extensionList: [
+            {
+                key: 'accountType',
+                value: 'Wallet',
+            },
+            {
+                key: 'accountNumber',
+                value: '12345343',
+            },
+        ],
+    };
+    await model.party.create(partyCreateWithSubIdValue);
+    const orig = await model.party.get(idType, idValue, subIdValue);
+    await model.party.update(newParty, idType, idValue, subIdValue);
+    const changed = await model.party.get(idType, idValue, subIdValue);
+    t.notDeepEqual({ orig }, { changed });
+});
+
+test('create and update a party with subIdValue without extensionList', async (t) => {
+    const { model } = t.context;
+    const newParty = {
+        displayName: 'randName',
+        firstName: 'hello',
+        middleName: 'world',
+        lastName: 'lambda',
+        dateOfBirth: '1970-01-01T00:00:00.000Z',
+        idType,
+        idValue,
+        subIdValue,
+    };
+    await model.party.create(partyWithSubIdValue);
+    const orig = await model.party.get(idType, idValue, subIdValue);
+    await model.party.update(newParty, idType, idValue, subIdValue);
+    const changed = await model.party.get(idType, idValue, subIdValue);
     t.notDeepEqual({ orig }, { changed });
 });
 
@@ -130,12 +226,28 @@ test('retrieve a participant', async (t) => {
     t.truthy(res);
 });
 
+test('retrieve a participant with subIdValue', async (t) => {
+    const { model } = t.context;
+    await model.party.create(partyWithSubIdValue);
+    const res = await model.party.get(idType, idValue, subIdValue);
+    t.truthy(res);
+});
+
 test('create and delete a party', async (t) => {
     const { model } = t.context;
     await model.party.create(partyCreate);
     await model.party.get(idType, idValue);
     await model.party.delete(idType, idValue);
     const deleted = await model.party.get(idType, idValue);
+    t.is(deleted, undefined);
+});
+
+test('create and delete a party with subIdValue', async (t) => {
+    const { model } = t.context;
+    await model.party.create(partyCreateWithSubIdValue);
+    await model.party.get(idType, idValue, subIdValue);
+    await model.party.delete(idType, idValue, subIdValue);
+    const deleted = await model.party.get(idType, idValue, subIdValue);
     t.is(deleted, undefined);
 });
 
@@ -226,6 +338,77 @@ test('create and delete a quote', async (t) => {
     t.is(deleted, undefined);
 });
 
+test('create a bulk quote', async (t) => {
+    await t.context.model.bulkQuote.create(cloneDeep(bulkQuote));
+    t.pass();
+});
+
+test('create and retrieve a bulk quote', async (t) => {
+    const { model } = t.context;
+
+    await model.bulkQuote.create(cloneDeep(bulkQuote));
+    const res = await model.bulkQuote.get(idValue);
+
+    if (!res) {
+        t.fail('Result not found');
+    }
+
+    t.pass();
+});
+
+test('created bulk quote has correct fees', async (t) => {
+    const { model } = t.context;
+
+    const bq = await model.bulkQuote.create(cloneDeep(bulkQuote));
+    const q = bq.individualQuoteResults[0];
+
+    if (q.payeeFspFeeAmount !== '5') {
+        return t.fail(`Fee is ${q.payeeFspFeeAmount}`);
+    }
+    if (q.payeeFspCommissionAmount !== '5') {
+        return t.fail(`Fee is ${q.payeeFspCommissionAmount}`);
+    }
+
+    return t.pass();
+});
+
+test('created bulk quote has correct fees when transfer amounts is small', async (t) => {
+    const { model } = t.context;
+
+    const smq = cloneDeep(bulkQuote);
+    smq.individualQuotes[0].amount = 1;
+    const bq = await model.bulkQuote.create(smq);
+    const q = bq.individualQuoteResults[0];
+
+    if (q.payeeFspFeeAmount !== '0') {
+        return t.fail(`Fee is ${q.payeeFspFeeAmount}`);
+    }
+    if (q.payeeFspCommissionAmount !== '0') {
+        return t.fail(`Fee is ${q.payeeFspCommissionAmount}`);
+    }
+
+    return t.pass();
+});
+
+test('create and update a bulk quote', async (t) => {
+    const { model } = t.context;
+
+    await model.bulkQuote.create(cloneDeep(bulkQuote));
+    const orig = await model.bulkQuote.get(idValue);
+    await model.bulkQuote.update(idValue, cloneDeep(newBulkQuote));
+    const changed = await model.bulkQuote.get(idValue);
+    t.notDeepEqual({ orig }, { changed });
+});
+
+test('create and delete a bulk quote', async (t) => {
+    const { model } = t.context;
+    await model.bulkQuote.create(cloneDeep(bulkQuote));
+    await model.bulkQuote.get(idValue);
+    await model.bulkQuote.delete(idValue);
+    const deleted = await model.bulkQuote.get(idValue);
+    t.is(deleted, undefined);
+});
+
 test('create a transfer', async (t) => {
     await t.context.model.transfer.create(transfer);
     t.pass();
@@ -258,6 +441,36 @@ test('create and delete a transfer', async (t) => {
     await model.transfer.get(transferId);
     await model.transfer.delete(transferId);
     const deleted = await model.transfer.get(transferId);
+    t.is(deleted, undefined);
+});
+
+test('create and retrieve a bulk transfer', async (t) => {
+    const { model } = t.context;
+
+    await model.bulkTransfer.create(cloneDeep(bulkTransfer));
+    const res = await model.bulkTransfer.get(bulkTransferId);
+    if (!res) {
+        t.fail('Result not found');
+    }
+    t.pass();
+});
+
+test('create and update a bulk transfer', async (t) => {
+    const { model } = t.context;
+
+    await model.bulkTransfer.create(cloneDeep(bulkTransfer));
+    const orig = await model.bulkTransfer.get(idValue);
+    await model.bulkTransfer.update(idValue, cloneDeep(newBulkTransfer));
+    const changed = await model.bulkTransfer.get(idValue);
+    t.notDeepEqual({ orig }, { changed });
+});
+
+test('create and delete a bulkTransfer', async (t) => {
+    const { model } = t.context;
+    await model.bulkTransfer.create(cloneDeep(bulkTransfer));
+    await model.bulkTransfer.get(bulkTransferId);
+    await model.bulkTransfer.delete(bulkTransferId);
+    const deleted = await model.bulkTransfer.get(bulkTransferId);
     t.is(deleted, undefined);
 });
 
@@ -298,7 +511,7 @@ test('throws if we try to init the db incorrectly', async (t) => {
     });
 
     // Assert
-    t.is(error.message, 'TypeError: Argument 0 must be a string', 'Invalid error message.');
+    t.is(error.message, 'Cannot destructure property \'databaseFilepath\' of \'undefined\' as it is undefined.', 'Invalid error message.');
 });
 
 test('does nothing if trying to close a non existent db', async (t) => {

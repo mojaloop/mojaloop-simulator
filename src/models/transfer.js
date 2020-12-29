@@ -75,16 +75,13 @@ module.exports = class Transfer {
     * @param {String} transferId       The current transfer id.
     * @param {Object} TansferRequest   The new transfer object.
     */
-    async update(currentTransferId, transferRequest) {
-        const { homeTransactionId: newTransferId } = transferRequest;
-        const response = { newTransferId };
-        const reqStr = JSON.stringify(transferRequest);
-        const resStr = JSON.stringify(response);
+    async update(currentTransferId, transferResponse) {
+        const resStr = JSON.stringify(transferResponse);
 
         await this.db.run(`
             UPDATE ${transferTable}
-            SET id = ?, request = ?, response = ?
-            WHERE id = ?`, [newTransferId, reqStr, resStr, currentTransferId]);
+            SET response = ?
+            WHERE id = ?`, [resStr, currentTransferId]);
     }
 
     /**
