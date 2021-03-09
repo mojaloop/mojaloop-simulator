@@ -67,6 +67,7 @@ module.exports = class Quote {
             transactionId,
             amount,
             currency,
+            extensionList
         } = quoteRequest;
         const fee = Math.floor(Number(amount) * Number(process.env.FEE_MULTIPLIER)).toString();
         const response = {
@@ -79,6 +80,9 @@ module.exports = class Quote {
             payeeFspCommissionAmount: fee,
             payeeFspCommissionAmountCurrency: currency,
         };
+        if (extensionList) {
+            response.extensionList = extensionList
+        }
         const reqStr = JSON.stringify(quoteRequest);
         const resStr = JSON.stringify(response);
         const created = new Date().toISOString().slice(0, 19);

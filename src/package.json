@@ -1,6 +1,6 @@
 {
   "name": "mojaloop-simulator",
-  "version": "11.3.0",
+  "version": "11.4.0",
   "description": "A canonical test example implementation of the parties, transfers and quotes resources of  the Mojaloop API",
   "license": "Apache-2.0",
   "main": "index.js",
@@ -51,6 +51,7 @@
     "joi": "14.3.1",
     "koa": "2.11.0",
     "koa-body": "4.1.1",
+    "lodash": "4.17.21",
     "mustache": "4.0.0",
     "node-fetch": "2.6.1",
     "sqlite": "3.0.3",

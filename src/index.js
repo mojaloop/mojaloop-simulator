@@ -40,6 +40,7 @@ const router = require('@internal/router');
 const https = require('https');
 const cors = require('@koa/cors');
 const RulesEngine = require('@internal/rules-engine');
+const _ = require('lodash')
 require('dotenv').config();
 
 // eslint-disable-next-line import/no-dynamic-require
@@ -232,6 +233,16 @@ const testApi = new Koa();
                 ctx.state.logger.log('Rule engine is triggering a no response scenario');
                 ctx.res.end();
                 return;
+            }
+
+            if (evt.modifyExtension) {
+                const { extensionList } = res[0];
+                const newBody = Object.assign({}, ctx.request.body);
+                newBody.extensionList = Array.isArray(newBody.extensionList.extension) ? newBody.extensionList : {extension:[]}
+                newBody.extensionList.extension = _.unionBy(extensionList.extension, newBody.extensionList.extension, 'key')
+                ctx.request.body = newBody;
+                return await next();
+    
             }
 
             const { body, statusCode } = res[0];
