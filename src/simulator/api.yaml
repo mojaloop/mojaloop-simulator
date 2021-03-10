@@ -548,6 +548,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
+  /accounts/{ID}:
+    get:
+      operationId: GetAccountsByUserId
+      summary: GetAccountsByUserId
+      description: |
+        The HTTP request `GET /accounts/{ID}` is used to retrieve the list of potential accounts available for linking.
+      tags:
+        - accounts
+      parameters:
+        - name: ID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The user identifier value.
+      responses:
+        200:
+          description: Response containing details of the user accounts
+          content:
+            application/json:
+              schema:
+                type: object
+        400:
+          description: 'invalid request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: 'internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
 components:
   schemas:
   
@@ -1731,4 +1765,3 @@ components:
         entered the authentication value. - REJECTED Consumer rejected the
         transaction. - RESEND Consumer requested to resend the authentication
         value.
-
