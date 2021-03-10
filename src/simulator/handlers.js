@@ -216,6 +216,19 @@ const healthCheck = async (ctx) => {
     ctx.response.body = '';
 };
 
+const getAccountsByUserId = async (ctx) => {
+    try {
+        const { ID } = ctx.state.path.params;
+        // if rules not configured, return ID not found error 
+        ctx.state.logger.log(`getAccountsByUserId rules not configured for : ${ID}`);
+        ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
+        ctx.response.status = 404;
+        return;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
 
 const map = {
     '/': {
@@ -262,6 +275,9 @@ const map = {
     },
     '/transfers/{transferId}': {
         put: putTransfersById,
+    },
+    '/accounts/{ID}': {
+        get: getAccountsByUserId,
     },
 };
 
