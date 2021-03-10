@@ -219,7 +219,7 @@ const healthCheck = async (ctx) => {
 const getAccountsByUserId = async (ctx) => {
     try {
         const { ID } = ctx.state.path.params;
-        // if rules not configured, return ID not found error 
+        // if rules not configured, return ID not found error
         ctx.state.logger.log(`getAccountsByUserId rules not configured for : ${ID}`);
         ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
         ctx.response.status = 404;
