@@ -57,6 +57,14 @@ test('get an otp', async (t) => {
     t.is(t.context.response.status, 200);
 });
 
+test('get accounts by user Id', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { ID: 'test123' } };
+    await map['/accounts/{ID}'].get(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 404);
+});
+
 test('get a party', async (t) => {
     await t.context.state.model.party.create(party);
     // eslint-disable-next-line no-param-reassign

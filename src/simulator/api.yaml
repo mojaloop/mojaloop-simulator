@@ -555,7 +555,7 @@ paths:
       description: |
         The HTTP request `GET /accounts/{ID}` is used to retrieve the list of potential accounts available for linking.
       tags:
-        - accounts
+        - Accounts
       parameters:
         - name: ID
           in: path
@@ -569,7 +569,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/AccountsIDPutResponse' 
         400:
           description: 'invalid request'
           content:
@@ -1683,6 +1683,16 @@ components:
           minLength: 1
           maxLength: 128
 
+    accountAddress:
+      type: string
+      description: |
+        A long-lived unique account identifier provided by the DFSP. This MUST NOT
+        be Bank Account Number or anything that may expose a User's private bank
+        account information.
+      pattern: '^([0-9A-Za-z_~\-\.]+[0-9A-Za-z_~\-])$'
+      minLength: 1
+      maxLength: 1023
+
     transferState:
       type: string
       enum:
@@ -1765,3 +1775,22 @@ components:
         entered the authentication value. - REJECTED Consumer rejected the
         transaction. - RESEND Consumer requested to resend the authentication
         value.
+
+    AccountsIDPutResponse:
+      title: AccountsIDPutResponse
+      type: array
+      items:
+        type: object
+        description: |
+          `GET /accounts/{ID}` response.
+        properties:
+          accountNickname:
+            $ref: '#/components/schemas/accountAddress'
+          id:
+            $ref: '#/components/schemas/accountAddress'
+          currency:
+            $ref: '#/components/schemas/currency'
+        required:
+          - accountNickname
+          - id
+          - currency
