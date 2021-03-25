@@ -40,7 +40,6 @@ const router = require('@internal/router');
 const https = require('https');
 const cors = require('@koa/cors');
 const RulesEngine = require('@internal/rules-engine');
-const _ = require('lodash');
 require('dotenv').config();
 
 // eslint-disable-next-line import/no-dynamic-require
@@ -241,7 +240,11 @@ const testApi = new Koa();
                 const newBody = { ...ctx.request.body };
                 newBody.extensionList = Array.isArray(newBody.extensionList.extension)
                     ? newBody.extensionList : { extension: [] };
-                newBody.extensionList.extension = _.unionBy(extensionList.extension, newBody.extensionList.extension, 'key');
+                newBody.extensionList.extension = newBody.extensionList.extension
+                    .filter((originalList) => !extensionList.extension
+                        .find((newList) => originalList.key === newList.key))
+                    .concat(extensionList.extension);
+
                 ctx.request.body = newBody;
                 // eslint-disable-next-line
                 return await next();
