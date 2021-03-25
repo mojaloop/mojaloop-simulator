@@ -234,8 +234,8 @@ const testApi = new Koa();
                 return;
             }
 
-            // append the extensionList
-            if (evt.modifyExtension === 'append') {
+            // merge the extensionList
+            if (evt.modifyExtension === 'merge') {
                 const { extensionList } = res[0];
                 const newBody = { ...ctx.request.body };
                 newBody.extensionList = Array.isArray(newBody.extensionList.extension)
@@ -250,8 +250,8 @@ const testApi = new Koa();
                 return await next();
             }
 
-            // overwrite the extensionList
-            if (evt.modifyExtension === 'overwrite') {
+            // replace the extensionList
+            if (evt.modifyExtension === 'replace') {
                 const { extensionList } = res[0];
                 const newBody = { ...ctx.request.body };
                 newBody.extensionList = extensionList;

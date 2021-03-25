@@ -59,7 +59,7 @@
     "event": {
       "type": "simulateResponse",
       "params": {
-        "modifyExtension": "append/overwrite",
+        "modifyExtension": "merge/replace",
         "statusCode": 200,
         "extensionList":{
           "extension":[
