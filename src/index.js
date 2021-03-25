@@ -235,12 +235,23 @@ const testApi = new Koa();
                 return;
             }
 
-            if (evt.modifyExtension) {
+            // append the extensionList
+            if (evt.modifyExtension === 'append') {
                 const { extensionList } = res[0];
                 const newBody = { ...ctx.request.body };
                 newBody.extensionList = Array.isArray(newBody.extensionList.extension)
                     ? newBody.extensionList : { extension: [] };
                 newBody.extensionList.extension = _.unionBy(extensionList.extension, newBody.extensionList.extension, 'key');
+                ctx.request.body = newBody;
+                // eslint-disable-next-line
+                return await next();
+            }
+
+            // overwrite the extensionList
+            if (evt.modifyExtension === 'overwrite') {
+                const { extensionList } = res[0];
+                const newBody = { ...ctx.request.body };
+                newBody.extensionList = extensionList;
                 ctx.request.body = newBody;
                 // eslint-disable-next-line
                 return await next();

@@ -126,7 +126,73 @@ const quote = {
     initiatorType: 'CONSUMER',
 };
 
+const quoteWithExtensionList = {
+    quoteId: idValue,
+    transactionId: uuid(),
+    to: {
+        idType: 'MSISDN',
+        idValue: '0012345',
+    },
+    from: {
+        idType: 'MSISDN',
+        idValue: '0067890',
+    },
+    amountType: 'SEND',
+    amount: '100',
+    currency: 'USD',
+    feesAmount: '0.5',
+    feesCurrency: 'USD',
+    transactionType: 'TRANSFER',
+    initiator: 'PAYER',
+    initiatorType: 'CONSUMER',
+    extensionList: {
+        extension: [
+            {
+                key: 'KYCPayerTier',
+                value: '1',
+            },
+            {
+                key: 'KYCNationality',
+                value: 'CI',
+            },
+        ],
+    },
+};
+
 const newQuote = {
+    quoteId: uuid(),
+    transactionId: uuid(),
+    to: {
+        idType: 'MSISDN',
+        idValue: '0012345',
+    },
+    from: {
+        idType: 'MSISDN',
+        idValue: '0067890',
+    },
+    amountType: 'SEND',
+    amount: '100',
+    currency: 'USD',
+    feesAmount: '0.5',
+    feesCurrency: 'USD',
+    transactionType: 'TRANSFER',
+    initiator: 'PAYER',
+    initiatorType: 'CONSUMER',
+    extensionList: {
+        extension: [
+            {
+                key: 'KYCPayerTier',
+                value: '1',
+            },
+            {
+                key: 'KYCNationality',
+                value: 'CI',
+            },
+        ],
+    },
+};
+
+const newQuoteWithExtensionList = {
     quoteId: uuid(),
     transactionId: uuid(),
     to: {
@@ -347,7 +413,9 @@ module.exports = {
     newBulkTransfer,
     bulkTransferId,
     quote,
+    quoteWithExtensionList,
     newQuote,
+    newQuoteWithExtensionList,
     bulkQuote,
     newBulkQuote,
     transactionrequest,

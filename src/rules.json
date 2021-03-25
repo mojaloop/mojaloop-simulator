@@ -32,5 +32,52 @@
         }
       }
     }
+  },
+  {
+    "ruleId": 2,
+    "description": "Amend the extensionList in the quote response response when the amount is 111",
+    "conditions": {
+      "all": [
+        {
+          "fact": "path",
+          "operator": "equal",
+          "value": "/quoterequests"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "POST"
+        },
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "111",
+          "path": ".amount"
+        }
+      ]
+    },
+    "event": {
+      "type": "simulateResponse",
+      "params": {
+        "modifyExtension": "append/overwrite",
+        "statusCode": 200,
+        "extensionList":{
+          "extension":[
+             {
+                "key":"KYCPayerIDType",
+                "value":"DRIVERSLICENSE"
+             },
+             {
+                "key":"KYCPayerIDValue",
+                "value":"11111111111111"
+             },
+             {
+                "key":"KYCPayerTransferReason",
+                "value":"Tacos"
+             }
+          ]
+        }
+      }
+    }
   }
 ]

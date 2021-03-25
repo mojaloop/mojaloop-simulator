@@ -32,9 +32,10 @@ const Model = require('../models/model');
 const { cloneDeep } = require('./unit/TestUtils');
 
 const {
-    transfer, quote, newQuote, bulkQuote, newBulkQuote, transactionrequest, party, newTransfer,
-    bulkTransfer, newBulkTransfer, bulkTransferId, idType, idValue, partyCreate, transferId,
-    transactionRequestId, partyWithSubIdValue, partyCreateWithSubIdValue, subIdValue,
+    transfer, quote, quoteWithExtensionList, newQuote, newQuoteWithExtensionList, bulkQuote,
+    newBulkQuote, transactionrequest, party, newTransfer, bulkTransfer, newBulkTransfer,
+    bulkTransferId, idType, idValue, partyCreate, transferId, transactionRequestId,
+    partyWithSubIdValue, partyCreateWithSubIdValue, subIdValue,
 } = require('./constants');
 
 test.beforeEach(async (t) => {
@@ -313,6 +314,16 @@ test('create and update a quote', async (t) => {
     await model.quote.create(quote);
     const orig = await model.quote.get(idValue);
     await model.quote.update(idValue, newQuote);
+    const changed = await model.quote.get(idValue);
+    t.notDeepEqual({ orig }, { changed });
+});
+
+test('create and update a quote with extensionList', async (t) => {
+    const { model } = t.context;
+
+    await model.quote.create(quoteWithExtensionList);
+    const orig = await model.quote.get(idValue);
+    await model.quote.update(idValue, newQuoteWithExtensionList);
     const changed = await model.quote.get(idValue);
     t.notDeepEqual({ orig }, { changed });
 });
