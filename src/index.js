@@ -234,6 +234,32 @@ const testApi = new Koa();
                 return;
             }
 
+            // merge the extensionList
+            if (evt.modifyExtension === 'merge') {
+                const { extensionList } = res[0];
+                const newBody = { ...ctx.request.body };
+                newBody.extensionList = Array.isArray(newBody.extensionList.extension)
+                    ? newBody.extensionList : { extension: [] };
+                newBody.extensionList.extension = newBody.extensionList.extension
+                    .filter((originalList) => !extensionList.extension
+                        .find((newList) => originalList.key === newList.key))
+                    .concat(extensionList.extension);
+
+                ctx.request.body = newBody;
+                // eslint-disable-next-line
+                return await next();
+            }
+
+            // replace the extensionList
+            if (evt.modifyExtension === 'replace') {
+                const { extensionList } = res[0];
+                const newBody = { ...ctx.request.body };
+                newBody.extensionList = extensionList;
+                ctx.request.body = newBody;
+                // eslint-disable-next-line
+                return await next();
+            }
+
             const { body, statusCode } = res[0];
             ctx.state.logger.log(`Rules engine returned a response for request: ${util.inspect(res)}.`);
             ctx.response.body = body;

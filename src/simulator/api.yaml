@@ -634,6 +634,9 @@ components:
         geoCode:
           $ref: '#/components/schemas/geoCode'
           description: Longitude and Latitude of the Payee. Can be used to detect fraud
+        extensionList:
+          $ref: '#/components/schemas/extensionList'
+          description: Optional extension, specific to deployment.
         
     transactionRequestResponse:
       type: object
