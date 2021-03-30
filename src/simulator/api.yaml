@@ -1924,4 +1924,4 @@ components:
         scopes:
           type: array
           items:
-            $ref: ./Scope.yaml
+            $ref: '#/components/schemas/Scope'
