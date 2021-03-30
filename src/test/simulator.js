@@ -65,6 +65,43 @@ test('get accounts by user Id', async (t) => {
     t.is(t.context.response.status, 404);
 });
 
+test('get scopes by Id', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { ID: 'test123' } };
+    await map['/scopes/{ID}'].get(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('post validate otp valid', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = {
+        body: {
+            authToken: '123456',
+            consentRequestId: idValue
+        }
+    };
+    await map['/validateOTP'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.body.isValid, true);
+    t.is(t.context.response.status, 200);
+});
+
+
+test('post validate otp invalid', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = {
+        body: {
+            authToken: '123457',
+            consentRequestId: idValue
+        }
+    };
+    await map['/validateOTP'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.body.isValid, false);
+    t.is(t.context.response.status, 200);
+});
+
 test('get a party', async (t) => {
     await t.context.state.model.party.create(party);
     // eslint-disable-next-line no-param-reassign
