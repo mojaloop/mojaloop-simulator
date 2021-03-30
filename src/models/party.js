@@ -76,7 +76,7 @@ module.exports = class Party {
                     idValue: row.idValue,
                 };
                 if (row.subIdValue) {
-                    party.subIdValue = row.subIdValue;
+                    party.idSubValue = row.subIdValue;
                 }
                 resultMap[row.idValue] = party;
             }
@@ -119,7 +119,7 @@ module.exports = class Party {
                     idValue: row.idValue,
                 };
                 if (row.subIdValue) {
-                    party.subIdValue = row.subIdValue;
+                    party.idSubValue = row.subIdValue;
                 }
                 resultMap[`${row.idValue}-${row.subIdValue}`] = party;
             }
