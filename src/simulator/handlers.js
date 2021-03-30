@@ -230,6 +230,54 @@ const getAccountsByUserId = async (ctx) => {
     }
 };
 
+const getConsentRequestsScopesById = async (ctx) => {
+    try {
+        // fake scopes for testing purposes until consents storage is
+        // more fleshed out
+        const { ID } = ctx.state.path.params;
+        const res = {
+            scopes: [
+                {
+                    "accountId": "dfsp.blue.account.one",
+                    "actions": [
+                      "accounts.getBalance",
+                      "accounts.transfer"
+                    ]
+                },
+                {
+                    "accountId": "dfsp.blue.account.two",
+                    "actions": [
+                      "accounts.getBalance",
+                      "accounts.transfer"
+                    ]
+                },
+            ]
+        }
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
+const postValidateOTP = async (ctx) => {
+    try {
+        // fake validation for testing purposes
+        // even auth tokens validate true
+        const res = {
+            isValid: ctx.request.body.authToken % 2 == 0
+        }
+        ctx.state.logger.log(`postValidateOTP is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in postValidateOTP: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
 const map = {
     '/': {
         get: healthCheck,
@@ -278,6 +326,12 @@ const map = {
     },
     '/accounts/{ID}': {
         get: getAccountsByUserId,
+    },
+    '/consentRequests/{ID}/scopes': {
+        get: getConsentRequestsScopesById,
+    },
+    '/validateOTP': {
+        post: postValidateOTP,
     },
 };
 
