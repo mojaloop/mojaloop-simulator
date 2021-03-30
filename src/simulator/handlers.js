@@ -230,7 +230,7 @@ const getAccountsByUserId = async (ctx) => {
     }
 };
 
-const getConsentRequestsScopesById = async (ctx) => {
+const getScopesById = async (ctx) => {
     try {
         // fake scopes for testing purposes until consents storage is
         // more fleshed out
@@ -327,8 +327,8 @@ const map = {
     '/accounts/{ID}': {
         get: getAccountsByUserId,
     },
-    '/consentRequests/{ID}/scopes': {
-        get: getConsentRequestsScopesById,
+    '/scopes/{ID}': {
+        get: getScopesById,
     },
     '/validateOTP': {
         post: postValidateOTP,

@@ -68,7 +68,7 @@ test('get accounts by user Id', async (t) => {
 test('get consent request scopes by Id', async (t) => {
     // eslint-disable-next-line no-param-reassign
     t.context.state.path = { params: { ID: 'test123' } };
-    await map['/consentRequests/{ID}/scopes'].get(t.context);
+    await map['/scopes/{ID}'].get(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
 });

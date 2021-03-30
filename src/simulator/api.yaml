@@ -617,12 +617,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/errorResponse'
 
-  /consentRequests/{ID}/scopes:
+  /scopes/{ID}:
     get:
-      operationId: GetConsentRequestScopesById
-      summary: GetConsentRequestScopesById
+      operationId: GetScopesById
+      summary: GetScopesById
       description: |
-        The HTTP request `GET /consentRequests/{ID}/scopes` is used to retrieve granted scopes for a consent request.
+        The HTTP request `GET /scopes/{ID}` is used to retrieve granted scopes for a consent request.
       tags:
         - consentRequests
       parameters:
@@ -638,7 +638,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConsentRequestsIdScopesResponse'
+                $ref: '#/components/schemas/ScopesIdResponse'
         400:
           description: 'invalid request'
           content:
@@ -1915,11 +1915,11 @@ components:
         isValid:
           type: boolean
 
-    ConsentRequestsIdScopesResponse:
-      title: ConsentRequestsIdScopesResponse
+    ScopesIdResponse:
+      title: ScopesIdResponse
       type: object
       description: |
-          `GET /consentRequests/{ID}/scopes` response.
+          `GET /scopes/{ID}` response.
       properties:
         scopes:
           type: array
