@@ -34,6 +34,18 @@
       "decision": "ignore",
       "madeAt": 1615383991701,
       "expiresAt": 1617975978786
+    },
+    "1654|ava>yargs>y18n": {
+      "decision": "fix",
+      "madeAt": 1617075431111
+    },
+    "1654|nyc>yargs>y18n": {
+      "decision": "fix",
+      "madeAt": 1617075431111
+    },
+    "1654|npm-audit-resolver>yargs-unparser>yargs>y18n": {
+      "decision": "fix",
+      "madeAt": 1617075431111
     }
   },
   "rules": {},
