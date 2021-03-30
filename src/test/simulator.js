@@ -83,6 +83,7 @@ test('post validate otp valid', async (t) => {
     };
     await map['/validateOTP'].post(t.context);
     t.truthy(t.context.response.body);
+    t.is(t.context.response.body.isValid, true);
     t.is(t.context.response.status, 200);
 });
 
@@ -97,6 +98,7 @@ test('post validate otp invalid', async (t) => {
     };
     await map['/validateOTP'].post(t.context);
     t.truthy(t.context.response.body);
+    t.is(t.context.response.body.isValid, false);
     t.is(t.context.response.status, 200);
 });
 
