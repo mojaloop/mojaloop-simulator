@@ -622,9 +622,9 @@ paths:
       operationId: GetScopesById
       summary: GetScopesById
       description: |
-        The HTTP request `GET /scopes/{ID}` is used to retrieve granted scopes for a consent request.
+        The HTTP request `GET /scopes/{ID}` is used to retrieve granted scopes for a specified consent request id.
       tags:
-        - consentRequests
+        - scopes
       parameters:
         - name: ID
           in: path
@@ -1877,14 +1877,14 @@ components:
 
     ConsentScopeType:
       title: ConsentScopeType
-        type: string
-        enum:
-          - accounts.getBalance
-          - accounts.transfer
-        description: |
-          The scopes requested for a ConsentRequest.
-          - "accounts.getBalance" - Get the balance of a given account.
-          - "accounts.transfer" - Initiate a transfer from an account.
+      type: string
+      enum:
+        - accounts.getBalance
+        - accounts.transfer
+      description: |
+        The scopes requested for a ConsentRequest.
+        - "accounts.getBalance" - Get the balance of a given account.
+        - "accounts.transfer" - Initiate a transfer from an account.
 
     Scope:
       title: Scope
