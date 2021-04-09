@@ -651,6 +651,154 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
+
+  /validateConsentRequests:
+    post:
+      operationId: PostValidateConsentRequests
+      summary: PostValidateConsentRequests
+      description: |
+        The HTTP request `POST /validateConsentRequests` is used to validate ConsentRequests
+      tags:
+        - ConsentRequests
+      requestBody:
+        description: An incoming consentRequest
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentRequestsPostRequest'
+      responses:
+        200:
+          description: Response containing validation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentRequestsPostResponse'
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+  /sendOTP:
+    post:
+      tags:
+        - DFSPSim
+      description: The HTTP request `POST /sendOTP` is used to send OTP to a DFSP user (most likely through SMS).
+      summary: SendOTP
+      operationId: SendOTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendOTPRequest'
+            example:
+              userName: dfspa.user.name
+              consentRequestId: 3b346cec-47b3-4def-b870-edb255aaf6c3
+              message: '9876'
+      responses:
+        200:
+          description: Response containing validation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendOTPResponse'
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
+  /store/consentRequests/{ID}:
+    get:
+      tags:
+        - DFSPSim
+      operationId: GetConsentRequest
+      summary: GetConsentRequest
+      description: |
+        The HTTP request `GET /store/consentRequests/{ID}` is used by DFSP to load a specified consentRequest.
+      responses:
+        200:
+          description: Response containing consentRequest details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScopesIdResponse'
+              example:
+                scopes:
+                  - accountId: dfspa.username.1234
+                    actions:
+                      - accounts.transfer
+                      - accounts.getBalance
+                  - accountId: dfspa.username.5678
+                    actions:
+                      - accounts.transfer
+                      - accounts.getBalance
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+    post:
+      tags:
+        - DFSPSim
+      operationId: StoreConsentRequest
+      summary: StoreConsentRequest
+      description: |
+        The HTTP request `POST /store/consentRequests/{ID}` is used by a DFSP to store consentRequests.
+      requestBody:
+        description: The consentRequest to store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScopesIdResponse'
+            example:
+              scopes:
+                - accountId: dfspa.username.1234
+                  actions:
+                    - accounts.transfer
+                    - accounts.getBalance
+                - accountId: dfspa.username.5678
+                  actions:
+                    - accounts.transfer
+                    - accounts.getBalance
+      responses:
+        200:
+          description: OK
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
 components:
   schemas:
 
@@ -1776,6 +1924,17 @@ components:
         - COMMITTED DFSP has successfully performed the transfer.
         - ABORTED DFSP has aborted the transfer due a rejection or failure to perform the transfer.
 
+    ConsentRequestChannelType:
+      title: ConsentRequestChannelType
+      type: string
+      enum:
+        - WEB
+        - OTP
+      description: |
+        The auth channel being used for the consentRequest.
+        - "WEB" - The Web auth channel.
+        - "OTP" - The OTP auth channel.
+
     fulfilNotification:
       title: TransfersIDPatchResponse
       type: object
@@ -1831,6 +1990,38 @@ components:
         - responseType
         - authenticationInfo
         - transactionRequestId
+
+    ConsentRequestsPostRequest:
+      title: ConsentRequestsPostRequest
+      type: object
+      description: The object sent in a `POST /consentRequests` request.
+      properties:
+        id:
+          $ref: '#/components/schemas/CorrelationId'
+        initiatorId:
+          type: string
+          description: >-
+            The id of the PISP who will initiate transactions on a user's
+            behalf.
+        scopes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Scope'
+        authChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsentRequestChannelType'
+        callbackUri:
+          type: string
+          description: >-
+            The callback uri that the user will be redirected to after
+            completing the WEB auth channel.
+      required:
+        - id
+        - initiatorId
+        - scopes
+        - authChannels
+        - callbackUri
 
     AuthorizationResponse:
       title: AuthorizationResponse
@@ -1905,7 +2096,6 @@ components:
         - accountId
         - actions
 
-
     ValidateOTPResponse:
       title: ValidateOTPResponse
       type: object
@@ -1925,3 +2115,66 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Scope'
+
+    ConsentRequestsPostResponse:
+      title: ConsentRequestsPostResponse
+      type: object
+      description: |
+          `POST /validateConsentRequests` response.
+      properties:
+        isValid:
+          type: boolean
+        authChannels:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsentRequestChannelType'
+        authUri:
+          type: string
+          description: >-
+            The callback uri that the pisp app redirects to for user to complete
+            their login.
+    UserName:
+      title: UserName
+      type: string
+      minLength: 1
+      maxLength: 25
+    Password:
+      title: Password
+      type: string
+      minLength: 1
+      maxLength: 25
+    Message:
+      title: Message
+      type: string
+      description: OTP value or error message
+
+    SendOTPRequest:
+      title: SendOTPRequest
+      type: object
+      description: 'POST /sendOTP request'
+      properties:
+        userName:
+          $ref: '#/components/schemas/UserName'
+        consentRequestId:
+          $ref: '#/components/schemas/CorrelationId'
+        message:
+          $ref: '#/components/schemas/Message'
+      required:
+        - consentRequestId
+    SendOTPResponse:
+      title: SendOTPResponse
+      type: object
+      description: |
+          `POST /sendOTP` response.
+      properties:
+        otp:
+          type: string
+    StoreConsentRequest:
+      title: StoreConsentRequest
+      type: object
+      description: 'store consent request details'
+      properties:
+        scopes:
+          $ref: '#/components/schemas/ScopesIdResponse'
+      required:
+        - scopes

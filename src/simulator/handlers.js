@@ -30,7 +30,7 @@ const crypto = require('crypto');
 require('dotenv').config();
 const { getStackOrInspect } = require('@internal/log');
 const { ApiErrorCodes } = require('../models/errors.js');
-
+const objectStore = require('../lib/objectStore/objectStoreInterface');
 
 const getParticipantsByTypeAndId = async (ctx) => {
     try {
@@ -123,7 +123,6 @@ const putTransfersById = async (ctx) => {
         ctx.response.status = 500;
     }
 };
-
 
 const postQuotes = async (ctx) => {
     try {
@@ -236,21 +235,21 @@ const getScopesById = async (ctx) => {
     const res = {
         scopes: [
             {
-                "accountId": "dfsp.blue.account.one",
-                "actions": [
-                    "accounts.getBalance",
-                    "accounts.transfer"
-                ]
+                accountId: 'dfsp.blue.account.one',
+                actions: [
+                    'accounts.getBalance',
+                    'accounts.transfer',
+                ],
             },
             {
-                "accountId": "dfsp.blue.account.two",
-                "actions": [
-                    "accounts.getBalance",
-                    "accounts.transfer"
-                ]
+                accountId: 'dfsp.blue.account.two',
+                actions: [
+                    'accounts.getBalance',
+                    'accounts.transfer',
+                ],
             },
-        ]
-    }
+        ],
+    };
     ctx.response.body = res;
     ctx.response.status = 200;
 };
@@ -259,11 +258,86 @@ const postValidateOTP = async (ctx) => {
     // fake validation for testing purposes
     // even auth tokens validate true
     const res = {
-        isValid: ctx.request.body.authToken % 2 == 0
-    }
+        isValid: ctx.request.body.authToken % 2 === 0,
+    };
     ctx.state.logger.log(`postValidateOTP is returning body: ${util.inspect(res)}`);
     ctx.response.body = res;
     ctx.response.status = 200;
+};
+
+const validateConsentRequests = async (ctx) => {
+    try {
+        const request = ctx.request.body;
+        ctx.state.logger.log(`validateConsentRequests request body: ${util.inspect(request)}`);
+        // default mock reponse, if rules not configured
+        const res = {
+            isValid: true,
+            authChannels: ['WEB'],
+            authUri: `dfspa.com/authorize?consentRequestId=${request.id}`,
+        };
+        ctx.state.logger.log(`validateConsentRequests is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in validateConsentRequests: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
+const sendOTP = async (ctx) => {
+    try {
+        const request = ctx.request.body;
+        ctx.state.logger.log(`sendOTP request body: ${util.inspect(request)}`);
+        // default mock reponse, if rules not configured
+        const res = {
+            otp: Math.floor(Math.random() * 90000) + 10000,
+        };
+        await objectStore.set(`${request.consentRequestId}-OTP`, res);
+        ctx.state.logger.log(`sendOTP is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in sendOTP: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
+const storeConsentRequest = async (ctx) => {
+    try {
+        const { ID } = ctx.state.path.params;
+        const request = ctx.request.body;
+        ctx.state.logger.log(`storeConsentRequest request body: ${util.inspect(request)}`);
+        // default mock reponse, if rules not configured
+        const res = {
+            status: 'OK',
+        };
+        await objectStore.set(`${ID}-CR`, request);
+        ctx.state.logger.log(`sendOTP is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in storeConsentRequest: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
+const getConsentRequest = async (ctx) => {
+    try {
+        const { ID } = ctx.state.path.params;
+        ctx.state.logger.log(`getConsentRequest : ${ID}`);
+        // default mock reponse, if rules not configured
+        const res = await objectStore.get(`${ID}-CR`);
+        ctx.state.logger.log(`getConsentRequest is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.state.logger.log(`Error in getConsentRequest: ${getStackOrInspect(err)}`);
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
 };
 
 const map = {
@@ -320,9 +394,18 @@ const map = {
     },
     '/validateOTP': {
         post: postValidateOTP,
-    }
+    },
+    '/validateConsentRequests': {
+        post: validateConsentRequests,
+    },
+    '/sendOTP': {
+        post: sendOTP,
+    },
+    '/store/consentRequests/{ID}': {
+        get: getConsentRequest,
+        post: storeConsentRequest,
+    },
 };
-
 
 module.exports = {
     map,

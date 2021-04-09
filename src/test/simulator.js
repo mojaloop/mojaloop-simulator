@@ -73,13 +73,56 @@ test('get scopes by Id', async (t) => {
     t.is(t.context.response.status, 200);
 });
 
+test('post validateConsentRequests', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = {
+        body: { id: '123456' },
+    };
+    await map['/validateConsentRequests'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.body.isValid, true);
+    t.is(t.context.response.status, 200);
+});
+
+test('post sendOTP', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = {
+        body: { consentRequestId: '123456' },
+    };
+    await map['/sendOTP'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('post storeConsentRequest', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { ID: '123456' } };
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = {
+        body: { consentRequestId: '123456' },
+    };
+    await map['/store/consentRequests/{ID}'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.body.status, 'OK');
+    t.is(t.context.response.status, 200);
+});
+
+test('get consentRequest', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { ID: '123456' } };
+
+    await map['/store/consentRequests/{ID}'].get(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
 test('post validate otp valid', async (t) => {
     // eslint-disable-next-line no-param-reassign
     t.context.request = {
         body: {
             authToken: '123456',
-            consentRequestId: idValue
-        }
+            consentRequestId: idValue,
+        },
     };
     await map['/validateOTP'].post(t.context);
     t.truthy(t.context.response.body);
@@ -93,8 +136,8 @@ test('post validate otp invalid', async (t) => {
     t.context.request = {
         body: {
             authToken: '123457',
-            consentRequestId: idValue
-        }
+            consentRequestId: idValue,
+        },
     };
     await map['/validateOTP'].post(t.context);
     t.truthy(t.context.response.body);
