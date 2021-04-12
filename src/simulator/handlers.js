@@ -266,78 +266,54 @@ const postValidateOTP = async (ctx) => {
 };
 
 const validateConsentRequests = async (ctx) => {
-    try {
-        const request = ctx.request.body;
-        ctx.state.logger.log(`validateConsentRequests request body: ${util.inspect(request)}`);
-        // default mock reponse, if rules not configured
-        const res = {
-            isValid: true,
-            authChannels: ['WEB'],
-            authUri: `dfspa.com/authorize?consentRequestId=${request.id}`,
-        };
-        ctx.state.logger.log(`validateConsentRequests is returning body: ${util.inspect(res)}`);
-        ctx.response.body = res;
-        ctx.response.status = 200;
-    } catch (err) {
-        ctx.state.logger.log(`Error in validateConsentRequests: ${getStackOrInspect(err)}`);
-        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
-        ctx.response.status = 500;
-    }
+    const request = ctx.request.body;
+    ctx.state.logger.log(`validateConsentRequests request body: ${util.inspect(request)}`);
+    // default mock reponse, if rules not configured
+    const res = {
+        isValid: true,
+        authChannels: ['WEB'],
+        authUri: `dfspa.com/authorize?consentRequestId=${request.id}`,
+    };
+    ctx.state.logger.log(`validateConsentRequests is returning body: ${util.inspect(res)}`);
+    ctx.response.body = res;
+    ctx.response.status = 200;
 };
 
 const sendOTP = async (ctx) => {
-    try {
-        const request = ctx.request.body;
-        ctx.state.logger.log(`sendOTP request body: ${util.inspect(request)}`);
-        // default mock reponse, if rules not configured
-        const res = {
-            otp: Math.floor(Math.random() * 90000) + 10000,
-        };
-        await objectStore.set(`${request.consentRequestId}-OTP`, res);
-        ctx.state.logger.log(`sendOTP is returning body: ${util.inspect(res)}`);
-        ctx.response.body = res;
-        ctx.response.status = 200;
-    } catch (err) {
-        ctx.state.logger.log(`Error in sendOTP: ${getStackOrInspect(err)}`);
-        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
-        ctx.response.status = 500;
-    }
+    const request = ctx.request.body;
+    ctx.state.logger.log(`sendOTP request body: ${util.inspect(request)}`);
+    // default mock reponse, if rules not configured
+    const res = {
+        otp: Math.floor(Math.random() * 90000) + 10000,
+    };
+    await objectStore.set(`${request.consentRequestId}-OTP`, res);
+    ctx.state.logger.log(`sendOTP is returning body: ${util.inspect(res)}`);
+    ctx.response.body = res;
+    ctx.response.status = 200;
 };
 
 const storeConsentRequest = async (ctx) => {
-    try {
-        const { ID } = ctx.state.path.params;
-        const request = ctx.request.body;
-        ctx.state.logger.log(`storeConsentRequest request body: ${util.inspect(request)}`);
-        // default mock reponse, if rules not configured
-        const res = {
-            status: 'OK',
-        };
-        await objectStore.set(`${ID}-CR`, request);
-        ctx.state.logger.log(`sendOTP is returning body: ${util.inspect(res)}`);
-        ctx.response.body = res;
-        ctx.response.status = 200;
-    } catch (err) {
-        ctx.state.logger.log(`Error in storeConsentRequest: ${getStackOrInspect(err)}`);
-        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
-        ctx.response.status = 500;
-    }
+    const { ID } = ctx.state.path.params;
+    const request = ctx.request.body;
+    ctx.state.logger.log(`storeConsentRequest request body: ${util.inspect(request)}`);
+    // default mock reponse, if rules not configured
+    const res = {
+        status: 'OK',
+    };
+    await objectStore.set(`${ID}-CR`, request);
+    ctx.state.logger.log(`sendOTP is returning body: ${util.inspect(res)}`);
+    ctx.response.body = res;
+    ctx.response.status = 200;
 };
 
 const getConsentRequest = async (ctx) => {
-    try {
-        const { ID } = ctx.state.path.params;
-        ctx.state.logger.log(`getConsentRequest : ${ID}`);
-        // default mock reponse, if rules not configured
-        const res = await objectStore.get(`${ID}-CR`);
-        ctx.state.logger.log(`getConsentRequest is returning body: ${util.inspect(res)}`);
-        ctx.response.body = res;
-        ctx.response.status = 200;
-    } catch (err) {
-        ctx.state.logger.log(`Error in getConsentRequest: ${getStackOrInspect(err)}`);
-        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
-        ctx.response.status = 500;
-    }
+    const { ID } = ctx.state.path.params;
+    ctx.state.logger.log(`getConsentRequest : ${ID}`);
+    // default mock reponse, if rules not configured
+    const res = await objectStore.get(`${ID}-CR`);
+    ctx.state.logger.log(`getConsentRequest is returning body: ${util.inspect(res)}`);
+    ctx.response.body = res;
+    ctx.response.status = 200;
 };
 
 const map = {
