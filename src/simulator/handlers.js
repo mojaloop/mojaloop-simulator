@@ -273,8 +273,8 @@ const validateConsentRequests = async (ctx) => {
         isValid: true,
         data: {
             authChannels: ['WEB'],
-            authUri: `dfspa.com/authorize?consentRequestId=${request.id}`
-        }
+            authUri: `dfspa.com/authorize?consentRequestId=${request.id}`,
+        },
     };
     ctx.state.logger.log(`validateConsentRequests is returning body: ${util.inspect(res)}`);
     ctx.response.body = res;
