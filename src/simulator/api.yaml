@@ -2124,15 +2124,20 @@ components:
       properties:
         isValid:
           type: boolean
-        authChannels:
-          type: array
-          items:
-            $ref: '#/components/schemas/ConsentRequestChannelType'
-        authUri:
-          type: string
-          description: >-
-            The callback uri that the pisp app redirects to for user to complete
-            their login.
+        data:
+          type: object
+          properties:
+            authChannels:
+              type: array
+              items:
+                $ref: '#/components/schemas/ConsentRequestChannelType'
+            authUri:
+              type: string
+              description: >-
+                The callback uri that the pisp app redirects to for user to complete
+                their login.
+        errorInformation:
+          $ref: '#/components/schemas/ErrorInformation'
     UserName:
       title: UserName
       type: string
@@ -2147,7 +2152,13 @@ components:
       title: Message
       type: string
       description: OTP value or error message
-
+    ErrorInformation:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        errorDescription:
+          type: string
     SendOTPRequest:
       title: SendOTPRequest
       type: object
