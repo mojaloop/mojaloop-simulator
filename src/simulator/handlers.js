@@ -271,8 +271,10 @@ const validateConsentRequests = async (ctx) => {
     // default mock reponse, if rules not configured
     const res = {
         isValid: true,
-        authChannels: ['WEB'],
-        authUri: `dfspa.com/authorize?consentRequestId=${request.id}`,
+        data: {
+            authChannels: ['WEB'],
+            authUri: `dfspa.com/authorize?consentRequestId=${request.id}`
+        }
     };
     ctx.state.logger.log(`validateConsentRequests is returning body: ${util.inspect(res)}`);
     ctx.response.body = res;
