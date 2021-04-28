@@ -91,7 +91,7 @@ const testApi = new Koa();
         } catch (err) {
             // eslint-disable-next-line no-console
             console.log(JSON.stringify({
-                message: `Unhandled error in handler chain: ${getStackOrInspect(err, { depth: Infinity })}`
+                message: `Unhandled error in handler chain: ${getStackOrInspect(err, { depth: Infinity })}`,
             }, null, 2));
         }
     };
