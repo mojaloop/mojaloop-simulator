@@ -90,15 +90,15 @@ const testApi = new Koa();
             await next();
         } catch (err) {
             // eslint-disable-next-line no-console
-            console.log(`Unhandled error in handler chain: ${getStackOrInspect(err, { depth: Infinity })}`);
+            console.log(JSON.stringify({
+                message: `Unhandled error in handler chain: ${getStackOrInspect(err, { depth: Infinity })}`
+            }, null, 2));
         }
     };
 
     simulator.use(failSafe);
     report.use(failSafe);
     testApi.use(failSafe);
-
-    testApi.use(cors());
 
     // Add a log context for each request, log the receipt and handling thereof
     simulator.use(async (ctx, next) => {
@@ -144,6 +144,9 @@ const testApi = new Koa();
 
         ctx.state.logger.log('Request processed');
     });
+
+
+    testApi.use(cors());
 
 
     simulator.use(koaBody());
