@@ -112,7 +112,8 @@ const testApi = new Koa();
         ctx.state.logger.push({ body: ctx.request.body }).log('Request received');
         await next();
 
-        ctx.state.logger.log('Request processed');
+        const { body, status } = ctx.response;
+        ctx.state.logger.push({ response: { body, status } }).log('Request processed');
     });
 
 
@@ -127,7 +128,8 @@ const testApi = new Koa();
         ctx.state.logger.push({ body: ctx.request.body }).log('Request received');
         await next();
 
-        ctx.state.logger.log('Request processed');
+        const { body, status } = ctx.response;
+        ctx.state.logger.push({ response: { body, status } }).log('Request processed');
     });
 
 
@@ -142,7 +144,8 @@ const testApi = new Koa();
         ctx.state.logger.push({ body: ctx.request.body }).log('Request received');
         await next();
 
-        ctx.state.logger.log('Request processed');
+        const { body, status } = ctx.response;
+        ctx.state.logger.push({ response: { body, status } }).log('Request processed');
     });
 
 
