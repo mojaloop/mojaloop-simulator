@@ -2733,7 +2733,6 @@ components:
           description: Accounts associated with the Party.
       required:
         - account
-        - 
     AuthorizationsIDPutResponse:
       title: AuthorizationsIDPutResponse
       type: object
