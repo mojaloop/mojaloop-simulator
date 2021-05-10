@@ -2687,7 +2687,53 @@ components:
         - amount
         - transactionType
         - expiration
-    
+    Name:
+      title: Name
+      type: string
+      pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
+      description: >-
+        The API data type Name is a JSON String, restricted by a regular
+        expression to avoid characters which are generally not used in a name.
+
+
+        Regular Expression - The regular expression for restricting the Name
+        type is "^(?!\s*$)[\w .,'-]{1,128}$". The restriction does not allow a
+        string consisting of whitespace only, all Unicode characters are
+        allowed, as well as the period (.) (apostrophe (‘), dash (-), comma (,)
+        and space characters ( ).
+
+
+        **Note:** In some programming languages, Unicode support must be
+        specifically enabled. For example, if Java is used, the flag
+        UNICODE_CHARACTER_CLASS must be enabled to allow Unicode characters.
+    Account:
+      title: Account
+      type: object
+      description: Data model for the complex type Account.
+      properties:
+        address:
+          $ref: '#/components/schemas/AccountAddress'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        description:
+          $ref: '#/components/schemas/Name'
+      required:
+        - currency
+    AccountList:
+      title: AccountList
+      type: object
+      description: Data model for the complex type AccountList.
+      properties:
+        account:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+          minItems: 1
+          maxItems: 32
+          description: Accounts associated with the Party.
+      required:
+        - account
+        - 
     AuthorizationsIDPutResponse:
       title: AuthorizationsIDPutResponse
       type: object
