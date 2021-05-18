@@ -2077,22 +2077,28 @@ components:
 
     AccountsIDPutResponse:
       title: AccountsIDPutResponse
-      type: array
-      items:
-        type: object
-        description: |
-          `GET /accounts/{ID}` response.
-        properties:
-          accountNickname:
-            $ref: '#/components/schemas/accountAddress'
-          id:
-            $ref: '#/components/schemas/accountAddress'
-          currency:
-            $ref: '#/components/schemas/currency'
-        required:
-          - accountNickname
-          - id
-          - currency
+      type: object
+      description: 'The object sent in a `PUT /accounts/{ID}` request.'
+      properties:
+        accounts:
+          type: array
+          items:
+            type: object
+            description: |
+              The object sent in a `PUT /accounts/{ID}` request.
+            properties:
+              accountNickname:
+                $ref: '#/components/schemas/AccountAddress'
+              id:
+                $ref: '#/components/schemas/AccountAddress'
+              currency:
+                $ref: '#/components/schemas/Currency'
+            required:
+              - accountNickname
+              - id
+              - currency
+      required:
+        - accounts
 
     AccountAddress:
       title: AccountAddress
