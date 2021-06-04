@@ -587,12 +587,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
-  /validateOTP:
+  /validateAuthToken:
     post:
-      operationId: PostValidateOTP
-      summary: PostValidateOTP
+      operationId: PostValidateAuthToken
+      summary: PostValidateAuthToken
       description: |
-        The HTTP request `POST /validateOTP` is used to validate an auth token from a PISP for authentication.
+        The HTTP request `POST /validateAuthToken` is used to validate an auth token from a PISP for authentication.
       tags:
         - validateOTP
       requestBody:
@@ -2035,13 +2035,11 @@ components:
       type: object
       description: The object sent in a `POST /consentRequests` request.
       properties:
-        id:
+        consentRequestId:
           $ref: '#/components/schemas/CorrelationId'
-        initiatorId:
+        userId:
           type: string
-          description: >-
-            The id of the PISP who will initiate transactions on a user's
-            behalf.
+          description: ID used to associate request with GET /accounts request.
         scopes:
           type: array
           items:
@@ -2056,8 +2054,8 @@ components:
             The callback uri that the user will be redirected to after
             completing the WEB auth channel.
       required:
-        - id
-        - initiatorId
+        - consentRequestId
+        - userId
         - scopes
         - authChannels
         - callbackUri

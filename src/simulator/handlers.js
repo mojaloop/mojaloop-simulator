@@ -254,9 +254,9 @@ const getScopesById = async (ctx) => {
     ctx.response.status = 200;
 };
 
-const postValidateOTP = async (ctx) => {
+const postValidateAuthToken = async (ctx) => {
     // fake validation for testing purposes
-    // even auth tokens validate true
+    // even auth tokens validate true as default mock response, if rules not configured
     const res = {
         isValid: ctx.request.body.authToken % 2 === 0,
     };
@@ -268,7 +268,7 @@ const postValidateOTP = async (ctx) => {
 const validateConsentRequests = async (ctx) => {
     const request = ctx.request.body;
     ctx.state.logger.log(`validateConsentRequests request body: ${util.inspect(request)}`);
-    // default mock reponse, if rules not configured
+    // default mock response, if rules not configured
     const res = {
         isValid: true,
         data: {
@@ -370,8 +370,8 @@ const map = {
     '/scopes/{ID}': {
         get: getScopesById,
     },
-    '/validateOTP': {
-        post: postValidateOTP,
+    '/validateAuthToken': {
+        post: postValidateAuthToken,
     },
     '/validateConsentRequests': {
         post: validateConsentRequests,

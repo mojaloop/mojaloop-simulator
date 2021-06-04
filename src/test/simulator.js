@@ -76,7 +76,7 @@ test('get scopes by Id', async (t) => {
 test('post validateConsentRequests', async (t) => {
     // eslint-disable-next-line no-param-reassign
     t.context.request = {
-        body: { id: '123456' },
+        body: { consentRequestId: '123456' },
     };
     await map['/validateConsentRequests'].post(t.context);
     t.truthy(t.context.response.body);
@@ -116,7 +116,7 @@ test('get consentRequest', async (t) => {
     t.is(t.context.response.status, 200);
 });
 
-test('post validate otp valid', async (t) => {
+test('post validate authToken valid', async (t) => {
     // eslint-disable-next-line no-param-reassign
     t.context.request = {
         body: {
@@ -124,14 +124,14 @@ test('post validate otp valid', async (t) => {
             consentRequestId: idValue,
         },
     };
-    await map['/validateOTP'].post(t.context);
+    await map['/validateAuthToken'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.body.isValid, true);
     t.is(t.context.response.status, 200);
 });
 
 
-test('post validate otp invalid', async (t) => {
+test('post validate authToken invalid', async (t) => {
     // eslint-disable-next-line no-param-reassign
     t.context.request = {
         body: {
@@ -139,7 +139,7 @@ test('post validate otp invalid', async (t) => {
             consentRequestId: idValue,
         },
     };
-    await map['/validateOTP'].post(t.context);
+    await map['/validateAuthToken'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.body.isValid, false);
     t.is(t.context.response.status, 200);
