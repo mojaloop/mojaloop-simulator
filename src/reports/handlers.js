@@ -24,13 +24,13 @@
 
 const { parse } = require('querystring');
 const sqlite = require('sqlite');
+const sqlite3 = require('sqlite3');
 
 const { getStackOrInspect } = require('@internal/log');
 const { ApiErrorCodes } = require('../models/errors');
 const { quoteTable } = require('../models/constants');
 
 require('dotenv').config();
-
 
 /**
  * Parses all quotes and returns responses.
@@ -93,7 +93,10 @@ const getReport = async (ctx) => {
             ctx.response.status = 400;
             return;
         }
-        const db = await sqlite.open(process.env.MODEL_DATABASE);
+        const db = await sqlite.open({
+            filename: process.env.MODEL_DATABASE,
+            driver: sqlite3.Database,
+        });
 
         const quotes = await db.all(`SELECT request, response, created FROM ${quoteTable} where created >= '${START_DATE_TIME}' AND created < '${END_DATE_TIME}'`);
         if (quotes.length === 0) {

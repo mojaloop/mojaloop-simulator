@@ -27,7 +27,6 @@ require('dotenv').config();
 
 const { OUTBOUND_ENDPOINT } = process.env;
 
-
 /**
  * Endpoint call to outbound transfer request initiation
  *
@@ -43,7 +42,6 @@ const postTransfers = async (body) => {
 
     return res.json();
 };
-
 
 /**
  * Endpoint call resuming outbound transfers in scenarios where two-step transfers are enabled
@@ -92,7 +90,6 @@ const postBulkQuotes = async (body) => {
 
     return res.json();
 };
-
 
 module.exports = {
     postTransfers,

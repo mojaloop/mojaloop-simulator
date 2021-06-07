@@ -255,7 +255,6 @@ test('should be undefined for deleted participant', async (t) => {
     t.is(deleted, undefined);
 });
 
-
 test('create a quote', async (t) => {
     await t.context.model.quote.create(quote);
     t.pass();
@@ -272,7 +271,6 @@ test('create and retrieve a quote', async (t) => {
     t.pass();
 });
 
-
 test('created quote has correct fees', async (t) => {
     const { model } = t.context;
 
@@ -287,7 +285,6 @@ test('created quote has correct fees', async (t) => {
 
     return t.pass();
 });
-
 
 test('created quote has correct fees when transfer amount is small', async (t) => {
     const { model } = t.context;
@@ -306,7 +303,6 @@ test('created quote has correct fees when transfer amount is small', async (t) =
 
     return t.pass();
 });
-
 
 test('create and update a quote', async (t) => {
     const { model } = t.context;
@@ -494,7 +490,6 @@ test('throws if we try to init the db twice', async (t) => {
 
     // Act
     const error = await t.throwsAsync(() => model.init(':memory:'));
-
 
     // Assert
     t.is(error.message, 'Attempted to initialise database twice', 'Invalid error message.');

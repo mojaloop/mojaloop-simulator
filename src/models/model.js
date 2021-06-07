@@ -29,6 +29,8 @@
  */
 
 const sqlite = require('sqlite');
+const sqlite3 = require('sqlite3');
+
 const Party = require('./party');
 const Quote = require('./quote');
 const BulkQuote = require('./bulkQuote');
@@ -90,7 +92,10 @@ module.exports = class Model {
             throw new Error('Attempted to initialise database twice');
         }
 
-        this.db = await sqlite.open(databaseFilepath);
+        this.db = await sqlite.open({
+            filename: databaseFilepath,
+            driver: sqlite3.Database,
+        });
         await this.db.run('PRAGMA foreign_keys = true');
         await this.db.run(createPartyTable);
         await this.db.run(createPartyTableUniqueIndex);

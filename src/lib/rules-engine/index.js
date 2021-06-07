@@ -26,7 +26,6 @@ const util = require('util');
 const { Engine } = require('json-rules-engine');
 const { getStackOrInspect } = require('@internal/log');
 
-
 class RulesEngine {
     constructor(config) {
         this.config = config;
@@ -43,7 +42,6 @@ class RulesEngine {
         /* istanbul ignore next */
         this.engine.addOperator('numberStringGreaterThanInclusive', (a, b) => Number(a) >= b);
     }
-
 
     /**
      * Loads an array of rules into the engine
@@ -82,6 +80,5 @@ class RulesEngine {
         });
     }
 }
-
 
 module.exports = RulesEngine;
