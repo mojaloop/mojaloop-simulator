@@ -71,8 +71,10 @@ class RulesEngine {
             this.logger.log(`Rule engine evaluating facts: ${util.inspect(facts)}`);
             this.engine
                 .run(facts)
-                .then((events) => {
-                    this.logger.log(`Rule engine returning events: ${util.inspect(events)}`);
+                .then((engineResult) => {
+                    const { events } = engineResult;
+
+                    this.logger.log(`Rule engine returning events: ${util.inspect(engineResult)}`);
                     // Events is always longer than 0 for istanbul
                     /* istanbul ignore next */
                     return resolve(events.length === 0 ? null : events.map((e) => e.params));
