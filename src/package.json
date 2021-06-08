@@ -68,6 +68,7 @@
     "koa-body": "4.2.0",
     "mustache": "4.2.0",
     "node-fetch": "2.6.1",
+    "openapi-jsonschema-parameters": "9.0.3",
     "sqlite": "4.0.23",
     "sqlite3": "5.0.2",
     "yamljs": "0.3.0"
