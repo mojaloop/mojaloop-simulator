@@ -31,7 +31,7 @@ const Ajv = require('ajv');
 
 // Don't stop at the first error, we'll let the user know what all their errors are. Also, when we
 // validate, coerce types to those we're interested in where possible.
-const ajv = new Ajv({ allErrors: true, coerceTypes: true, strict: false, });
+const ajv = new Ajv({ allErrors: true, coerceTypes: true, strict: false });
 
 const httpMethods = ['get', 'head', 'post', 'put', 'delete', 'connnect', 'options', 'trace', 'patch'];
 
