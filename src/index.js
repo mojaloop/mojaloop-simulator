@@ -49,9 +49,8 @@ const simHandlers = require('./simulator/handlers');
 const reportHandlers = require('./reports/handlers');
 const testApiHandlers = require('./test-api/handlers');
 
-const { setConfig, getConfig } = require('./config.js');
+const { setConfig, getConfig } = require('./config');
 const Model = require('./models/model');
-
 
 const simApiSpec = yaml.load('./simulator/api.yaml');
 const reportApiSpec = yaml.load('./reports/api.yaml');
@@ -75,7 +74,6 @@ const testApi = new Koa();
     const simLogger = new Logger({ context: { app: 'simulator' }, space, transports });
     const reportLogger = new Logger({ context: { app: 'report' }, space, transports });
     const testApiLogger = new Logger({ context: { app: 'test-api' }, space, transports });
-
 
     const rulesEngine = new RulesEngine({ logger: simLogger });
     rulesEngine.loadRules(rules);
@@ -116,7 +114,6 @@ const testApi = new Koa();
         ctx.state.logger.push({ response: { body, status } }).log('Request processed');
     });
 
-
     report.use(async (ctx, next) => {
         ctx.state.logger = reportLogger.push({
             request: {
@@ -131,7 +128,6 @@ const testApi = new Koa();
         const { body, status } = ctx.response;
         ctx.state.logger.push({ response: { body, status } }).log('Request processed');
     });
-
 
     testApi.use(async (ctx, next) => {
         ctx.state.logger = testApiLogger.push({
@@ -148,14 +144,11 @@ const testApi = new Koa();
         ctx.state.logger.push({ response: { body, status } }).log('Request processed');
     });
 
-
     testApi.use(cors());
-
 
     simulator.use(koaBody());
     report.use(koaBody());
     testApi.use(koaBody());
-
 
     // Add validation and data model for each request
     const simValidator = new Validate();
@@ -213,7 +206,6 @@ const testApi = new Koa();
             };
         }
     });
-
 
     // Add rule engine evaluation for each simulator request
     simulator.use(async (ctx, next) => {
@@ -275,7 +267,6 @@ const testApi = new Koa();
         await next();
     });
 
-
     // Handle requests
     simulator.use(router(simHandlers.map));
     report.use(router(reportHandlers.map));
@@ -286,7 +277,6 @@ const testApi = new Koa();
         reportValidator.initialise(reportApiSpec),
         testApiValidator.initialise(testApiSpec),
     ]);
-
 
     // If config specifies TLS, start an HTTPS server; otherwise HTTP
     let simServer;

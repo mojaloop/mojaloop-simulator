@@ -26,13 +26,12 @@
 
 const test = require('ava');
 const yaml = require('yamljs');
-const uuid = require('uuid/v1');
+const { v1: uuid } = require('uuid');
 
 const Validate = require('@internal/validate');
 const { testLogger } = require('../../TestUtils');
 
 const simApiSpec = yaml.load('./simulator/api.yaml');
-
 
 test('Validates a simple request', async (t) => {
     // Arrange

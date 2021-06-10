@@ -27,7 +27,7 @@
 
 const test = require('ava');
 const Chance = require('chance');
-const uuid = require('uuid/v1');
+const { v1: uuid } = require('uuid');
 
 const chance = new Chance();
 const randName = chance.name({ suffix: true, middle: true });
@@ -103,7 +103,6 @@ const partyCreateWithSubIdValue = {
         },
     ],
 };
-
 
 const quote = {
     quoteId: idValue,
@@ -398,7 +397,6 @@ const transferWithoutQuote = {
     currency,
     amount,
 };
-
 
 test('constants', async (t) => {
     // to avoid test warnings

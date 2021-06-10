@@ -28,7 +28,7 @@
 const util = require('util');
 require('dotenv').config();
 const { getStackOrInspect } = require('@internal/log');
-const { ApiErrorCodes } = require('../models/errors.js');
+const { ApiErrorCodes } = require('../models/errors');
 
 const getParticipantsByTypeAndId = async (ctx) => {
     try {
@@ -197,7 +197,6 @@ const healthCheck = async (ctx) => {
     ctx.response.body = '';
 };
 
-
 const map = {
     '/': {
         get: healthCheck,
@@ -242,7 +241,6 @@ const map = {
         put: putTransfersById,
     },
 };
-
 
 module.exports = {
     map,

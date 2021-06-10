@@ -39,7 +39,6 @@ async function readFile(...args) {
     return p;
 }
 
-
 // TODO: implement toString, toJSON toAnythingElse methods on config so that secrets can't be
 // printed
 const config = {
@@ -59,7 +58,6 @@ const config = {
     },
     parties: [],
 };
-
 
 const setConfig = async (cfg) => {
     config.tls.mutualTLS.enabled = cfg.MUTUAL_TLS_ENABLED.toLowerCase() !== 'false';
@@ -82,9 +80,7 @@ const setConfig = async (cfg) => {
     config.parties = cfg.PARTIES ? JSON.parse(cfg.PARTIES) : config.parties;
 };
 
-
 const getConfig = () => config;
-
 
 module.exports = {
     getConfig,
