@@ -838,9 +838,73 @@ paths:
               schema:
                 $ref: '#/components/schemas/errorResponse'
 
+  /store/consent:
+    post:
+      tags:
+        - DFSPSim
+      description: |
+        The HTTP request `POST /store/consent` is used to request that the DFSP store information about
+        an account ID and consent.
+      summary: PostStoreConsent
+      operationId: PostStoreConsent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200:
+          description: Response containing details
+          content:
+            application/json:
+              schema:
+                type: object
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
+
+  /transactionRequestContextForAccountId/{ID}:
+    get:
+      tags:
+        - DFSPSim
+      operationId: GetTransactionRequestContextForAccountIdById
+      summary: GetTransactionRequestContextForAccountIdById
+      description: |
+        The HTTP request `GET /transactionRequestContextForAccountId/{ID}` is
+        used to retrieve consent information for a specific account ID.
+      responses:
+        200:
+          description: Response containing account consent info details
+          content:
+            application/json:
+              schema:
+                type: object
+        400:
+          description: Malformed or missing required headers or parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: An error occured processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+
 components:
   schemas:
-
     quoteRequest:
       type: object
       description: A request for a quote for transfer from the DFSP backend
