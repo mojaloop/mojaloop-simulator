@@ -121,7 +121,6 @@ CREATE TABLE IF NOT EXISTS ${bulkTransferTable} (
 )
 `;
 
-<<<<<<< HEAD
 const createAccountTable = `
 CREATE TABLE IF NOT EXISTS ${partyAccountsTable} (
     address TEXT NOT NULL PRIMARY KEY,
@@ -131,8 +130,6 @@ CREATE TABLE IF NOT EXISTS ${partyAccountsTable} (
 )
 `;
 
-=======
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
 module.exports = {
     partyTable,
     quoteTable,
@@ -145,7 +142,6 @@ module.exports = {
     createQuoteTable,
     createBulkQuoteTable,
     createBulkTransferTable,
-<<<<<<< HEAD
     createTransactionRequestTable,
     createTransferTable,
     createPartyExtensionTable,
@@ -153,11 +149,5 @@ module.exports = {
     createPartyExtensionTableUniqueIndex,
     partyAccountsTable,
     createAccountTable,
-=======
     createTransferTable,
-    createTransactionRequestTable,
-    createPartyExtensionTable,
-    createPartyTableUniqueIndex,
-    createPartyExtensionTableUniqueIndex,
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
 };

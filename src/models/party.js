@@ -53,27 +53,11 @@ module.exports = class Party {
     async get(idType, idValue, subIdValue = null) {
         let res;
         if (!subIdValue) {
-<<<<<<< HEAD
-            res = await this.db.all(`
-            SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value, pa.address, pa.currency, pa.description
-            FROM ${partyTable} p
-            LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue
-            LEFT JOIN ${partyAccountsTable} pa ON p.idValue = pa.idValue
-            WHERE p.idType = ? AND p.idValue = ? AND p.subIdValue IS NULL AND pe.subIdValue IS NULL`, [idType, idValue]);
-        } else {
-            res = await this.db.all(`
-            SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value, pa.address, pa.currency, pa.description
-            FROM ${partyTable} p
-            LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue  AND p.subIdValue = pe.subIdValue
-            LEFT JOIN ${partyAccountsTable} pa ON p.idValue = pa.idValue
-            WHERE p.idType = ? AND p.idValue = ? AND p.subIdValue = ?`, [idType, idValue, subIdValue]);
-=======
             res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value  FROM ${partyTable} p 
             LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue WHERE p.idType = ? AND p.idValue = ? AND p.subIdValue IS NULL AND pe.subIdValue IS NULL`, [idType, idValue]);
         } else {
             res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value  FROM ${partyTable} p 
             LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue  AND p.subIdValue = pe.subIdValue WHERE p.idType = ? AND p.idValue = ? AND p.subIdValue = ?`, [idType, idValue, subIdValue]);
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
         }
         const resultMap = {};
         res.forEach((row) => {
@@ -91,11 +75,7 @@ module.exports = class Party {
                     idValue: row.idValue,
                 };
                 if (row.subIdValue) {
-<<<<<<< HEAD
                     party.subIdValue = row.subIdValue;
-=======
-                    party.idSubValue = row.subIdValue;
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
                 }
                 resultMap[row.idValue] = party;
             }
@@ -129,17 +109,9 @@ module.exports = class Party {
     * @returns {Promise<Object>} Party object.
     */
     async getAll() {
-<<<<<<< HEAD
-        const res = await this.db.all(`
-            SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value, pa.address, pa.currency, pa.description
-            FROM ${partyTable} p
-            LEFT JOIN ${partyExtensionTable} pe ON (p.idValue = pe.idValue AND pe.subIdValue IS NULL AND p.subIdValue IS NULL) OR (p.idValue = pe.idValue AND p.subIdValue = pe.subIdValue)
-            LEFT JOIN ${partyAccountsTable} pa ON p.idValue = pa.idValue`);
-=======
         const res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value  FROM ${partyTable} p 
         LEFT JOIN ${partyExtensionTable} pe ON (p.idValue = pe.idValue AND pe.subIdValue IS NULL AND p.subIdValue IS NULL) OR (p.idValue = pe.idValue AND p.subIdValue = pe.subIdValue)`);
 
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
         const resultMap = {};
         res.forEach((row) => {
             let party;
@@ -156,11 +128,7 @@ module.exports = class Party {
                     idValue: row.idValue,
                 };
                 if (row.subIdValue) {
-<<<<<<< HEAD
                     party.subIdValue = row.subIdValue;
-=======
-                    party.idSubValue = row.subIdValue;
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
                 }
                 resultMap[`${row.idValue}-${row.subIdValue}`] = party;
             }

@@ -302,6 +302,21 @@ const getConsentRequest = async (ctx) => {
     ctx.response.status = 200;
 };
 
+const getSignedChallenge = async (ctx) => {
+    try {
+        const res = {
+            pinValue: crypto.randomBytes(256).toString('base64').slice(0, 64),
+            counter: '1',
+        };
+        ctx.state.logger.log(`getSignedChallenge is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
 const map = {
     '/': {
         get: healthCheck,

@@ -168,12 +168,8 @@ async function rewriteContentTypeHeader(ctx, next) {
         ctx.state.logger.push({ response: { body, status } }).log('Request processed');
     });
 
-<<<<<<< HEAD
     simulator.use(rewriteContentTypeHeader);
-=======
     testApi.use(cors());
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
-
     simulator.use(koaBody());
     report.use(koaBody());
     testApi.use(koaBody());
