@@ -34,108 +34,6 @@ defaults_Dependencies: &defaults_Dependencies |
   npm install -g node-gyp
 
 defaults_awsCliDependencies: &defaults_awsCliDependencies |
-<<<<<<< HEAD
-    apk upgrade --no-cache
-    apk --no-cache add \
-            python3 \
-            py3-pip \
-            groff \
-            less \
-            mailcap
-    pip3 install --upgrade pip awscli==1.14.5 s3cmd==2.0.1 python-magic
-
-defaults_build_docker_build: &defaults_build_docker_build
-  name: Build Docker image
-  command: |
-    docker build -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG .
-
-defaults_build_docker_login: &defaults_build_docker_login
-  name: Login to Docker Hub
-  command: |
-    docker login -u $DOCKER_USER -p $DOCKER_PASS
-
-defaults_build_docker_publish: &defaults_build_docker_publish
-  name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
-  command: |
-    echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
-    docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
-    case "$CIRCLE_TAG" in
-      *-pisp*)
-        # Don't update `late5t` for an image that has a `-pisp`
-        echo 'skipping late5t tag'
-        exit 0
-        ;;
-      *)
-        echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
-        docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
-        ;;
-    esac
-
-defaults_deploy_config_kubernetes_cluster: &defaults_deploy_config_kubernetes_cluster
-  name: Configure Kubernetes cluster
-  command: |
-    echo "Configure Kubernetes cluster ${K8_CLUSTER_NAME}"
-    kubectl config set-cluster $K8_CLUSTER_NAME --server=$K8_CLUSTER_SERVER --insecure-skip-tls-verify=true
-
-defaults_deploy_config_kubernetes_context: &defaults_deploy_config_kubernetes_context
-  name: Confi gure Kubernetes context
-  command: |
-    echo "Configure Kubernetes context ${K8_CLUSTER_NAME}"
-    kubectl config set-context $K8_CLUSTER_NAME --cluster=$K8_CLUSTER_NAME --user=$K8_USER_NAME --namespace=$K8_NAMESPACE
-
-defaults_deploy_config_kubernetes_credentials: &defaults_deploy_config_kubernetes_credentials
-  name: Configure Kubernetes credentails
-  command: |
-    echo "Configure Kubernetes credentials ${K8_USER_NAME}"
-    if [ ! -z "$K8_USER_TOKEN" ];
-    then
-        echo "Configure Kubernetes credentials ${K8_USER_NAME} using Token"
-        kubectl config set-credentials $K8_USER_NAME --token=$K8_USER_TOKEN
-    else
-        echo "Configure Kubernetes credentials ${K8_USER_NAME} using Certs"
-        kubectl config set-credentials $K8_USER_NAME --client-certificate=$CIRCLE_WORKING_DIRECTORY/$AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_KEYS/$K8_USER_PEM_CERT_FILENAME --client-key=$CIRCLE_WORKING_DIRECTORY/$AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_KEYS/$K8_USER_PEM_KEY_FILENAME
-    fi
-
-defaults_deploy_configure_helm: &defaults_deploy_configure_helm
-  name: Configure Helm
-  command: |
-    helm init --client-only
-
-defaults_deploy_install_or_upgrade_helm_chart: &defaults_deploy_install_or_upgrade_helm_chart
-  name: Install or Upgrade Helm Chart
-  command: |
-    echo "Install or Upgrade Chart ${K8_RELEASE_NAME} for Docker Image ${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}"
-    if [ -z "$(helm list -q | grep -E "^${K8_RELEASE_NAME}$")"  ] && [ "$(helm list -q | grep -E "^${K8_RELEASE_NAME}$")" != "Error: Unauthorized" ];
-    then
-        echo "Installing ${K8_RELEASE_NAME} new release"
-        helm install --namespace=$K8_NAMESPACE --name=$K8_RELEASE_NAME --repo=$K8_HELM_REPO $HELM_VALUE_SET_VALUES -f $CIRCLE_WORKING_DIRECTORY/$AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_HELM/$HELM_VALUE_FILENAME $K8_HELM_CHART_NAME
-    else
-        echo "Upgrading ${K8_RELEASE_NAME} release"
-        helm upgrade $K8_RELEASE_NAME --repo=$K8_HELM_REPO --reuse-values $HELM_VALUE_SET_VALUES -f $CIRCLE_WORKING_DIRECTORY/$AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_HELM/$HELM_VALUE_FILENAME $K8_HELM_CHART_NAME
-    fi
-
-defaults_deploy_prequisites: &defaults_deploy_prequisites
-  name: Copy deployment pre-requisites from S3 bucket
-  command: |
-    if [ -z "$K8_USER_TOKEN" ];
-    then
-        echo "Copying K8 keys into $AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_KEYS folder"
-        mkdir $CIRCLE_WORKING_DIRECTORY/$AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_KEYS
-        aws s3 cp $AWS_S3_URI_DEVOPS_DEPLOYMENT_CONFIG/$AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_KEYS/$K8_USER_PEM_KEY_FILENAME $CIRCLE_WORKING_DIRECTORY/$AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_KEYS/
-        aws s3 cp $AWS_S3_URI_DEVOPS_DEPLOYMENT_CONFIG/$AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_KEYS/$K8_USER_PEM_CERT_FILENAME $CIRCLE_WORKING_DIRECTORY/$AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_KEYS/
-    else
-        echo "Skipping K8 keys into $AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_KEYS folder"
-    fi
-    echo "Copying Helm value file into $AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_HELM folder for $K8_RELEASE_NAME release"
-    mkdir $CIRCLE_WORKING_DIRECTORY/$AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_HELM
-    aws s3 cp $AWS_S3_URI_DEVOPS_DEPLOYMENT_CONFIG/$AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_HELM/$HELM_VALUE_FILENAME $CIRCLE_WORKING_DIRECTORY/$AWS_S3_DIR_DEVOPS_DEPLOYMENT_CONFIG_HELM/
-
-defaults_deploy_set_kubernetes_context: &defaults_deploy_set_kubernetes_context
-  name: Set Kubernetes context
-  command: |
-    echo "Configure Kubernetes context ${K8_CLUSTER_NAME}"
-    kubectl config use-context $K8_CLUSTER_NAME
-=======
   apk --update --no-cache add \
           python3 \
           py3-pip \
@@ -143,7 +41,6 @@ defaults_deploy_set_kubernetes_context: &defaults_deploy_set_kubernetes_context
           less \
           mailcap
   pip3 install --upgrade awscli==1.14.5 s3cmd==2.0.1 python-magic
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
 
 defaults_license_scanner: &defaults_license_scanner
   name: Install and set up license-scanner
@@ -151,24 +48,6 @@ defaults_license_scanner: &defaults_license_scanner
     git clone https://github.com/mojaloop/license-scanner /tmp/license-scanner
     cd /tmp/license-scanner && make build default-files set-up
 
-<<<<<<< HEAD
-
-# defaults_working_directory: &defaults_working_directory
-#   # The working directory for this project (place where package.json is) is /src,
-#   # as opposed to the project root
-#   working_directory: /home/circleci/project/git
-
-defaults_slack_announcement: &defaults_slack_announcement
-  name: Slack announcement for tag releases
-  command: |
-    curl -X POST \
-      $SLACK_WEBHOOK_ANNOUNCEMENT \
-      -H 'Content-type: application/json' \
-      -H 'cache-control: no-cache' \
-      -d "{\"text\": \"*${CIRCLE_PROJECT_REPONAME}* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
-
-=======
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
 src_working_directory: &src_working_directory
   # The working directory for this project (place where package.json is) is /src,
   # as opposed to the project root
@@ -183,25 +62,13 @@ executors:
   default-docker:
     working_directory: /home/circleci/project/git
     docker:
-<<<<<<< HEAD
-      - image: node:12.16.0-alpine
-=======
       - image: node:12.18.0-alpine
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
 
   default-machine:
     working_directory: /home/circleci/project/git
     machine:
       image: ubuntu-1604:201903-01
 
-<<<<<<< HEAD
-  helm-kube:
-    working_directory: /home/circleci/project
-    docker:
-      - image: hypnoglow/kubernetes-helm
-
-=======
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
 ##
 # Jobs
 #
@@ -214,16 +81,6 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-<<<<<<< HEAD
-      - checkout
-      # - run:
-          # name: Build dependencies
-          # command: apk add --no-cache -t build-dependencies make gcc g++ python libtool autoconf automake
-      - run:
-          name: Access npm folder as root
-          command: cd $(npm root -g)/npm
-=======
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
       - run:
           name: Update NPM install (using `npm ci`)
           command: cd src && npm ci
@@ -240,12 +97,9 @@ jobs:
   test-unit:
     executor: default-docker
     steps:
-<<<<<<< HEAD
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-=======
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
       - checkout
       - restore_cache:
           key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
@@ -271,8 +125,6 @@ jobs:
   test-coverage:
     executor: default-docker
     steps:
-<<<<<<< HEAD
-=======
       - checkout
       - restore_cache:
           key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
@@ -280,7 +132,6 @@ jobs:
             - src/node_modules
             - src/lib/log/node_modules
             - src/lib/validate/node_modules
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
@@ -310,11 +161,6 @@ jobs:
   vulnerability-check:
     executor: default-docker
     steps:
-<<<<<<< HEAD
-      - run:
-          name: Install general dependencies
-          command: *defaults_Dependencies
-=======
       - checkout
       - restore_cache:
           key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
@@ -338,7 +184,6 @@ jobs:
   vulnerability-check-onboard-hub-accounts:
     executor: default-docker
     steps:
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
       - checkout
       - restore_cache:
           key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
@@ -357,12 +202,7 @@ jobs:
           command: mkdir -p ./audit/results
       - run:
           name: Check for new npm vulnerabilities
-<<<<<<< HEAD
-          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
-          <<: *src_working_directory
-=======
           command: cd src && npm run audit:check --silent -- --json > ../audit/results/auditResults.json
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
       - store_artifacts:
           path: ./audit/results
           prefix: audit
@@ -396,8 +236,6 @@ jobs:
   audit-licenses:
     executor: default-docker
     steps:
-<<<<<<< HEAD
-=======
       - checkout
       - restore_cache:
           key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
@@ -405,11 +243,9 @@ jobs:
             - src/node_modules
             - src/lib/log/node_modules
             - src/lib/validate/node_modules
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
-      - checkout
       - run:
           <<: *defaults_license_scanner
       - run:
@@ -423,6 +259,7 @@ jobs:
     executor: default-machine
     steps:
       - checkout
+      # TODO: build all the images here!
       - run:
           name: Build Docker $CIRCLE_TAG image
           command: >
@@ -442,166 +279,166 @@ jobs:
           paths:
             - ./docker-image.tar
 
-  build-onboard-hub-accounts:
-    executor: default-machine
-    steps:
-      - checkout
-      - run:
-          name: Build Docker onboard-hub-accounts $CIRCLE_TAG image
-          command: >
-            echo "Building Docker image: onboard-hub-accounts $CIRCLE_TAG"
+  # build-onboard-hub-accounts:
+  #   executor: default-machine
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Build Docker onboard-hub-accounts $CIRCLE_TAG image
+  #         command: >
+  #           echo "Building Docker image: onboard-hub-accounts $CIRCLE_TAG"
 
-            docker build
-            --build-arg CREATED="$(date -u --iso-8601=seconds)"
-            --build-arg VERSION="$RELEASE_TAG"
-            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
-            --build-arg REVISION="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG ./init/onboard-hub-accounts/
-      - run:
-          name: Save docker image to workspace
-          command: docker save -o /tmp/docker-onboard-hub-accounts.tar $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - ./docker-onboard-hub-accounts.tar
+  #           docker build
+  #           --build-arg CREATED="$(date -u --iso-8601=seconds)"
+  #           --build-arg VERSION="$RELEASE_TAG"
+  #           --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+  #           --build-arg REVISION="$CIRCLE_SHA1"
+  #           -t $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG ./init/onboard-hub-accounts/
+  #     - run:
+  #         name: Save docker image to workspace
+  #         command: docker save -o /tmp/docker-onboard-hub-accounts.tar $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG
+  #     - persist_to_workspace:
+  #         root: /tmp
+  #         paths:
+  #           - ./docker-onboard-hub-accounts.tar
 
-  build-onboard-central-ledger:
-    executor: default-machine
-    steps:
-      - checkout
-      - run:
-          name: Build Docker onboard-central-ledger $CIRCLE_TAG image
-          command: >
-            echo "Building Docker image: onboard-central-ledger $CIRCLE_TAG"
+  # build-onboard-central-ledger:
+  #   executor: default-machine
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Build Docker onboard-central-ledger $CIRCLE_TAG image
+  #         command: >
+  #           echo "Building Docker image: onboard-central-ledger $CIRCLE_TAG"
 
-            docker build
-            --build-arg CREATED="$(date -u --iso-8601=seconds)"
-            --build-arg VERSION="$RELEASE_TAG"
-            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
-            --build-arg REVISION="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG ./init/onboard-central-ledger/
-      - run:
-          name: Save docker image to workspace
-          command: docker save -o /tmp/docker-onboard-central-ledger.tar $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - ./docker-onboard-central-ledger.tar
+  #           docker build
+  #           --build-arg CREATED="$(date -u --iso-8601=seconds)"
+  #           --build-arg VERSION="$RELEASE_TAG"
+  #           --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+  #           --build-arg REVISION="$CIRCLE_SHA1"
+  #           -t $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG ./init/onboard-central-ledger/
+  #     - run:
+  #         name: Save docker image to workspace
+  #         command: docker save -o /tmp/docker-onboard-central-ledger.tar $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG
+  #     - persist_to_workspace:
+  #         root: /tmp
+  #         paths:
+  #           - ./docker-onboard-central-ledger.tar
 
-  build-onboard-msisdn-oracle:
-    executor: default-machine
-    steps:
-      - checkout
-      - run:
-          name: Build Docker onboard-msisdn-oracle $CIRCLE_TAG image
-          command: >
-            echo "Building Docker image: onboard-msisdn-oracle $CIRCLE_TAG"
+  # build-onboard-msisdn-oracle:
+  #   executor: default-machine
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Build Docker onboard-msisdn-oracle $CIRCLE_TAG image
+  #         command: >
+  #           echo "Building Docker image: onboard-msisdn-oracle $CIRCLE_TAG"
 
-            docker build
-            --build-arg CREATED="$(date -u --iso-8601=seconds)"
-            --build-arg VERSION="$RELEASE_TAG"
-            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
-            --build-arg REVISION="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG ./init/onboard-msisdn-oracle/
-      - run:
-          name: Save docker image to workspace
-          command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - ./docker-onboard-msisdn-oracle.tar
+  #           docker build
+  #           --build-arg CREATED="$(date -u --iso-8601=seconds)"
+  #           --build-arg VERSION="$RELEASE_TAG"
+  #           --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+  #           --build-arg REVISION="$CIRCLE_SHA1"
+  #           -t $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG ./init/onboard-msisdn-oracle/
+  #     - run:
+  #         name: Save docker image to workspace
+  #         command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG
+  #     - persist_to_workspace:
+  #         root: /tmp
+  #         paths:
+  #           - ./docker-onboard-msisdn-oracle.tar
 
-  build-local:
-    executor: default-machine
-    steps:
-      - checkout
-      - run:
-          name: Build Docker local image for testing
-          command: >
-            echo "Building Docker image: local"
+  # build-local:
+  #   executor: default-machine
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Build Docker local image for testing
+  #         command: >
+  #           echo "Building Docker image: local"
 
-            docker build
-            --build-arg CREATED="$(date -u --iso-8601=seconds)"
-            --build-arg VERSION="local"
-            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
-            --build-arg REVISION="$CIRCLE_SHA1"
-            -t mojaloop/$CIRCLE_PROJECT_REPONAME:local .
-      - run:
-          name: Save docker image to workspace
-          command: docker save -o /tmp/docker-image.tar mojaloop/$CIRCLE_PROJECT_REPONAME:local
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - ./docker-image.tar
+  #           docker build
+  #           --build-arg CREATED="$(date -u --iso-8601=seconds)"
+  #           --build-arg VERSION="local"
+  #           --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+  #           --build-arg REVISION="$CIRCLE_SHA1"
+  #           -t mojaloop/$CIRCLE_PROJECT_REPONAME:local .
+  #     - run:
+  #         name: Save docker image to workspace
+  #         command: docker save -o /tmp/docker-image.tar mojaloop/$CIRCLE_PROJECT_REPONAME:local
+  #     - persist_to_workspace:
+  #         root: /tmp
+  #         paths:
+  #           - ./docker-image.tar
 
-  build-local-onboard-hub-accounts:
-    executor: default-machine
-    steps:
-      - checkout
-      - run:
-          name: Build Docker onboard-hub-accounts local image for testing
-          command: >
-            echo "Building Docker image: onboard-hub-accounts local"
+  # build-local-onboard-hub-accounts:
+  #   executor: default-machine
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Build Docker onboard-hub-accounts local image for testing
+  #         command: >
+  #           echo "Building Docker image: onboard-hub-accounts local"
 
-            docker build
-            --build-arg CREATED="$(date -u --iso-8601=seconds)"
-            --build-arg VERSION="local"
-            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
-            --build-arg REVISION="$CIRCLE_SHA1"
-            -t mojaloop/onboard-hub-accounts:local ./init/onboard-hub-accounts/
-      - run:
-          name: Save docker image to workspace
-          command: docker save -o /tmp/docker-onboard-hub-accounts.tar mojaloop/onboard-hub-accounts:local
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - ./docker-onboard-hub-accounts.tar
+  #           docker build
+  #           --build-arg CREATED="$(date -u --iso-8601=seconds)"
+  #           --build-arg VERSION="local"
+  #           --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+  #           --build-arg REVISION="$CIRCLE_SHA1"
+  #           -t mojaloop/onboard-hub-accounts:local ./init/onboard-hub-accounts/
+  #     - run:
+  #         name: Save docker image to workspace
+  #         command: docker save -o /tmp/docker-onboard-hub-accounts.tar mojaloop/onboard-hub-accounts:local
+  #     - persist_to_workspace:
+  #         root: /tmp
+  #         paths:
+  #           - ./docker-onboard-hub-accounts.tar
 
-  build-local-onboard-central-ledger:
-    executor: default-machine
-    steps:
-      - checkout
-      - run:
-          name: Build Docker onboard-central-ledger local image for testing
-          command: >
-            echo "Building Docker image: onboard-central-ledger local"
+  # build-local-onboard-central-ledger:
+  #   executor: default-machine
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Build Docker onboard-central-ledger local image for testing
+  #         command: >
+  #           echo "Building Docker image: onboard-central-ledger local"
 
-            docker build
-            --build-arg CREATED="$(date -u --iso-8601=seconds)"
-            --build-arg VERSION="local"
-            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
-            --build-arg REVISION="$CIRCLE_SHA1"
-            -t mojaloop/onboard-central-ledger:local ./init/onboard-central-ledger/
-      - run:
-          name: Save docker image to workspace
-          command: docker save -o /tmp/docker-onboard-central-ledger.tar mojaloop/onboard-central-ledger:local
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - ./docker-onboard-central-ledger.tar
+  #           docker build
+  #           --build-arg CREATED="$(date -u --iso-8601=seconds)"
+  #           --build-arg VERSION="local"
+  #           --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+  #           --build-arg REVISION="$CIRCLE_SHA1"
+  #           -t mojaloop/onboard-central-ledger:local ./init/onboard-central-ledger/
+  #     - run:
+  #         name: Save docker image to workspace
+  #         command: docker save -o /tmp/docker-onboard-central-ledger.tar mojaloop/onboard-central-ledger:local
+  #     - persist_to_workspace:
+  #         root: /tmp
+  #         paths:
+  #           - ./docker-onboard-central-ledger.tar
 
-  build-local-onboard-msisdn-oracle:
-    executor: default-machine
-    steps:
-      - checkout
-      - run:
-          name: Build Docker onboard-msisdn-oracle local image for testing
-          command: >
-            echo "Building Docker image: onboard-msisdn-oracle local"
+  # build-local-onboard-msisdn-oracle:
+  #   executor: default-machine
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Build Docker onboard-msisdn-oracle local image for testing
+  #         command: >
+  #           echo "Building Docker image: onboard-msisdn-oracle local"
 
-            docker build
-            --build-arg CREATED="$(date -u --iso-8601=seconds)"
-            --build-arg VERSION="local"
-            --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
-            --build-arg REVISION="$CIRCLE_SHA1"
-            -t mojaloop/onboard-msisdn-oracle:local ./init/onboard-msisdn-oracle/
-      - run:
-          name: Save docker image to workspace
-          command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar mojaloop/onboard-msisdn-oracle:local
-      - persist_to_workspace:
-          root: /tmp
-          paths:
-            - ./docker-onboard-msisdn-oracle.tar
+  #           docker build
+  #           --build-arg CREATED="$(date -u --iso-8601=seconds)"
+  #           --build-arg VERSION="local"
+  #           --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
+  #           --build-arg REVISION="$CIRCLE_SHA1"
+  #           -t mojaloop/onboard-msisdn-oracle:local ./init/onboard-msisdn-oracle/
+  #     - run:
+  #         name: Save docker image to workspace
+  #         command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar mojaloop/onboard-msisdn-oracle:local
+  #     - persist_to_workspace:
+  #         root: /tmp
+  #         paths:
+  #           - ./docker-onboard-msisdn-oracle.tar
 
   license-scan:
     executor: default-machine
@@ -671,161 +508,161 @@ jobs:
       - store_artifacts:
           path: anchore-reports
 
-  image-scan-onboard-hub-accounts:
-    executor: anchore/anchore_engine
-    steps:
-      - setup_remote_docker
-      - checkout
-      - run:
-          name: Install AWS CLI dependencies
-          command: *defaults_awsCliDependencies
-      - attach_workspace:
-          at: /tmp
-      - run:
-          name: Load the pre-built docker image from workspace
-          command: docker load -i /tmp/docker-onboard-hub-accounts.tar
-      - anchore/analyze_local_image:
-          dockerfile_path: ./Dockerfile
-          image_name: mojaloop/onboard-hub-accounts:local
-          # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
-          policy_failure: false
-          timeout: '500'
-      - run:
-          name: Evaluate Failures.
-          command: |
-            if [[ ! $(which jq) ]]; then
-              (set +o pipefail; apk add jq || apt-get install -y jq || yum install -y jq)
-            fi
-            if [[ $(ls anchore-reports/*content-os*.json 2> /dev/null) ]]; then
-              printf "\n%s\n" "The following OS packages are installed:"
-              jq '[.content | sort_by(.package) | .[] | {package: .package, version: .version}]' anchore-reports/*content-os*.json
-            fi
-            if [[ $(ls anchore-reports/*vuln*.json 2> /dev/null) ]]; then
-              printf "\n%s\n" "The following vulnerabilities were found:"
-              jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
-            fi
-            #       - run:
-            #           name: Upload Anchore reports to s3
-            #           command: |
-            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
-            #             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
-            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+#   image-scan-onboard-hub-accounts:
+#     executor: anchore/anchore_engine
+#     steps:
+#       - setup_remote_docker
+#       - checkout
+#       - run:
+#           name: Install AWS CLI dependencies
+#           command: *defaults_awsCliDependencies
+#       - attach_workspace:
+#           at: /tmp
+#       - run:
+#           name: Load the pre-built docker image from workspace
+#           command: docker load -i /tmp/docker-onboard-hub-accounts.tar
+#       - anchore/analyze_local_image:
+#           dockerfile_path: ./Dockerfile
+#           image_name: mojaloop/onboard-hub-accounts:local
+#           # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
+#           policy_failure: false
+#           timeout: '500'
+#       - run:
+#           name: Evaluate Failures.
+#           command: |
+#             if [[ ! $(which jq) ]]; then
+#               (set +o pipefail; apk add jq || apt-get install -y jq || yum install -y jq)
+#             fi
+#             if [[ $(ls anchore-reports/*content-os*.json 2> /dev/null) ]]; then
+#               printf "\n%s\n" "The following OS packages are installed:"
+#               jq '[.content | sort_by(.package) | .[] | {package: .package, version: .version}]' anchore-reports/*content-os*.json
+#             fi
+#             if [[ $(ls anchore-reports/*vuln*.json 2> /dev/null) ]]; then
+#               printf "\n%s\n" "The following vulnerabilities were found:"
+#               jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
+#             fi
+#             #       - run:
+#             #           name: Upload Anchore reports to s3
+#             #           command: |
+#             #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+#             #             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+#             #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
 
-            # TODO: Enable this when we want to increase the strictness of our security policies
-            # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
-            # echo "FailCount is: ${failCount}"
-            # if [ $failCount -gt 0 ]; then
-            #   printf "Failed with a policy failure count of: ${failCount}"
-            #   exit 1
-          # fi
-      - store_artifacts:
-          path: anchore-reports
+#             # TODO: Enable this when we want to increase the strictness of our security policies
+#             # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
+#             # echo "FailCount is: ${failCount}"
+#             # if [ $failCount -gt 0 ]; then
+#             #   printf "Failed with a policy failure count of: ${failCount}"
+#             #   exit 1
+#           # fi
+#       - store_artifacts:
+#           path: anchore-reports
 
-  image-scan-onboard-central-ledger:
-    executor: anchore/anchore_engine
-    steps:
-      - setup_remote_docker
-      - checkout
-      - run:
-          name: Install AWS CLI dependencies
-          command: *defaults_awsCliDependencies
-      - attach_workspace:
-          at: /tmp
-      - run:
-          name: Load the pre-built docker image from workspace
-          command: docker load -i /tmp/docker-onboard-central-ledger.tar
-      - anchore/analyze_local_image:
-          dockerfile_path: ./Dockerfile
-          image_name: mojaloop/onboard-central-ledger:local
-          # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
-          policy_failure: false
-          timeout: '500'
-      - run:
-          name: Evaluate Failures.
-          command: |
-<<<<<<< HEAD
-            aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
-            aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
-            aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
-=======
-            if [[ ! $(which jq) ]]; then
-              (set +o pipefail; apk add jq || apt-get install -y jq || yum install -y jq)
-            fi
-            if [[ $(ls anchore-reports/*content-os*.json 2> /dev/null) ]]; then
-              printf "\n%s\n" "The following OS packages are installed:"
-              jq '[.content | sort_by(.package) | .[] | {package: .package, version: .version}]' anchore-reports/*content-os*.json
-            fi
-            if [[ $(ls anchore-reports/*vuln*.json 2> /dev/null) ]]; then
-              printf "\n%s\n" "The following vulnerabilities were found:"
-              jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
-            fi
-            #       - run:
-            #           name: Upload Anchore reports to s3
-            #           command: |
-            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
-            #             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
-            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
+#   image-scan-onboard-central-ledger:
+#     executor: anchore/anchore_engine
+#     steps:
+#       - setup_remote_docker
+#       - checkout
+#       - run:
+#           name: Install AWS CLI dependencies
+#           command: *defaults_awsCliDependencies
+#       - attach_workspace:
+#           at: /tmp
+#       - run:
+#           name: Load the pre-built docker image from workspace
+#           command: docker load -i /tmp/docker-onboard-central-ledger.tar
+#       - anchore/analyze_local_image:
+#           dockerfile_path: ./Dockerfile
+#           image_name: mojaloop/onboard-central-ledger:local
+#           # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
+#           policy_failure: false
+#           timeout: '500'
+#       - run:
+#           name: Evaluate Failures.
+#           command: |
+# <<<<<<< HEAD
+#             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+#             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+#             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+# =======
+#             if [[ ! $(which jq) ]]; then
+#               (set +o pipefail; apk add jq || apt-get install -y jq || yum install -y jq)
+#             fi
+#             if [[ $(ls anchore-reports/*content-os*.json 2> /dev/null) ]]; then
+#               printf "\n%s\n" "The following OS packages are installed:"
+#               jq '[.content | sort_by(.package) | .[] | {package: .package, version: .version}]' anchore-reports/*content-os*.json
+#             fi
+#             if [[ $(ls anchore-reports/*vuln*.json 2> /dev/null) ]]; then
+#               printf "\n%s\n" "The following vulnerabilities were found:"
+#               jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
+#             fi
+#             #       - run:
+#             #           name: Upload Anchore reports to s3
+#             #           command: |
+#             #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+#             #             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+#             #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+# >>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
 
-            # TODO: Enable this when we want to increase the strictness of our security policies
-            # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
-            # echo "FailCount is: ${failCount}"
-            # if [ $failCount -gt 0 ]; then
-            #   printf "Failed with a policy failure count of: ${failCount}"
-            #   exit 1
-          # fi
-      - store_artifacts:
-          path: anchore-reports
+#             # TODO: Enable this when we want to increase the strictness of our security policies
+#             # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
+#             # echo "FailCount is: ${failCount}"
+#             # if [ $failCount -gt 0 ]; then
+#             #   printf "Failed with a policy failure count of: ${failCount}"
+#             #   exit 1
+#           # fi
+#       - store_artifacts:
+#           path: anchore-reports
 
-  image-scan-onboard-msisdn-oracle:
-    executor: anchore/anchore_engine
-    steps:
-      - setup_remote_docker
-      - checkout
-      - run:
-          name: Install AWS CLI dependencies
-          command: *defaults_awsCliDependencies
-      - attach_workspace:
-          at: /tmp
-      - run:
-          name: Load the pre-built docker image from workspace
-          command: docker load -i /tmp/docker-onboard-msisdn-oracle.tar
-      - anchore/analyze_local_image:
-          dockerfile_path: ./Dockerfile
-          image_name: mojaloop/onboard-msisdn-oracle:local
-          # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
-          policy_failure: false
-          timeout: '500'
-      - run:
-          name: Evaluate Failures.
-          command: |
-            if [[ ! $(which jq) ]]; then
-              (set +o pipefail; apk add jq || apt-get install -y jq || yum install -y jq)
-            fi
-            if [[ $(ls anchore-reports/*content-os*.json 2> /dev/null) ]]; then
-              printf "\n%s\n" "The following OS packages are installed:"
-              jq '[.content | sort_by(.package) | .[] | {package: .package, version: .version}]' anchore-reports/*content-os*.json
-            fi
-            if [[ $(ls anchore-reports/*vuln*.json 2> /dev/null) ]]; then
-              printf "\n%s\n" "The following vulnerabilities were found:"
-              jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
-            fi
-            #       - run:
-            #           name: Upload Anchore reports to s3
-            #           command: |
-            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
-            #             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
-            #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
+#   image-scan-onboard-msisdn-oracle:
+#     executor: anchore/anchore_engine
+#     steps:
+#       - setup_remote_docker
+#       - checkout
+#       - run:
+#           name: Install AWS CLI dependencies
+#           command: *defaults_awsCliDependencies
+#       - attach_workspace:
+#           at: /tmp
+#       - run:
+#           name: Load the pre-built docker image from workspace
+#           command: docker load -i /tmp/docker-onboard-msisdn-oracle.tar
+#       - anchore/analyze_local_image:
+#           dockerfile_path: ./Dockerfile
+#           image_name: mojaloop/onboard-msisdn-oracle:local
+#           # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
+#           policy_failure: false
+#           timeout: '500'
+#       - run:
+#           name: Evaluate Failures.
+#           command: |
+#             if [[ ! $(which jq) ]]; then
+#               (set +o pipefail; apk add jq || apt-get install -y jq || yum install -y jq)
+#             fi
+#             if [[ $(ls anchore-reports/*content-os*.json 2> /dev/null) ]]; then
+#               printf "\n%s\n" "The following OS packages are installed:"
+#               jq '[.content | sort_by(.package) | .[] | {package: .package, version: .version}]' anchore-reports/*content-os*.json
+#             fi
+#             if [[ $(ls anchore-reports/*vuln*.json 2> /dev/null) ]]; then
+#               printf "\n%s\n" "The following vulnerabilities were found:"
+#               jq '[.vulnerabilities | group_by(.package) | .[] | {package: .[0].package, vuln: [.[].vuln]}]' anchore-reports/*vuln*.json
+#             fi
+#             #       - run:
+#             #           name: Upload Anchore reports to s3
+#             #           command: |
+#             #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/${CIRCLE_PROJECT_REPONAME}/ --recursive
+#             #             aws s3 rm ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive --exclude "*" --include "${CIRCLE_PROJECT_REPONAME}*"
+#             #             aws s3 cp anchore-reports ${AWS_S3_DIR_ANCHORE_REPORTS}/latest/ --recursive
 
-            # TODO: Enable this when we want to increase the strictness of our security policies
-            # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
-            # echo "FailCount is: ${failCount}"
-            # if [ $failCount -gt 0 ]; then
-            #   printf "Failed with a policy failure count of: ${failCount}"
-            #   exit 1
-          # fi
-      - store_artifacts:
-          path: anchore-reports
+#             # TODO: Enable this when we want to increase the strictness of our security policies
+#             # failCount=$(cat anchore-reports/*policy*.json | grep 'fail' | wc -l)
+#             # echo "FailCount is: ${failCount}"
+#             # if [ $failCount -gt 0 ]; then
+#             #   printf "Failed with a policy failure count of: ${failCount}"
+#             #   exit 1
+#           # fi
+#       - store_artifacts:
+#           path: anchore-reports
 
   publish:
     executor: default-machine
@@ -845,6 +682,7 @@ jobs:
             docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
       - run:
           name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
+          # TODO: publish everything here
           command: |
             echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
             docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
@@ -859,145 +697,136 @@ jobs:
               -H 'cache-control: no-cache' \
               -d "{\"text\": \"*${CIRCLE_PROJECT_REPONAME}* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
 
-  publish-onboard-hub-accounts:
-    executor: default-machine
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /tmp
-      - run:
-          name: Load the pre-built docker image for onboard-hub-accounts from workspace
-          command: docker load -i /tmp/docker-onboard-hub-accounts.tar
-      - run:
-          name: Login to Docker Hub
-          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
-      - run:
-          name: Setup environment vars for release/snapshot
-          command: ./.circleci/_set_up_deploy_envs.sh
-      - run:
-          name: Re-tag pre built image
-          command: |
-            docker tag $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG $DOCKER_ORG/onboard-hub-accounts:$RELEASE_TAG
-      - run:
-<<<<<<< HEAD
-          <<: *defaults_build_docker_publish
-      - run:
-          <<: *defaults_slack_announcement
+#   publish-onboard-hub-accounts:
+#     executor: default-machine
+#     steps:
+#       - checkout
+#       - attach_workspace:
+#           at: /tmp
+#       - run:
+#           name: Load the pre-built docker image for onboard-hub-accounts from workspace
+#           command: docker load -i /tmp/docker-onboard-hub-accounts.tar
+#       - run:
+#           name: Login to Docker Hub
+#           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+#       - run:
+#           name: Setup environment vars for release/snapshot
+#           command: ./.circleci/_set_up_deploy_envs.sh
+#       - run:
+#           name: Re-tag pre built image
+#           command: |
+#             docker tag $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG $DOCKER_ORG/onboard-hub-accounts:$RELEASE_TAG
+#       - run:
+# <<<<<<< HEAD
+#           <<: *defaults_build_docker_publish
+#       - run:
+#           <<: *defaults_slack_announcement
 
-  # deploy:
-  #   executor: helm-kube
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Install AWS CLI dependencies
-  #         command: *defaults_awsCliDependencies
-  #     - run:
-  #         name: setup environment vars for release/snapshot
-  #         command: ./.circleci/_set_up_deploy_envs.sh
-  #     - run:
-  #         <<: *defaults_deploy_prequisites
-  #     - run:
-  #         <<: *defaults_deploy_config_kubernetes_cluster
-  #     - run:
-  #         <<: *defaults_deploy_config_kubernetes_credentials
-  #     - run:
-  #         <<: *defaults_deploy_config_kubernetes_context
-  #     - run:
-  #         <<: *defaults_deploy_set_kubernetes_context
-  #     - run:
-  #         <<: *defaults_deploy_configure_helm
-  #     - run:
-  #         <<: *defaults_deploy_install_or_upgrade_helm_chart
+#   # deploy:
+#   #   executor: helm-kube
+#   #   steps:
+#   #     - checkout
+#   #     - run:
+#   #         name: Install AWS CLI dependencies
+#   #         command: *defaults_awsCliDependencies
+#   #     - run:
+#   #         name: setup environment vars for release/snapshot
+#   #         command: ./.circleci/_set_up_deploy_envs.sh
+#   #     - run:
+#   #         <<: *defaults_deploy_prequisites
+#   #     - run:
+#   #         <<: *defaults_deploy_config_kubernetes_cluster
+#   #     - run:
+#   #         <<: *defaults_deploy_config_kubernetes_credentials
+#   #     - run:
+#   #         <<: *defaults_deploy_config_kubernetes_context
+#   #     - run:
+#   #         <<: *defaults_deploy_set_kubernetes_context
+#   #     - run:
+#   #         <<: *defaults_deploy_configure_helm
+#   #     - run:
+#   #         <<: *defaults_deploy_install_or_upgrade_helm_chart
 
-=======
-          name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub for onboard-hub-accounts
-          command: |
-            echo "Publishing $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG"
-            docker push $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG
-      - run:
-          name: Slack announcement for tag releases
-          command: |
-            curl -X POST \
-              $SLACK_WEBHOOK_ANNOUNCEMENT \
-              -H 'Content-type: application/json' \
-              -H 'cache-control: no-cache' \
-              -d "{\"text\": \"*onboard-hub-accounts* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
+# =======
+#           name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub for onboard-hub-accounts
+#           command: |
+#             echo "Publishing $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG"
+#             docker push $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG
+#       - run:
+#           name: Slack announcement for tag releases
+#           command: |
+#             curl -X POST \
+#               $SLACK_WEBHOOK_ANNOUNCEMENT \
+#               -H 'Content-type: application/json' \
+#               -H 'cache-control: no-cache' \
+#               -d "{\"text\": \"*onboard-hub-accounts* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
 
-  publish-onboard-central-ledger:
-    executor: default-machine
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /tmp
-      - run:
-          name: Load the pre-built docker image for onboard-central-ledger from workspace
-          command: docker load -i /tmp/docker-onboard-central-ledger.tar
-      - run:
-          name: Login to Docker Hub
-          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
-      - run:
-          name: Setup environment vars for release/snapshot
-          command: ./.circleci/_set_up_deploy_envs.sh
-      - run:
-          name: Re-tag pre built image
-          command: |
-            docker tag $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG $DOCKER_ORG/onboard-central-ledger:$RELEASE_TAG
-      - run:
-          name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub for onboard-central-ledger
-          command: |
-            echo "Publishing $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG"
-            docker push $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG
-      - run:
-          name: Slack announcement for tag releases
-          command: |
-            curl -X POST \
-              $SLACK_WEBHOOK_ANNOUNCEMENT \
-              -H 'Content-type: application/json' \
-              -H 'cache-control: no-cache' \
-              -d "{\"text\": \"*onboard-central-ledger* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
+#   publish-onboard-central-ledger:
+#     executor: default-machine
+#     steps:
+#       - checkout
+#       - attach_workspace:
+#           at: /tmp
+#       - run:
+#           name: Load the pre-built docker image for onboard-central-ledger from workspace
+#           command: docker load -i /tmp/docker-onboard-central-ledger.tar
+#       - run:
+#           name: Login to Docker Hub
+#           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+#       - run:
+#           name: Setup environment vars for release/snapshot
+#           command: ./.circleci/_set_up_deploy_envs.sh
+#       - run:
+#           name: Re-tag pre built image
+#           command: |
+#             docker tag $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG $DOCKER_ORG/onboard-central-ledger:$RELEASE_TAG
+#       - run:
+#           name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub for onboard-central-ledger
+#           command: |
+#             echo "Publishing $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG"
+#             docker push $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG
+#       - run:
+#           name: Slack announcement for tag releases
+#           command: |
+#             curl -X POST \
+#               $SLACK_WEBHOOK_ANNOUNCEMENT \
+#               -H 'Content-type: application/json' \
+#               -H 'cache-control: no-cache' \
+#               -d "{\"text\": \"*onboard-central-ledger* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
 
-  publish-onboard-msisdn-oracle:
-    executor: default-machine
-    steps:
-      - checkout
-      - attach_workspace:
-          at: /tmp
-      - run:
-          name: Load the pre-built docker image for onboard-msisdn-oracle from workspace
-          command: docker load -i /tmp/docker-onboard-msisdn-oracle.tar
-      - run:
-          name: Login to Docker Hub
-          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
-      - run:
-          name: Setup environment vars for release/snapshot
-          command: ./.circleci/_set_up_deploy_envs.sh
-      - run:
-          name: Re-tag pre built image
-          command: |
-            docker tag $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG $DOCKER_ORG/onboard-msisdn-oracle:$RELEASE_TAG
-      - run:
-          name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub for onboard-msisdn-oracle
-          command: |
-            echo "Publishing $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG"
-            docker push $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG
-      - run:
-          name: Slack announcement for tag releases
-          command: |
-            curl -X POST \
-              $SLACK_WEBHOOK_ANNOUNCEMENT \
-              -H 'Content-type: application/json' \
-              -H 'cache-control: no-cache' \
-              -d "{\"text\": \"*onboard-msisdn-oracle* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
+#   publish-onboard-msisdn-oracle:
+#     executor: default-machine
+#     steps:
+#       - checkout
+#       - attach_workspace:
+#           at: /tmp
+#       - run:
+#           name: Load the pre-built docker image for onboard-msisdn-oracle from workspace
+#           command: docker load -i /tmp/docker-onboard-msisdn-oracle.tar
+#       - run:
+#           name: Login to Docker Hub
+#           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+#       - run:
+#           name: Setup environment vars for release/snapshot
+#           command: ./.circleci/_set_up_deploy_envs.sh
+#       - run:
+#           name: Re-tag pre built image
+#           command: |
+#             docker tag $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG $DOCKER_ORG/onboard-msisdn-oracle:$RELEASE_TAG
+#       - run:
+#           name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub for onboard-msisdn-oracle
+#           command: |
+#             echo "Publishing $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG"
+#             docker push $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG
+#       - run:
+#           name: Slack announcement for tag releases
+#           command: |
+#             curl -X POST \
+#               $SLACK_WEBHOOK_ANNOUNCEMENT \
+#               -H 'Content-type: application/json' \
+#               -H 'cache-control: no-cache' \
+#               -d "{\"text\": \"*onboard-msisdn-oracle* - Release \`${CIRCLE_TAG}\`: https://github.com/mojaloop/${CIRCLE_PROJECT_REPONAME}/releases/tag/${CIRCLE_TAG}\"}"
 
-  deploy:
-    executor: deploy-kube/helm-kube
-    steps:
-      - checkout
-      - deploy-kube/setup_and_run:
-          helm_set_values: |
-            --set finance-portal.frontend.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-            --set finance-portal.frontend.image.tag=$CIRCLE_TAG
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
 
 ##
 # Workflows
@@ -1050,26 +879,6 @@ workflows:
                 - /feature*/
                 - /bugfix*/
                 - /hotfix*/
-      - vulnerability-check-onboard-hub-accounts:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
-                - /hotfix*/
-      - vulnerability-check-onboard-central-ledger:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
-                - /hotfix*/
       - audit-licenses:
           context: org-global
           requires:
@@ -1090,36 +899,36 @@ workflows:
                 - /feature*/
                 - /bugfix*/
                 - /hotfix*/
-      - build-local-onboard-hub-accounts:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
-                - /hotfix*/
-      - build-local-onboard-central-ledger:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
-                - /hotfix*/
-      - build-local-onboard-msisdn-oracle:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
-                - /hotfix*/
+      # - build-local-onboard-hub-accounts:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
+      #           - /hotfix*/
+      # - build-local-onboard-central-ledger:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
+      #           - /hotfix*/
+      # - build-local-onboard-msisdn-oracle:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
+      #           - /hotfix*/
       - license-scan:
           context: org-global
           requires:
@@ -1140,140 +949,76 @@ workflows:
                 - /feature*/
                 - /bugfix*/
                 - /hotfix*/
-      - image-scan-onboard-hub-accounts:
+      # - image-scan-onboard-hub-accounts:
+      #     context: org-global
+      #     requires:
+      #       - build-local-onboard-hub-accounts
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
+      #           - /hotfix*/
+      # - image-scan-onboard-central-ledger:
+      #     context: org-global
+      #     requires:
+      #       - build-local-onboard-central-ledger
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
+      #           - /hotfix*/
+      # - image-scan-onboard-msisdn-oracle:
+      #     context: org-global
+      #     requires:
+      #       - build-local-onboard-msisdn-oracle
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - /feature*/
+      #           - /bugfix*/
+      #           - /hotfix*/
+      # New commits to master release automatically
+      - release:
           context: org-global
           requires:
-            - build-local-onboard-hub-accounts
+            - pr-tools/pr-title-check
+            - test-unit
+            - test-coverage
+            - vulnerability-check
+            - audit-licenses
+            - test-integration
+            - license-scan
+            - image-scan
           filters:
             branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
-                - /hotfix*/
-      - image-scan-onboard-central-ledger:
+              only:
+                - master
+                - /release\/v.*/
+      - github-release:
           context: org-global
           requires:
-            - build-local-onboard-central-ledger
+            - release
           filters:
             branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
-                - /hotfix*/
-      - image-scan-onboard-msisdn-oracle:
-          context: org-global
-          requires:
-            - build-local-onboard-msisdn-oracle
-          filters:
-            branches:
-              ignore:
-                - /feature*/
-                - /bugfix*/
-                - /hotfix*/
-      - build:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?(\-pisp)?/
-            branches:
-              ignore:
-                - /.*/
-      - build-onboard-hub-accounts:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
-            branches:
-              ignore:
-                - /.*/
-      - build-onboard-central-ledger:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
-            branches:
-              ignore:
-                - /.*/
-      - build-onboard-msisdn-oracle:
-          context: org-global
-          requires:
-            - setup
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
-            branches:
-              ignore:
-                - /.*/
+              only:
+                - master
+                - /release\/v.*/
       - publish:
           context: org-global
           requires:
-            - build
-            - build-onboard-central-ledger
-            - build-onboard-msisdn-oracle
+            - pr-tools/pr-title-check
+            - test-unit
+            - test-coverage
+            - vulnerability-check
+            - audit-licenses
+            - test-integration
+            - license-scan
+            - image-scan
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?(\-pisp)?/
+              only: /.*/
             branches:
               ignore:
                 - /.*/
-      - publish-onboard-hub-accounts:
-          context: org-global
-          requires:
-            - build
-            - build-onboard-central-ledger
-            - build-onboard-msisdn-oracle
-            - build-onboard-hub-accounts
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?(\-pisp)?/
-            branches:
-              ignore:
-                - /.*/
-      - publish-onboard-central-ledger:
-          context: org-global
-          requires:
-            - build
-            - build-onboard-central-ledger
-            - build-onboard-msisdn-oracle
-            - build-onboard-hub-accounts
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?(\-pisp)?/
-            branches:
-              ignore:
-                - /.*/
-<<<<<<< HEAD
-=======
-      - publish-onboard-msisdn-oracle:
-          context: org-global
-          requires:
-            - build
-            - build-onboard-central-ledger
-            - build-onboard-msisdn-oracle
-            - build-onboard-hub-accounts
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
-            branches:
-              ignore:
-                - /.*/
-      - deploy:
-          context: org-global
-          requires:
-            - publish
-            - publish-onboard-central-ledger
-            - publish-onboard-msisdn-oracle
-            - publish-onboard-hub-accounts
-          filters:
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
-            branches:
-              ignore:
-                - /.*/
->>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
