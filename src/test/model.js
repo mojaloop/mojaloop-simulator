@@ -32,9 +32,10 @@ const Model = require('../models/model');
 const { cloneDeep } = require('./unit/TestUtils');
 
 const {
-    transfer, quote, newQuote, bulkQuote, newBulkQuote, transactionrequest, party, newTransfer,
-    bulkTransfer, newBulkTransfer, bulkTransferId, idType, idValue, partyCreate, transferId,
-    transactionRequestId, partyWithSubIdValue, partyCreateWithSubIdValue, subIdValue,
+    transfer, quote, quoteWithExtensionList, newQuote, newQuoteWithExtensionList, bulkQuote,
+    newBulkQuote, transactionrequest, party, newTransfer, bulkTransfer, newBulkTransfer,
+    bulkTransferId, idType, idValue, partyCreate, transferId, transactionRequestId,
+    partyWithSubIdValue, partyCreateWithSubIdValue, subIdValue,
 } = require('./constants');
 
 test.beforeEach(async (t) => {
@@ -167,6 +168,27 @@ test('create and update a party without extensionList', async (t) => {
     await model.party.create(partyCreate);
     const orig = await model.party.get(idType, idValue);
     await model.party.update(newParty, idType, idValue);
+<<<<<<< HEAD
+=======
+    const changed = await model.party.get(idType, idValue);
+    t.notDeepEqual({ orig }, { changed });
+});
+
+test('create and update a party without extensionList', async (t) => {
+    const { model } = t.context;
+    const newParty = {
+        displayName: 'randName',
+        firstName: 'hello',
+        middleName: 'world',
+        lastName: 'lambda',
+        dateOfBirth: '1970-01-01T00:00:00.000Z',
+        idType,
+        idValue,
+    };
+    await model.party.create(partyCreate);
+    const orig = await model.party.get(idType, idValue);
+    await model.party.update(newParty, idType, idValue);
+>>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
     const changed = await model.party.get(idType, idValue);
     t.notDeepEqual({ orig }, { changed });
 });
@@ -266,7 +288,6 @@ test('should be undefined for deleted participant', async (t) => {
     t.is(deleted, undefined);
 });
 
-
 test('create a quote', async (t) => {
     await t.context.model.quote.create(quote);
     t.pass();
@@ -283,7 +304,6 @@ test('create and retrieve a quote', async (t) => {
     t.pass();
 });
 
-
 test('created quote has correct fees', async (t) => {
     const { model } = t.context;
 
@@ -298,7 +318,6 @@ test('created quote has correct fees', async (t) => {
 
     return t.pass();
 });
-
 
 test('created quote has correct fees when transfer amount is small', async (t) => {
     const { model } = t.context;
@@ -318,13 +337,22 @@ test('created quote has correct fees when transfer amount is small', async (t) =
     return t.pass();
 });
 
-
 test('create and update a quote', async (t) => {
     const { model } = t.context;
 
     await model.quote.create(quote);
     const orig = await model.quote.get(idValue);
     await model.quote.update(idValue, newQuote);
+    const changed = await model.quote.get(idValue);
+    t.notDeepEqual({ orig }, { changed });
+});
+
+test('create and update a quote with extensionList', async (t) => {
+    const { model } = t.context;
+
+    await model.quote.create(quoteWithExtensionList);
+    const orig = await model.quote.get(idValue);
+    await model.quote.update(idValue, newQuoteWithExtensionList);
     const changed = await model.quote.get(idValue);
     t.notDeepEqual({ orig }, { changed });
 });
@@ -495,7 +523,6 @@ test('throws if we try to init the db twice', async (t) => {
 
     // Act
     const error = await t.throwsAsync(() => model.init(':memory:'));
-
 
     // Assert
     t.is(error.message, 'Attempted to initialise database twice', 'Invalid error message.');

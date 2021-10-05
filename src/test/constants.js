@@ -27,7 +27,7 @@
 
 const test = require('ava');
 const Chance = require('chance');
-const uuid = require('uuid/v1');
+const { v1: uuid } = require('uuid');
 
 const chance = new Chance();
 const randName = chance.name({ suffix: true, middle: true });
@@ -128,6 +128,26 @@ const partyCreateWithSubIdValue = {
     ],
 };
 
+const partyCreateWithSubIdValue = {
+    displayName: randName,
+    firstName: randName.split(' ')[0] || '',
+    middleName: randName.split(' ')[1] || '',
+    lastName: randName.split(' ')[2] || '',
+    dateOfBirth: '1970-01-01T00:00:00.000Z',
+    idType,
+    idValue,
+    subIdValue,
+    extensionList: [
+        {
+            key: 'accountType',
+            value: 'Wallet',
+        },
+        {
+            key: 'accountNumber',
+            value: '12345343',
+        },
+    ],
+};
 
 const quote = {
     quoteId: idValue,
@@ -225,13 +245,16 @@ const newBulkQuote = {
 
 const transactionrequest = {
     transactionRequestId,
+const quoteWithExtensionList = {
+    quoteId: idValue,
+    transactionId: uuid(),
     to: {
         idType: 'MSISDN',
         idValue: '0012345',
     },
     from: {
-        idType: 'BUSINESS',
-        idValue: 'Starbucks',
+        idType: 'MSISDN',
+        idValue: '0067890',
     },
     amountType: 'SEND',
     amount: '100',
@@ -241,6 +264,18 @@ const transactionrequest = {
     transactionType: 'TRANSFER',
     initiator: 'PAYER',
     initiatorType: 'CONSUMER',
+    extensionList: {
+        extension: [
+            {
+                key: 'KYCPayerTier',
+                value: '1',
+            },
+            {
+                key: 'KYCNationality',
+                value: 'CI',
+            },
+        ],
+    },
 };
 
 const authorizationRequest = {
@@ -285,6 +320,139 @@ const authorizationRequest = {
             ],
         },
     },
+};
+
+const transfer = {
+    transferId,
+    quote: {
+        quoteId: idValue,
+        transactionId: randName,
+        transferAmount: amount,
+        transferAmountCurrency: currency,
+const newQuote = {
+    quoteId: uuid(),
+    transactionId: uuid(),
+    to: {
+        idType: 'MSISDN',
+        idValue: '0012345',
+    },
+    from: {
+        idType: 'MSISDN',
+        idValue: '0067890',
+    },
+    amountType: 'SEND',
+    amount: '100',
+    currency: 'USD',
+    feesAmount: '0.5',
+    feesCurrency: 'USD',
+    transactionType: 'TRANSFER',
+    initiator: 'PAYER',
+    initiatorType: 'CONSUMER',
+    extensionList: {
+        extension: [
+            {
+                key: 'KYCPayerTier',
+                value: '1',
+            },
+            {
+                key: 'KYCNationality',
+                value: 'CI',
+            },
+        ],
+    },
+};
+
+const newQuoteWithExtensionList = {
+    quoteId: uuid(),
+    transactionId: uuid(),
+    to: {
+        idType: 'MSISDN',
+        idValue: '0012345',
+    },
+    from: {
+        idType: 'MSISDN',
+        idValue: '0067890',
+    },
+    amountType: 'SEND',
+    amount: '100',
+    currency: 'USD',
+    feesAmount: '0.5',
+    feesCurrency: 'USD',
+    transactionType: 'TRANSFER',
+    initiator: 'PAYER',
+    initiatorType: 'CONSUMER',
+};
+
+const bulkQuote = {
+    bulkQuoteId: idValue,
+    from: {
+        idType: 'MSISDN',
+        idValue: '0067890',
+    },
+    individualQuotes: [
+        {
+            quoteId: idValue,
+            transactionId: uuid(),
+            to: {
+                idType: 'MSISDN',
+                idValue: '0012345',
+            },
+            amountType: 'SEND',
+            amount: '100',
+            currency: 'USD',
+            feesAmount: '0.5',
+            feesCurrency: 'USD',
+            transactionType: 'TRANSFER',
+            initiator: 'PAYER',
+            initiatorType: 'CONSUMER',
+        },
+    ],
+};
+
+const newBulkQuote = {
+    bulkQuoteId: uuid(),
+    from: {
+        idType: 'MSISDN',
+        idValue: '0067890',
+    },
+    individualQuotes: [
+        {
+            quoteId: uuid(),
+            transactionId: uuid(),
+            to: {
+                idType: 'MSISDN',
+                idValue: '0012345',
+            },
+            amountType: 'SEND',
+            amount: '100',
+            currency: 'USD',
+            feesAmount: '0.5',
+            feesCurrency: 'USD',
+            transactionType: 'TRANSFER',
+            initiator: 'PAYER',
+            initiatorType: 'CONSUMER',
+        },
+    ],
+};
+
+const transactionrequest = {
+    transactionRequestId,
+    to: {
+        idType: 'MSISDN',
+        idValue: '0012345',
+    },
+    from: {
+        idType: 'BUSINESS',
+        idValue: 'Starbucks',
+    },
+    amountType: 'SEND',
+    amount: '100',
+    currency: 'USD',
+    feesAmount: '0.5',
+    feesCurrency: 'USD',
+    transactionType: 'TRANSFER',
+    initiator: 'PAYER',
+    initiatorType: 'CONSUMER',
 };
 
 const transfer = {
@@ -401,7 +569,6 @@ const transferWithoutQuote = {
     amount,
 };
 
-
 test('constants', async (t) => {
     // to avoid test warnings
     t.pass();
@@ -416,6 +583,9 @@ module.exports = {
     bulkTransferId,
     quote,
     newQuote,
+    quoteWithExtensionList,
+    newQuote,
+    newQuoteWithExtensionList,
     bulkQuote,
     newBulkQuote,
     transactionrequest,

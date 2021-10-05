@@ -49,7 +49,6 @@ const getParticipantsByTypeAndId = async (ctx) => {
     }
 };
 
-
 const getPartiesByTypeAndId = async (ctx) => {
     // TODO: check that the provided type was MSISDN? Or just encode that in the API spec..
     try {
@@ -73,21 +72,6 @@ const getOTPById = async (ctx) => {
         const res = {
             otpValue: Math.floor(Math.random() * 90000) + 10000,
         };
-        ctx.response.body = res;
-        ctx.response.status = 200;
-    } catch (err) {
-        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
-        ctx.response.status = 500;
-    }
-};
-
-const getSignedChallenge = async (ctx) => {
-    try {
-        const res = {
-            pinValue: crypto.randomBytes(256).toString('base64').slice(0, 64),
-            counter: '1',
-        };
-        ctx.state.logger.log(`getSignedChallenge is returning body: ${util.inspect(res)}`);
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {

@@ -29,6 +29,7 @@ const fs = require('fs');
 // TODO: consider: https://github.com/JoshuaWise/better-sqlite3
 // TODO: consider moving this require into the sqliteTransport function
 const sqlite = require('sqlite');
+const sqlite3 = require('sqlite3');
 
 const nullTransport = () => {};
 
@@ -59,7 +60,10 @@ const file = (path) => {
 
 const sqliteTransport = async (path) => {
     // TODO: enable db object cache? https://github.com/mapbox/node-sqlite3/wiki/Caching
-    const db = await sqlite.open(path);
+    const db = await sqlite.open({
+        filename: path,
+        driver: sqlite3.Database,
+    });
     await db.run('CREATE TABLE IF NOT EXISTS log(timestamp TEXT, entry TEXT)');
     await db.run('CREATE INDEX IF NOT EXISTS log_timestamp_index ON log(timestamp)');
     // TODO: when the filesystem fills up?

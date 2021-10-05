@@ -26,7 +26,6 @@ const util = require('util');
 const { Engine } = require('json-rules-engine');
 const { getStackOrInspect } = require('@internal/log');
 
-
 class RulesEngine {
     constructor(config) {
         this.config = config;
@@ -43,7 +42,6 @@ class RulesEngine {
         /* istanbul ignore next */
         this.engine.addOperator('numberStringGreaterThanInclusive', (a, b) => Number(a) >= b);
     }
-
 
     /**
      * Loads an array of rules into the engine
@@ -73,8 +71,10 @@ class RulesEngine {
             this.logger.log(`Rule engine evaluating facts: ${util.inspect(facts)}`);
             this.engine
                 .run(facts)
-                .then((events) => {
-                    this.logger.log(`Rule engine returning events: ${util.inspect(events)}`);
+                .then((engineResult) => {
+                    const { events } = engineResult;
+
+                    this.logger.log(`Rule engine returning events: ${util.inspect(engineResult)}`);
                     // Events is always longer than 0 for istanbul
                     /* istanbul ignore next */
                     return resolve(events.length === 0 ? null : events.map((e) => e.params));
@@ -82,6 +82,5 @@ class RulesEngine {
         });
     }
 }
-
 
 module.exports = RulesEngine;

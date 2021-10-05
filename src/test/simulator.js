@@ -30,11 +30,20 @@ const { cloneDeep } = require('./unit/TestUtils');
 const Model = require('../models/model');
 const { map } = require('../simulator/handlers');
 const {
-    transfer, transferWithoutQuote, quote, transactionrequest, party, idType, idValue,
-    transactionRequestId, bulkQuote, bulkTransfer, bulkTransferId, authorizationRequest,
+    transfer, 
+    transferWithoutQuote, 
+    quote, 
+    transactionrequest, 
+    party, 
+    idType, 
+    idValue,
+    transactionRequestId, 
+    bulkQuote, 
+    bulkTransfer, 
+    bulkTransferId, 
+    authorizationRequest,
 } = require('./constants');
 const { ApiErrorCodes } = require('../models/errors');
-
 
 test.beforeEach(async (t) => {
     const model = new Model();
@@ -296,7 +305,6 @@ test('should return 404 while getting a non existent bulk quote', async (t) => {
     t.is(t.context.response.status, 404);
 });
 
-
 test('should return 404 while getting a non existent bulk transfer', async (t) => {
     // eslint-disable-next-line no-param-reassign
     t.context.state.path = { params: { idValue: 'invalidID0001' } };
@@ -320,7 +328,6 @@ test('should return a valid health check', async (t) => {
     // Assert
     t.deepEqual(t.context.response, expected, 'Response did not match expected');
 });
-
 
 test('postQuotes should handle 500 errors', async (t) => {
     // Arrange

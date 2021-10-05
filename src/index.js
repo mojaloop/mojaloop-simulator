@@ -49,9 +49,8 @@ const simHandlers = require('./simulator/handlers');
 const reportHandlers = require('./reports/handlers');
 const testApiHandlers = require('./test-api/handlers');
 
-const { setConfig, getConfig } = require('./config.js');
+const { setConfig, getConfig } = require('./config');
 const Model = require('./models/model');
-
 
 const simApiSpec = yaml.load('./simulator/api.yaml');
 const reportApiSpec = yaml.load('./reports/api.yaml');
@@ -100,7 +99,6 @@ async function rewriteContentTypeHeader(ctx, next) {
     const reportLogger = new Logger({ context: { app: 'report' }, space, transports });
     const testApiLogger = new Logger({ context: { app: 'test-api' }, space, transports });
 
-
     const rulesEngine = new RulesEngine({ logger: simLogger });
     rulesEngine.loadRules(rules);
 
@@ -114,15 +112,15 @@ async function rewriteContentTypeHeader(ctx, next) {
             await next();
         } catch (err) {
             // eslint-disable-next-line no-console
-            console.log(`Unhandled error in handler chain: ${getStackOrInspect(err, { depth: Infinity })}`);
+            console.log(JSON.stringify({
+                message: `Unhandled error in handler chain: ${getStackOrInspect(err, { depth: Infinity })}`,
+            }, null, 2));
         }
     };
 
     simulator.use(failSafe);
     report.use(failSafe);
     testApi.use(failSafe);
-
-    testApi.use(cors());
 
     // Add a log context for each request, log the receipt and handling thereof
     simulator.use(async (ctx, next) => {
@@ -136,9 +134,9 @@ async function rewriteContentTypeHeader(ctx, next) {
         ctx.state.logger.push({ body: ctx.request.body }).log('Request received');
         await next();
 
-        ctx.state.logger.log('Request processed');
+        const { body, status } = ctx.response;
+        ctx.state.logger.push({ response: { body, status } }).log('Request processed');
     });
-
 
     report.use(async (ctx, next) => {
         ctx.state.logger = reportLogger.push({
@@ -151,9 +149,9 @@ async function rewriteContentTypeHeader(ctx, next) {
         ctx.state.logger.push({ body: ctx.request.body }).log('Request received');
         await next();
 
-        ctx.state.logger.log('Request processed');
+        const { body, status } = ctx.response;
+        ctx.state.logger.push({ response: { body, status } }).log('Request processed');
     });
-
 
     testApi.use(async (ctx, next) => {
         ctx.state.logger = testApiLogger.push({
@@ -166,15 +164,19 @@ async function rewriteContentTypeHeader(ctx, next) {
         ctx.state.logger.push({ body: ctx.request.body }).log('Request received');
         await next();
 
-        ctx.state.logger.log('Request processed');
+        const { body, status } = ctx.response;
+        ctx.state.logger.push({ response: { body, status } }).log('Request processed');
     });
 
+<<<<<<< HEAD
     simulator.use(rewriteContentTypeHeader);
+=======
+    testApi.use(cors());
+>>>>>>> d5e777dae5b0bfada24f999bc9851d0ebdb6abee
 
     simulator.use(koaBody());
     report.use(koaBody());
     testApi.use(koaBody());
-
 
     // Add validation and data model for each request
     const simValidator = new Validate();
@@ -234,7 +236,6 @@ async function rewriteContentTypeHeader(ctx, next) {
         }
     });
 
-
     // Add rule engine evaluation for each simulator request
     simulator.use(async (ctx, next) => {
         const facts = {
@@ -260,6 +261,32 @@ async function rewriteContentTypeHeader(ctx, next) {
                 return;
             }
 
+            // merge the extensionList
+            if (evt.modifyExtension === 'merge') {
+                const { extensionList } = res[0];
+                const newBody = { ...ctx.request.body };
+                newBody.extensionList = Array.isArray(newBody.extensionList.extension)
+                    ? newBody.extensionList : { extension: [] };
+                newBody.extensionList.extension = newBody.extensionList.extension
+                    .filter((originalList) => !extensionList.extension
+                        .find((newList) => originalList.key === newList.key))
+                    .concat(extensionList.extension);
+
+                ctx.request.body = newBody;
+                // eslint-disable-next-line
+                return await next();
+            }
+
+            // replace the extensionList
+            if (evt.modifyExtension === 'replace') {
+                const { extensionList } = res[0];
+                const newBody = { ...ctx.request.body };
+                newBody.extensionList = extensionList;
+                ctx.request.body = newBody;
+                // eslint-disable-next-line
+                return await next();
+            }
+
             const { body, statusCode } = res[0];
             ctx.state.logger.log(`Rules engine returned a response for request: ${util.inspect(res)}.`);
             ctx.response.body = body;
@@ -268,7 +295,6 @@ async function rewriteContentTypeHeader(ctx, next) {
         }
         await next();
     });
-
 
     // Handle requests
     simulator.use(router(simHandlers.map));
@@ -280,7 +306,6 @@ async function rewriteContentTypeHeader(ctx, next) {
         reportValidator.initialise(reportApiSpec),
         testApiValidator.initialise(testApiSpec),
     ]);
-
 
     // If config specifies TLS, start an HTTPS server; otherwise HTTP
     let simServer;

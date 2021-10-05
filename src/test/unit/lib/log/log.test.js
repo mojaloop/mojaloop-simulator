@@ -121,7 +121,6 @@ test('getStackOrInspect inspects an error with no stack', (t) => {
     t.is(result, `'${error}'`, 'values should match');
 });
 
-
 test('getStackOrInspect gets nested data', (t) => {
     // Arrange
     const error = { a: { b: { c: { d: { e: 'This is a bad error, with no stack' } } } } };
