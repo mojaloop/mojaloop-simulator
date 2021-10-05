@@ -3128,13 +3128,12 @@ components:
         - completedTimestamp
         - transferState
 
-
-        - SEND - Amount the Payer would like to send, that is, the amount that
-        should be withdrawn from the Payer account including any fees.
-
-        - RECEIVE - Amount the Payer would like the Payee to receive, that is,
-        the amount that should be sent to the receiver exclusive of any fees.
-      example: RECEIVE
+        # TODO: tidy me!
+        # - SEND - Amount the Payer would like to send, that is, the amount that
+        # should be withdrawn from the Payer account including any fees.
+        # - RECEIVE - Amount the Payer would like the Payee to receive, that is,
+        # the amount that should be sent to the receiver exclusive of any fees.
+      # example: RECEIVE
     ThirdpartyRequestsTransactionsPostRequest:
       title: ThirdpartyRequestsTransactionsPostRequest
       type: object
