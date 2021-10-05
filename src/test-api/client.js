@@ -91,7 +91,6 @@ const postBulkQuotes = async (body) => {
     return res.json();
 };
 
-
 module.exports = {
     postTransfers,
     putTransfers,

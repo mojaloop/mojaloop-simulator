@@ -66,7 +66,6 @@ const testApi = new Koa();
     with interoperability headers and doesn't parse properly the request body
 */
 
-
 // map where keys are the content-type values to be rewritten, extend it if needed
 const rewriteContentTypes = {
     'application/vnd.interoperability.authorizations+json;version=1.0': 'application/json',
@@ -82,7 +81,6 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     await next();
 }
-
 
 (async function start() {
     // Set up the config from the environment

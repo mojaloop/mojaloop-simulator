@@ -29,7 +29,7 @@ const util = require('util');
 const crypto = require('crypto');
 require('dotenv').config();
 const { getStackOrInspect } = require('@internal/log');
-const { ApiErrorCodes } = require('../models/errors.js');
+const { ApiErrorCodes } = require('../models/errors');
 const objectStore = require('../lib/objectStore/objectStoreInterface');
 
 const getParticipantsByTypeAndId = async (ctx) => {

@@ -149,5 +149,4 @@ module.exports = {
     createPartyExtensionTableUniqueIndex,
     partyAccountsTable,
     createAccountTable,
-    createTransferTable,
 };

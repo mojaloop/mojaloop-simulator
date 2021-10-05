@@ -30,17 +30,17 @@ const { cloneDeep } = require('./unit/TestUtils');
 const Model = require('../models/model');
 const { map } = require('../simulator/handlers');
 const {
-    transfer, 
-    transferWithoutQuote, 
-    quote, 
-    transactionrequest, 
-    party, 
-    idType, 
+    transfer,
+    transferWithoutQuote,
+    quote,
+    transactionrequest,
+    party,
+    idType,
     idValue,
-    transactionRequestId, 
-    bulkQuote, 
-    bulkTransfer, 
-    bulkTransferId, 
+    transactionRequestId,
+    bulkQuote,
+    bulkTransfer,
+    bulkTransferId,
     authorizationRequest,
 } = require('./constants');
 const { ApiErrorCodes } = require('../models/errors');
@@ -138,7 +138,6 @@ test('post validate authToken valid', async (t) => {
     t.is(t.context.response.body.isValid, true);
     t.is(t.context.response.status, 200);
 });
-
 
 test('post validate authToken invalid', async (t) => {
     // eslint-disable-next-line no-param-reassign

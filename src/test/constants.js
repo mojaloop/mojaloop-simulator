@@ -95,7 +95,6 @@ const partyCreate = {
     ],
 };
 
-
 const partyCreateWithSubIdValue = {
     displayName: randName,
     firstName: randName.split(' ')[0] || '',
@@ -458,7 +457,6 @@ module.exports = {
     quote,
     newQuote,
     quoteWithExtensionList,
-    newQuote,
     newQuoteWithExtensionList,
     bulkQuote,
     newBulkQuote,
