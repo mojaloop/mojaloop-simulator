@@ -80,6 +80,7 @@ jobs:
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
+      - checkout
       - run:
           name: Update NPM install (using `npm ci`)
           command: cd src && npm ci
