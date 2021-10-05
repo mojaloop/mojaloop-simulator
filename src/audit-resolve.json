@@ -1,0 +1,236 @@
+{
+  "decisions": {
+    "1770|npm-check-updates>pacote>@npmcli/run-script>node-gyp>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1770|npm-check-updates>pacote>cacache>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1770|npm-check-updates>pacote>npm-registry-fetch>make-fetch-happen>cacache>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1770|npm-check-updates>pacote>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1771|npm-check-updates>pacote>@npmcli/run-script>node-gyp>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1771|npm-check-updates>pacote>cacache>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1771|npm-check-updates>pacote>npm-registry-fetch>make-fetch-happen>cacache>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1771|npm-check-updates>pacote>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1779|npm-check-updates>pacote>@npmcli/run-script>node-gyp>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1779|npm-check-updates>pacote>cacache>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1779|npm-check-updates>pacote>npm-registry-fetch>make-fetch-happen>cacache>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1779|npm-check-updates>pacote>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1780|npm-check-updates>pacote>@npmcli/run-script>node-gyp>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1780|npm-check-updates>pacote>cacache>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1780|npm-check-updates>pacote>npm-registry-fetch>make-fetch-happen>cacache>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1780|npm-check-updates>pacote>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1781|npm-check-updates>pacote>@npmcli/run-script>node-gyp>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1781|npm-check-updates>pacote>cacache>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1781|npm-check-updates>pacote>npm-registry-fetch>make-fetch-happen>cacache>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1781|npm-check-updates>pacote>tar": {
+      "decision": "fix",
+      "madeAt": 1633416289000
+    },
+    "1770|sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1770|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1770|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1770|sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1770|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1770|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1771|sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1771|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1771|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1771|sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1771|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1771|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1779|sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1779|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1779|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1779|sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1779|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1779|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1780|sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1780|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1780|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1780|sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1780|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1780|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1781|sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1781|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1781|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1781|sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1781|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    },
+    "1781|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1633416304667,
+      "expiresAt": 1636008277840
+    }
+  },
+  "rules": {},
+  "version": 1
+}
