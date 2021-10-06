@@ -353,7 +353,7 @@ jobs:
           <<: *defaults_license_scanner
       - run:
           name: Run the license-scanner
-          command: cd /tmp/license-scanner && mode=docker dockerImages=mojaloop/$CIRCLE_PROJECT_REPONAME:local make run
+          command: cd /tmp/license-scanner && mode=docker dockerImages=mojaloop/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG make run
       - store_artifacts:
           path: /tmp/license-scanner/results
           prefix: licenses
@@ -373,7 +373,7 @@ jobs:
           command: docker load -i /tmp/docker-image.tar
       - anchore/analyze_local_image:
           dockerfile_path: ./Dockerfile
-          image_name: mojaloop/${CIRCLE_PROJECT_REPONAME}:local
+          image_name: mojaloop/${CIRCLE_PROJECT_REPONAME}:$CIRCLE_TAG
           # Anchore bug: if policy_failure is `true`, reports don't get written - we manually check for failures below
           policy_failure: false
           timeout: '500'
@@ -423,9 +423,9 @@ jobs:
             docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
 
             # publish init images
-            docker push $DOCKER_ORG/onboard-hub-accounts:$RELEASE_TAG
-            docker push $DOCKER_ORG/onboard-msisdn-oracle:$RELEASE_TAG
-            docker push $DOCKER_ORG/onboard-central-ledger:$RELEASE_TAG
+            docker push $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG
+            docker push $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG
+            docker push $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG
       - slack/status:
           webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
           success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"${CIRCLE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"${CIRCLE_TAG}"'
