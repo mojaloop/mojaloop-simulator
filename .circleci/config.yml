@@ -42,11 +42,6 @@ defaults_license_scanner: &defaults_license_scanner
     git clone https://github.com/mojaloop/license-scanner /tmp/license-scanner
     cd /tmp/license-scanner && make build default-files set-up
 
-src_working_directory: &src_working_directory
-  # The working directory for this project (place where package.json is) is /src,
-  # as opposed to the project root
-  working_directory: ~/git/src
-
 ##
 # Executors
 #
@@ -251,7 +246,6 @@ jobs:
             git fetch origin
             git checkout origin/${CIRCLE_BRANCH}
       - run:
-          # Note: this is rather imperfect, but will do for now
           name: Format the changelog into the github release body and get release tag
           command: |
             git diff --no-indent-heuristic master~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
@@ -402,7 +396,7 @@ jobs:
           at: /tmp
       - run:
           name: Load the pre-built docker images from workspace
-          command: >
+          command: |
             docker load -i /tmp/docker-image.tar
             docker load -i /tmp/docker-onboard-hub-accounts.tar
             docker load -i /tmp/docker-onboard-msisdn-oracle.tar
@@ -411,7 +405,7 @@ jobs:
           name: Login to Docker Hub
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run:
-          name: Re-tag pre built image
+          name: Re-tag pre built image with :latest tag
           command: |
             docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
       - run:
@@ -426,10 +420,6 @@ jobs:
             docker push $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG
             docker push $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG
             docker push $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG
-      - slack/status:
-          webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
-          success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"${CIRCLE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"${CIRCLE_TAG}"'
-
 ##
 # Workflows
 #
@@ -456,6 +446,8 @@ workflows:
           requires:
             - setup
           filters:
+            tags:
+              only: /.*/
             branches:
               ignore:
                 - /feature*/
@@ -466,6 +458,8 @@ workflows:
           requires:
             - setup
           filters:
+            tags:
+              only: /.*/
             branches:
               ignore:
                 - /feature*/
@@ -476,6 +470,8 @@ workflows:
           requires:
             - setup
           filters:
+            tags:
+              only: /.*/
             branches:
               ignore:
                 - /feature*/
@@ -486,6 +482,8 @@ workflows:
           requires:
             - setup
           filters:
+            tags:
+              only: /.*/
             branches:
               ignore:
                 - /feature*/
