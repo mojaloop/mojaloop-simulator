@@ -1,11 +1,6 @@
 # CircleCI v2.1 Config
 version: 2.1
 
-
-# TODO! this config file is a real mess.
-# how can we improve it? Can we also add 
-# auto-releases at the same time?
-
 ##
 # orbs
 #
