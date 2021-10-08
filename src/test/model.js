@@ -134,6 +134,18 @@ test('create and update a party', async (t) => {
                 value: '12345343',
             },
         ],
+        accounts: [
+            {
+                currency: 'USD',
+                description: 'savings',
+                address: 'moja.blue.8f027046-b82a-4fa9-838b-100000000000',
+            },
+            {
+                currency: 'USD',
+                description: 'savings',
+                address: 'moja.blue.8f027046-b82a-4fa9-838b-200000000000',
+            },
+        ],
     };
     await model.party.create(partyCreate);
     const orig = await model.party.get(idType, idValue);
@@ -159,6 +171,24 @@ test('create and update a party without extensionList', async (t) => {
     const changed = await model.party.get(idType, idValue);
     t.notDeepEqual({ orig }, { changed });
 });
+
+// test('create and update a party without extensionList', async (t) => {
+//     const { model } = t.context;
+//     const newParty = {
+//         displayName: 'randName',
+//         firstName: 'hello',
+//         middleName: 'world',
+//         lastName: 'lambda',
+//         dateOfBirth: '1970-01-01T00:00:00.000Z',
+//         idType,
+//         idValue,
+//     };
+//     await model.party.create(partyCreate);
+//     const orig = await model.party.get(idType, idValue);
+//     await model.party.update(newParty, idType, idValue);
+//     const changed = await model.party.get(idType, idValue);
+//     t.notDeepEqual({ orig }, { changed });
+// });
 
 test('create and update a party with subIdValue', async (t) => {
     const { model } = t.context;

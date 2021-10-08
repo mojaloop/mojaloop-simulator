@@ -30,8 +30,18 @@ const { cloneDeep } = require('./unit/TestUtils');
 const Model = require('../models/model');
 const { map } = require('../simulator/handlers');
 const {
-    transfer, transferWithoutQuote, quote, transactionrequest, party, idType, idValue,
-    transactionRequestId, bulkQuote, bulkTransfer, bulkTransferId,
+    transfer,
+    transferWithoutQuote,
+    quote,
+    transactionrequest,
+    party,
+    idType,
+    idValue,
+    transactionRequestId,
+    bulkQuote,
+    bulkTransfer,
+    bulkTransferId,
+    authorizationRequest,
 } = require('./constants');
 const { ApiErrorCodes } = require('../models/errors');
 
@@ -53,6 +63,93 @@ test('get an otp', async (t) => {
     t.context.state.path = { params: { transactionRequestId } };
     await map['/otp/{requestToPayId}'].get(t.context);
     t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('get accounts by user Id', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { ID: 'test123' } };
+    await map['/accounts/{ID}'].get(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 404);
+});
+
+test('get scopes by Id', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { ID: 'test123' } };
+    await map['/scopes/{ID}'].get(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('post validateConsentRequests', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = {
+        body: { consentRequestId: '123456' },
+    };
+    await map['/validateConsentRequests'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.body.isValid, true);
+    t.is(t.context.response.status, 200);
+});
+
+test('post sendOTP', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = {
+        body: { consentRequestId: '123456' },
+    };
+    await map['/sendOTP'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('post storeConsentRequest', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { ID: '123456' } };
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = {
+        body: { consentRequestId: '123456' },
+    };
+    await map['/store/consentRequests/{ID}'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.body.status, 'OK');
+    t.is(t.context.response.status, 200);
+});
+
+test('get consentRequest', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.state.path = { params: { ID: '123456' } };
+
+    await map['/store/consentRequests/{ID}'].get(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('post validate authToken valid', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = {
+        body: {
+            authToken: '123456',
+            consentRequestId: idValue,
+        },
+    };
+    await map['/validateAuthToken'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.body.isValid, true);
+    t.is(t.context.response.status, 200);
+});
+
+test('post validate authToken invalid', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = {
+        body: {
+            authToken: '123457',
+            consentRequestId: idValue,
+        },
+    };
+    await map['/validateAuthToken'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.is(t.context.response.body.isValid, false);
     t.is(t.context.response.status, 200);
 });
 
@@ -120,6 +217,15 @@ test('create a transactionrequest', async (t) => {
     t.context.request = { body: transactionrequest };
     await map['/transactionrequests'].post(t.context);
     t.truthy(t.context.response.body);
+    t.is(t.context.response.status, 200);
+});
+
+test('get signed challenge', async (t) => {
+    // eslint-disable-next-line no-param-reassign
+    t.context.request = { body: authorizationRequest };
+    await map['/signchallenge'].post(t.context);
+    t.truthy(t.context.response.body);
+    t.assert({}.hasOwnProperty.call(t.context.response.body, 'pinValue'));
     t.is(t.context.response.status, 200);
 });
 

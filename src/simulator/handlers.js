@@ -26,9 +26,11 @@
 'use strict';
 
 const util = require('util');
+const crypto = require('crypto');
 require('dotenv').config();
 const { getStackOrInspect } = require('@internal/log');
 const { ApiErrorCodes } = require('../models/errors');
+const objectStore = require('../lib/objectStore/objectStoreInterface');
 
 const getParticipantsByTypeAndId = async (ctx) => {
     try {
@@ -197,6 +199,124 @@ const healthCheck = async (ctx) => {
     ctx.response.body = '';
 };
 
+const getAccountsByUserId = async (ctx) => {
+    try {
+        const { ID } = ctx.state.path.params;
+        // if rules not configured, return ID not found error
+        ctx.state.logger.log(`getAccountsByUserId rules not configured for : ${ID}`);
+        ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
+        ctx.response.status = 404;
+        return;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
+const getScopesById = async (ctx) => {
+    // fake scopes for testing purposes until consents storage is
+    // more fleshed out
+    const res = {
+        scopes: [
+            {
+                accountId: 'dfsp.blue.account.one',
+                actions: [
+                    'accounts.getBalance',
+                    'accounts.transfer',
+                ],
+            },
+            {
+                accountId: 'dfsp.blue.account.two',
+                actions: [
+                    'accounts.getBalance',
+                    'accounts.transfer',
+                ],
+            },
+        ],
+    };
+    ctx.response.body = res;
+    ctx.response.status = 200;
+};
+
+const postValidateAuthToken = async (ctx) => {
+    // fake validation for testing purposes
+    // even auth tokens validate true as default mock response, if rules not configured
+    const res = {
+        isValid: ctx.request.body.authToken % 2 === 0,
+    };
+    ctx.state.logger.log(`postValidateOTP is returning body: ${util.inspect(res)}`);
+    ctx.response.body = res;
+    ctx.response.status = 200;
+};
+
+const validateConsentRequests = async (ctx) => {
+    const request = ctx.request.body;
+    ctx.state.logger.log(`validateConsentRequests request body: ${util.inspect(request)}`);
+    // default mock response, if rules not configured
+    const res = {
+        isValid: true,
+        data: {
+            authChannels: ['WEB'],
+            authUri: `dfspa.com/authorize?consentRequestId=${request.id}`,
+        },
+    };
+    ctx.state.logger.log(`validateConsentRequests is returning body: ${util.inspect(res)}`);
+    ctx.response.body = res;
+    ctx.response.status = 200;
+};
+
+const sendOTP = async (ctx) => {
+    const request = ctx.request.body;
+    ctx.state.logger.log(`sendOTP request body: ${util.inspect(request)}`);
+    // default mock reponse, if rules not configured
+    const res = {
+        otp: Math.floor(Math.random() * 90000) + 10000,
+    };
+    await objectStore.set(`${request.consentRequestId}-OTP`, res);
+    ctx.state.logger.log(`sendOTP is returning body: ${util.inspect(res)}`);
+    ctx.response.body = res;
+    ctx.response.status = 200;
+};
+
+const storeConsentRequest = async (ctx) => {
+    const { ID } = ctx.state.path.params;
+    const request = ctx.request.body;
+    ctx.state.logger.log(`storeConsentRequest request body: ${util.inspect(request)}`);
+    // default mock reponse, if rules not configured
+    const res = {
+        status: 'OK',
+    };
+    await objectStore.set(`${ID}-CR`, request);
+    ctx.state.logger.log(`sendOTP is returning body: ${util.inspect(res)}`);
+    ctx.response.body = res;
+    ctx.response.status = 200;
+};
+
+const getConsentRequest = async (ctx) => {
+    const { ID } = ctx.state.path.params;
+    ctx.state.logger.log(`getConsentRequest : ${ID}`);
+    // default mock reponse, if rules not configured
+    const res = await objectStore.get(`${ID}-CR`);
+    ctx.state.logger.log(`getConsentRequest is returning body: ${util.inspect(res)}`);
+    ctx.response.body = res;
+    ctx.response.status = 200;
+};
+
+const getSignedChallenge = async (ctx) => {
+    try {
+        const res = {
+            pinValue: crypto.randomBytes(256).toString('base64').slice(0, 64),
+            counter: '1',
+        };
+        ctx.state.logger.log(`getSignedChallenge is returning body: ${util.inspect(res)}`);
+        ctx.response.body = res;
+        ctx.response.status = 200;
+    } catch (err) {
+        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
+        ctx.response.status = 500;
+    }
+};
+
 const map = {
     '/': {
         get: healthCheck,
@@ -234,11 +354,33 @@ const map = {
     '/bulkTransfers/{idValue}': {
         get: getBulkTransferById,
     },
+    '/signchallenge': {
+        post: getSignedChallenge,
+    },
     '/otp/{requestToPayId}': {
         get: getOTPById,
     },
     '/transfers/{transferId}': {
         put: putTransfersById,
+    },
+    '/accounts/{ID}': {
+        get: getAccountsByUserId,
+    },
+    '/scopes/{ID}': {
+        get: getScopesById,
+    },
+    '/validateAuthToken': {
+        post: postValidateAuthToken,
+    },
+    '/validateConsentRequests': {
+        post: validateConsentRequests,
+    },
+    '/sendOTP': {
+        post: sendOTP,
+    },
+    '/store/consentRequests/{ID}': {
+        get: getConsentRequest,
+        post: storeConsentRequest,
     },
 };
 

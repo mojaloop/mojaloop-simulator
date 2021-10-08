@@ -48,6 +48,7 @@ const {
     createTransactionRequestTable,
     createPartyExtensionTable,
     createPartyExtensionTableUniqueIndex,
+    createAccountTable,
 } = require('./constants');
 
 /**
@@ -106,6 +107,7 @@ module.exports = class Model {
         await this.db.run(createPartyExtensionTableUniqueIndex);
         await this.db.run(createBulkQuoteTable);
         await this.db.run(createBulkTransferTable);
+        await this.db.run(createAccountTable);
 
         this.party = new Party(this.db);
         this.quote = new Quote(this.db);

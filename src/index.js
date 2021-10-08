@@ -60,6 +60,28 @@ const simulator = new Koa();
 const report = new Koa();
 const testApi = new Koa();
 
+/*
+    when using simulator with sdk-standard-components ThirdpartyRequests
+    the need to rewrite content-type header appears because koaBody has problems
+    with interoperability headers and doesn't parse properly the request body
+*/
+
+// map where keys are the content-type values to be rewritten, extend it if needed
+const rewriteContentTypes = {
+    'application/vnd.interoperability.authorizations+json;version=1.0': 'application/json',
+};
+
+// rewrite content-type header middleware
+async function rewriteContentTypeHeader(ctx, next) {
+    const contentType = ctx.header['content-type'];
+
+    // rewrite only if contentType found in rewriteContentTypes
+    // elsewhere keep original value
+    ctx.header['content-type'] = rewriteContentTypes[contentType] || contentType;
+
+    await next();
+}
+
 (async function start() {
     // Set up the config from the environment
     await setConfig(process.env);
@@ -144,8 +166,8 @@ const testApi = new Koa();
         ctx.state.logger.push({ response: { body, status } }).log('Request processed');
     });
 
+    simulator.use(rewriteContentTypeHeader);
     testApi.use(cors());
-
     simulator.use(koaBody());
     report.use(koaBody());
     testApi.use(koaBody());
@@ -156,6 +178,7 @@ const testApi = new Koa();
     simulator.use(async (ctx, next) => {
         ctx.state.logger.log('Validating request');
         try {
+            ctx.state.logger.push({ ctx_request: ctx.request }).log('validating request');
             ctx.state.path = simValidator.validateRequest(ctx, ctx.state.logger);
             ctx.state.logger.log('Request passed validation');
             ctx.state.model = model;

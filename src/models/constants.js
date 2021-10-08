@@ -22,6 +22,7 @@
  ******/
 'use strict';
 
+const partyAccountsTable = 'account';
 const partyTable = 'party';
 const quoteTable = 'quote';
 const transactionRequestTable = 'transactionRequest';
@@ -120,6 +121,15 @@ CREATE TABLE IF NOT EXISTS ${bulkTransferTable} (
 )
 `;
 
+const createAccountTable = `
+CREATE TABLE IF NOT EXISTS ${partyAccountsTable} (
+    address TEXT NOT NULL PRIMARY KEY,
+    currency TEXT NOT NULL,
+    description TEXT NOT NULL,
+    idValue TEXT NOT NULL
+)
+`;
+
 module.exports = {
     partyTable,
     quoteTable,
@@ -132,9 +142,11 @@ module.exports = {
     createQuoteTable,
     createBulkQuoteTable,
     createBulkTransferTable,
-    createTransferTable,
     createTransactionRequestTable,
+    createTransferTable,
     createPartyExtensionTable,
     createPartyTableUniqueIndex,
     createPartyExtensionTableUniqueIndex,
+    partyAccountsTable,
+    createAccountTable,
 };

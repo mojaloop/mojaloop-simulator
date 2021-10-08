@@ -81,6 +81,18 @@ const partyCreate = {
             value: '12345343',
         },
     ],
+    accounts: [
+        {
+            currency: 'USD',
+            description: 'savings',
+            address: 'moja.blue.8f027046-b82a-4fa9-838b-514514543785',
+        },
+        {
+            currency: 'USD',
+            description: 'checking',
+            address: 'moja.blue.8f027046-b82a-4fa9-838b-70210fcf8137',
+        },
+    ],
 };
 
 const partyCreateWithSubIdValue = {
@@ -159,39 +171,6 @@ const quoteWithExtensionList = {
 };
 
 const newQuote = {
-    quoteId: uuid(),
-    transactionId: uuid(),
-    to: {
-        idType: 'MSISDN',
-        idValue: '0012345',
-    },
-    from: {
-        idType: 'MSISDN',
-        idValue: '0067890',
-    },
-    amountType: 'SEND',
-    amount: '100',
-    currency: 'USD',
-    feesAmount: '0.5',
-    feesCurrency: 'USD',
-    transactionType: 'TRANSFER',
-    initiator: 'PAYER',
-    initiatorType: 'CONSUMER',
-    extensionList: {
-        extension: [
-            {
-                key: 'KYCPayerTier',
-                value: '1',
-            },
-            {
-                key: 'KYCNationality',
-                value: 'CI',
-            },
-        ],
-    },
-};
-
-const newQuoteWithExtensionList = {
     quoteId: uuid(),
     transactionId: uuid(),
     to: {
@@ -398,6 +377,71 @@ const transferWithoutQuote = {
     amount,
 };
 
+const newQuoteWithExtensionList = {
+    quoteId: uuid(),
+    transactionId: uuid(),
+    to: {
+        idType: 'MSISDN',
+        idValue: '0012345',
+    },
+    from: {
+        idType: 'MSISDN',
+        idValue: '0067890',
+    },
+    amountType: 'SEND',
+    amount: '100',
+    currency: 'USD',
+    feesAmount: '0.5',
+    feesCurrency: 'USD',
+    transactionType: 'TRANSFER',
+    initiator: 'PAYER',
+    initiatorType: 'CONSUMER',
+};
+
+const authorizationRequest = {
+    authenticationType: 'U2F',
+    retriesLeft: '1',
+    amount: {
+        currency: 'USD',
+        amount: '100',
+    },
+    transactionId: '2f169631-ef99-4cb1-96dc-91e8fc08f539',
+    transactionRequestId: '02e28448-3c05-4059-b5f7-d518d0a2d8ea',
+    quote: {
+        transferAmount: {
+            currency: 'USD',
+            amount: '100',
+        },
+        payeeReceiveAmount: {
+            currency: 'USD',
+            amount: '99',
+        },
+        payeeFspFee: {
+            currency: 'USD',
+            amount: '1',
+        },
+        payeeFspCommission: {
+            currency: 'USD',
+            amount: '0',
+        },
+        expiration: '2020-05-17T15:28:54.250Z',
+        geoCode: {
+            latitude: '+45.4215',
+            longitude: '+75.6972',
+        },
+        ilpPacket: 'AYIBgQAAAAAAAASwNGxldmVsb25lLmRmc3AxLm1lci45T2RTOF81MDdqUUZERmZlakgy...',
+        condition: 'f5sqb7tBTWPd5Y8BDFdMm9BJR_MNI4isf8p8n4D5pHA',
+        extensionList: {
+            extension: [
+                {
+                    key: 'errorDescription1',
+                    value: 'This is a more detailed error description',
+                },
+            ],
+        },
+    },
+};
+
 test('constants', async (t) => {
     // to avoid test warnings
     t.pass();
@@ -411,8 +455,8 @@ module.exports = {
     newBulkTransfer,
     bulkTransferId,
     quote,
-    quoteWithExtensionList,
     newQuote,
+    quoteWithExtensionList,
     newQuoteWithExtensionList,
     bulkQuote,
     newBulkQuote,
@@ -426,4 +470,5 @@ module.exports = {
     partyWithSubIdValue,
     partyCreateWithSubIdValue,
     subIdValue,
+    authorizationRequest,
 };

@@ -28,7 +28,7 @@
  * @description Defines the party model structure and operations within the simulator.
  */
 
-const { partyTable, partyExtensionTable } = require('./constants');
+const { partyTable, partyExtensionTable, partyAccountsTable } = require('./constants');
 
 /**
  * @typedef {Object} Party
@@ -75,7 +75,7 @@ module.exports = class Party {
                     idValue: row.idValue,
                 };
                 if (row.subIdValue) {
-                    party.idSubValue = row.subIdValue;
+                    party.subIdValue = row.subIdValue;
                 }
                 resultMap[row.idValue] = party;
             }
@@ -84,6 +84,16 @@ module.exports = class Party {
                     party.extensionList = [];
                 }
                 party.extensionList.push({ key: row.key, value: row.value });
+            }
+            if (row.address) {
+                if (!party.accounts) {
+                    party.accounts = [];
+                }
+                party.accounts.push({
+                    address: row.address,
+                    currency: row.currency,
+                    description: row.description,
+                });
             }
         });
         if (res.length && res.length > 0) {
@@ -118,7 +128,7 @@ module.exports = class Party {
                     idValue: row.idValue,
                 };
                 if (row.subIdValue) {
-                    party.idSubValue = row.subIdValue;
+                    party.subIdValue = row.subIdValue;
                 }
                 resultMap[`${row.idValue}-${row.subIdValue}`] = party;
             }
@@ -127,6 +137,16 @@ module.exports = class Party {
                     party.extensionList = [];
                 }
                 party.extensionList.push({ key: row.key, value: row.value });
+            }
+            if (row.address) {
+                if (!party.accounts) {
+                    party.accounts = [];
+                }
+                party.accounts.push({
+                    address: row.address,
+                    currency: row.currency,
+                    description: row.description,
+                });
             }
         });
         return Object.values(resultMap);
@@ -153,6 +173,13 @@ module.exports = class Party {
                 VALUES (?, ?, ?, ?)`,
                 [idValue, subIdValue, extension.key, extension.value]);
             });
+        }
+        if (party.accounts) {
+            const { accounts } = party;
+            await Promise.all(accounts.map(async (account) => this.db.get(`
+                  INSERT INTO ${partyAccountsTable} (idValue, address, currency, description)
+                  VALUES (?, ?, ?, ?)`,
+            [idValue, account.address, account.currency, account.description])));
         }
     }
 
