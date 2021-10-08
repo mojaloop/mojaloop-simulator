@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [11.5.1](https://github.com/mojaloop/mojaloop-simulator/compare/v11.5.0...v11.5.1) (2021-10-08)
+
+
+### Bug Fixes
+
+* **ci:** incorrect changelog path ([#117](https://github.com/mojaloop/mojaloop-simulator/issues/117)) ([755df0d](https://github.com/mojaloop/mojaloop-simulator/commit/755df0d889c387f54d0c0e44b39d93fb751df7c5))
+
 ## [11.5.0](https://github.com/mojaloop/mojaloop-simulator/compare/v11.4.3...v11.5.0) (2021-10-08)
 
 
