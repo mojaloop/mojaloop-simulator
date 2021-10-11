@@ -196,7 +196,7 @@ const getBulkTransferById = async (ctx) => {
 
 const healthCheck = async (ctx) => {
     ctx.response.status = 200;
-    ctx.response.body = '';
+    ctx.response.body = JSON.stringify({status: 'OK'})
 };
 
 const getAccountsByUserId = async (ctx) => {
@@ -319,6 +319,9 @@ const getSignedChallenge = async (ctx) => {
 
 const map = {
     '/': {
+        get: healthCheck,
+    },
+    '/health': {
         get: healthCheck,
     },
     '/participants/{idType}/{idValue}': {

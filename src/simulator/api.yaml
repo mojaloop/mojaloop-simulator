@@ -12,6 +12,12 @@ info:
 paths:
   /:
     get:
+      summary: Deprecated health check endpoint. Use /health instead.
+      responses:
+        200:
+          description: Returns empty body if the service is running.
+  /health:
+    get:
       summary: Health check endpoint.
       responses:
         200:
