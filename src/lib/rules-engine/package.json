@@ -10,6 +10,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@internal/log": "file:../log",
-    "json-rules-engine": "6.1.2"
+    "json-rules-engine": "2.3.6"
   }
 }

@@ -21,7 +21,7 @@ describe('handlers', () => {
     expect(result).toStrictEqual(expected)
   })
 
-  it('POST /validateConsentRequests returns the mock payload for consentRequestId `b51ec534-ee48-4575-b6a9-ead2955b8069`', async () => {
+  it.only('POST /validateConsentRequests returns the mock payload for consentRequestId `b51ec534-ee48-4575-b6a9-ead2955b8069`', async () => {
     // Arrange
     const payload = {
       "consentRequestId": "b51ec534-ee48-4575-b6a9-ead2955b8069",
