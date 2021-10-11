@@ -25,7 +25,6 @@
  ******/
 'use strict';
 
-const test = require('ava');
 const Chance = require('chance');
 const { v1: uuid } = require('uuid');
 
@@ -441,11 +440,6 @@ const authorizationRequest = {
         },
     },
 };
-
-test('constants', async (t) => {
-    // to avoid test warnings
-    t.pass();
-});
 
 module.exports = {
     transfer,

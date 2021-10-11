@@ -27,9 +27,9 @@
 
 const test = require('ava');
 
-const Model = require('../models/model');
+const Model = require('../../models/model');
 
-const { cloneDeep } = require('./unit/TestUtils');
+const { cloneDeep } = require('./TestUtils');
 
 const {
     transfer, quote, quoteWithExtensionList, newQuote, newQuoteWithExtensionList, bulkQuote,
