@@ -99,7 +99,7 @@
           "fact": "body",
           "operator": "equal",
           "value": "b51ec534-ee48-4575-b6a9-ead2955b8069",
-          "path": ".consentRequestId"
+          "path": "$.consentRequestId"
         }
       ]
     },
