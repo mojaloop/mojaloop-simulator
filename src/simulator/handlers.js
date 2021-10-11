@@ -196,7 +196,7 @@ const getBulkTransferById = async (ctx) => {
 
 const healthCheck = async (ctx) => {
     ctx.response.status = 200;
-    ctx.response.body = JSON.stringify({status: 'OK'})
+    ctx.response.body = JSON.stringify({ status: 'OK' });
 };
 
 const getAccountsByUserId = async (ctx) => {

@@ -170,12 +170,7 @@ jobs:
           command: |
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             node --version
-            npm ci
-      - run:
-          name: Create dir for test results
-          command: | 
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            mkdir -p ./test/results
+            cd src && npm ci
       - run:
           name: Spin up core docker compose
           command: |
