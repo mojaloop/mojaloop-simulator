@@ -26,9 +26,9 @@
 'use strict';
 
 const test = require('ava');
-const { cloneDeep } = require('./unit/TestUtils');
-const Model = require('../models/model');
-const { map } = require('../simulator/handlers');
+const { cloneDeep } = require('./TestUtils');
+const Model = require('../../models/model');
+const { map } = require('../../simulator/handlers');
 const {
     transfer,
     transferWithoutQuote,
@@ -43,7 +43,7 @@ const {
     bulkTransferId,
     authorizationRequest,
 } = require('./constants');
-const { ApiErrorCodes } = require('../models/errors');
+const { ApiErrorCodes } = require('../../models/errors');
 
 test.beforeEach(async (t) => {
     const model = new Model();
@@ -318,7 +318,7 @@ test('should return a valid health check', async (t) => {
     t.context.state.path = { params: { idValue, idType } };
     const expected = {
         status: 200,
-        body: '',
+        body: '{"status":"OK"}',
     };
 
     // Act

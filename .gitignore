@@ -71,3 +71,6 @@ goldenpayeefsp
 .vscode/
 /init/.DS_Store
 /.DS_Store
+
+
+junit.xml
