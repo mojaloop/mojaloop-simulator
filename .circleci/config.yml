@@ -176,7 +176,7 @@ jobs:
           command: |
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd src && docker-compose build
-            cd src && docker-compose up -d
+            docker-compose up -d
       - run:
           name: Sleep for 30 seconds while waiting for docker
           command: |

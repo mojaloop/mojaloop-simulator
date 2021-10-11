@@ -318,7 +318,7 @@ test('should return a valid health check', async (t) => {
     t.context.state.path = { params: { idValue, idType } };
     const expected = {
         status: 200,
-        body: '',
+        body: '{"status":"OK"}',
     };
 
     // Act
