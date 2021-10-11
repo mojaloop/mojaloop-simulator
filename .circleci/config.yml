@@ -186,7 +186,7 @@ jobs:
           name: Execute integration tests
           command: |
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd ~/project/
+            cd ~/project/git/src
             npm ci
             npm -s run test:integration
 
