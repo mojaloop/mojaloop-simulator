@@ -116,17 +116,14 @@ curl -X POST \
 
 ## Mutual TLS
 
-### Testing
 
 #### Create secrets
 Use the script in `./scripts/mutualtls.sh`. Secrets will be generated in `./src/secrets`
 
-#### Test functionality
-TODO
 
-# Develop
+# Developing
 
-## Build
+## Build tools
 
 Dirty build, tagged with '-local' (will build clean if you don't have uncommitted local changes):
 ```bash
@@ -143,7 +140,7 @@ Specifically versioned build (dirty if you have local changes):
 make build_clean VER=whatever-you-like
 ```
 
-## Push to repo
+## Push to docker hub repo
 ```bash
 make push
 ```
@@ -151,4 +148,22 @@ make push
 ## Run locally
 ```bash
 docker-compose up
+```
+
+
+## Unit Tests
+
+```bash
+cd ./src
+npm run test:unit
+```
+
+## Integration Tests
+
+```bash
+cd ./src
+docker-compose up -d
+
+# wait until mojaloop-simulator is up and running
+npm run test:integration
 ```
