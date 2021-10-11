@@ -31,7 +31,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "npm run test:unit",
-    "test:unit": "ava -c 1",
+    "test:unit": "ava -c 1 ./test/** !./test/integration",
     "test:xunit": "ava --tap | tap-xunit",
     "test:coverage-check": "nyc ava",
     "test:integration": "jest --config './jest.integration.config.js' --testMatch '**/test/integration/**/*.(test|spec).js' --runInBand",
