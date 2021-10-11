@@ -148,6 +148,53 @@ jobs:
                 echo "Not a release (env CIRCLE_BRANCH != 'master'), skipping sending lcov.info to SonarQube."
             fi
 
+  test-integration:
+    executor: default-machine
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
+          paths:
+            - src/node_modules
+            - src/lib/log/node_modules
+            - src/lib/validate/node_modules
+      - run:
+          name: Set up NVM
+          command: |
+            echo ${NVM_DIR}
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install v12.16.0
+            nvm alias default v12.16.0
+      - run:
+          name: install modules
+          command: |
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            node --version
+            npm ci
+      - run:
+          name: Create dir for test results
+          command: | 
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            mkdir -p ./test/results
+      - run:
+          name: Spin up core docker compose
+          command: |
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            cd src && docker-compose build
+            cd src && docker-compose up -d
+      - run:
+          name: Sleep for 30 seconds while waiting for docker
+          command: |
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            sleep 30
+      - run:
+          name: Execute integration tests
+          command: |
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            cd ~/project/
+            npm ci
+            npm -s run test:integration
+
   vulnerability-check:
     executor: default-docker
     steps:
@@ -464,6 +511,18 @@ workflows:
                 - /feature*/
                 - /bugfix*/
                 - /hotfix*/
+      - test-integration:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
+                - /hotfix*/
       - vulnerability-check:
           context: org-global
           requires:
@@ -494,6 +553,7 @@ workflows:
             - setup
             - test-unit
             - test-coverage
+            - test-integration
             - vulnerability-check
             - audit-licenses
           filters:
