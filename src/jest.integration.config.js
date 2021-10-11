@@ -1,8 +1,8 @@
 'use strict'
 module.exports = {
-  roots: ['<rootDir>/src/', '<rootDir>/test/integration'],
+  // roots: ['<rootDir>/', '<rootDir>/test/integration'],
+  roots: ['<rootDir>/' ],
   verbose: true,
-  preset: 'ts-jest',
   testEnvironment: 'node',
   collectCoverage: false,
   clearMocks: true,
