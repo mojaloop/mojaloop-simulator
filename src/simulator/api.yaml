@@ -1059,7 +1059,7 @@ components:
           $ref: '#/components/schemas/initiatorType'
           description: Specifies the type of the transaction initiator
         geoCode:
-          $ref: '#/components/schemas/geoCode'
+          $ref: '#/components/schemas/GeoCode'
           description: Longitude and Latitude of the initiating Party. Can be used to detect fraud.
         note:
           type: string
@@ -1107,7 +1107,7 @@ components:
           $ref: '#/components/schemas/initiatorType'
           description: Specifies the type of the transaction initiator
         geoCode:
-          $ref: '#/components/schemas/geoCode'
+          $ref: '#/components/schemas/GeoCode'
           description: Longitude and Latitude of the initiating Party. Can be used to detect fraud.
         note:
           type: string
@@ -1185,7 +1185,7 @@ components:
           $ref: '#/components/schemas/timestamp'
           description: Timestamp specifying the validity period of the quotation
         geoCode:
-          $ref: '#/components/schemas/geoCode'
+          $ref: '#/components/schemas/GeoCode'
           description: Longitude and Latitude of the Payee. Can be used to detect fraud
 
     transactionRequestResponse:
@@ -1852,7 +1852,7 @@ components:
           $ref: '#/components/schemas/transferParty'
           description: Information about the Payer in the proposed financial transaction.
         geoCode:
-          $ref: '#/components/schemas/geoCode'
+          $ref: '#/components/schemas/GeoCode'
           description: Longitude and Latitude of the initiating Party. Can be used to detect fraud.
         expiration:
           $ref: '#/components/schemas/timestamp'
@@ -1978,7 +1978,7 @@ components:
           $ref: '#/components/schemas/timestamp'
           description: Timestamp specifying the validity period of the quotation
         geoCode:
-          $ref: '#/components/schemas/geoCode'
+          $ref: '#/components/schemas/GeoCode'
           description: Longitude and Latitude of the Payee. Can be used to detect fraud
         extensionList:
           $ref: '#/components/schemas/extensionList'
@@ -2067,28 +2067,6 @@ components:
       pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
       type: string
       description: A Mojaloop API transfer identifier (UUID)
-
-    geoCode:
-      type: object
-      description: Indicates the geographic location from where the transaction was initiated.
-      properties:
-        latitude:
-          $ref: '#/components/schemas/latitude'
-        longitude:
-          $ref: '#/components/schemas/longitude'
-      required:
-        - latitude
-        - longitude
-
-    latitude:
-      type: string
-      pattern: ^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$
-      description: The API data type Latitude is a JSON String in a lexical format that is restricted by a regular expression for interoperability reasons.
-
-    longitude:
-      type: string
-      pattern: ^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$
-      description: The API data type Longitude is a JSON String in a lexical format that is restricted by a regular expression for interoperability reasons.
 
     errorResponse:
       type: object
@@ -2682,7 +2660,7 @@ components:
           $ref: '#/components/schemas/transferParty'
           description: Information about the Payer in the proposed financial transaction.
         geoCode:
-          $ref: '#/components/schemas/geoCode'
+          $ref: '#/components/schemas/GeoCode'
           description: Longitude and Latitude of the initiating Party. Can be used to detect fraud.
         expiration:
           $ref: '#/components/schemas/timestamp'
@@ -2887,23 +2865,6 @@ components:
       type: string
       description: A Mojaloop API transfer identifier (UUID)
           
-    geoCode:
-      type: object
-      description: Data model for the complex type PartyIdInfo.
-      properties:
-        partyIdType:
-          $ref: '#/components/schemas/PartyIdTypeTPLink'
-        partyIdentifier:
-          $ref: '#/components/schemas/PartyIdentifier'
-        partySubIdOrType:
-          $ref: '#/components/schemas/PartySubIdOrType'
-        fspId:
-          $ref: '#/components/schemas/FspId'
-        extensionList:
-          $ref: '#/components/schemas/ExtensionList'
-      required:
-        - partyIdType
-        - partyIdentifier
     PartyIdType:
       title: PartyIdType
       type: string
@@ -3015,17 +2976,24 @@ components:
 
         - THIRD_PARTY_LINK - TBD
       example: PERSONAL_ID
-    PartyIdentifier:
-      title: PartyIdentifier
-      pattern: ^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$
-      description: The API data type Latitude is a JSON String in a lexical format that is restricted by a regular expression for interoperability reasons.
-    
+   
+ 
     longitude:
       type: string
       minLength: 1
       maxLength: 128
+      pattern: ^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$
+      description: The API data type Latitude is a JSON String in a lexical format that is restricted by a regular expression for interoperability reasons.
+    
+    PartyIdentifier:
+      title: PartyIdentifier
       description: Identifier of the Party.
       example: '16135551212'
+      type: string
+      minLength: 1
+      maxLength: 128
+
+
     PartySubIdOrType:
       title: PartySubIdOrType
       type: string
