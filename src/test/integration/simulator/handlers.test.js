@@ -67,7 +67,7 @@ describe('handlers', () => {
         expect(result).toStrictEqual(expected);
     });
 
-    it.only('POST /validate-thirdparty-transaction-request a FIXED_CALLBACK`', async () => {
+    it('POST /validate-thirdparty-transaction-request a FIXED_CALLBACK`', async () => {
         // Arrange
         const payload = {
             transactionRequestId: v4(),
