@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { v4 } = require('uuid')
 
 const axiosConfig = {
     headers: {
@@ -58,6 +59,50 @@ describe('handlers', () => {
             },
         };
         const uri = 'http://localhost:3000/validateConsentRequests';
+
+        // Act
+        const result = (await axios.post(uri, payload, axiosConfig)).data;
+
+        // Assert
+        expect(result).toStrictEqual(expected);
+    });
+
+    it.only('POST /validate-thirdparty-transaction-request a FIXED_CALLBACK`', async () => {
+        // Arrange
+        const payload = {
+            transactionRequestId: v4(),
+            payee: {
+                partyIdInfo: {
+                    partyIdType: 'MSISDN',
+                    partyIdentifier: '4412345678'
+                }
+            },
+            payer: {
+                partyIdType: 'THIRD_PARTY_LINK',
+                partyIdentifier: 'qwerty1234'
+            },
+            amountType: 'SEND',
+            amount: {
+                currency: 'USD',
+                amount: '100'
+            },
+            transactionType: {
+                scenario: 'TRANSFER',
+                initiator: 'PAYER',
+                initiatorType: 'CONSUMER'
+            },
+            expiration: (new Date()).toISOString()
+        }
+        const expected = {
+            "isValid": true,
+            "payerPartyIdInfo": {
+                "partyIdType": "MSISDN",
+                "partyIdentifier": "123456789",
+                "fspId": "dfspa"
+            },
+            "consentId": "46876aac-5db8-4353-bb3c-a6a905843ce7"
+        }
+        const uri = 'http://localhost:3000/validate-thirdparty-transaction-request';
 
         // Act
         const result = (await axios.post(uri, payload, axiosConfig)).data;
