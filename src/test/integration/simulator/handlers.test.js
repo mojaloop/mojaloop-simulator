@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { v4 } = require('uuid')
+const { v4 } = require('uuid');
 
 const axiosConfig = {
     headers: {
@@ -74,34 +74,34 @@ describe('handlers', () => {
             payee: {
                 partyIdInfo: {
                     partyIdType: 'MSISDN',
-                    partyIdentifier: '4412345678'
-                }
+                    partyIdentifier: '4412345678',
+                },
             },
             payer: {
                 partyIdType: 'THIRD_PARTY_LINK',
-                partyIdentifier: 'qwerty1234'
+                partyIdentifier: 'qwerty1234',
             },
             amountType: 'SEND',
             amount: {
                 currency: 'USD',
-                amount: '100'
+                amount: '100',
             },
             transactionType: {
                 scenario: 'TRANSFER',
                 initiator: 'PAYER',
-                initiatorType: 'CONSUMER'
+                initiatorType: 'CONSUMER',
             },
-            expiration: (new Date()).toISOString()
-        }
+            expiration: (new Date()).toISOString(),
+        };
         const expected = {
-            "isValid": true,
-            "payerPartyIdInfo": {
-                "partyIdType": "MSISDN",
-                "partyIdentifier": "123456789",
-                "fspId": "dfspa"
+            isValid: true,
+            payerPartyIdInfo: {
+                partyIdType: 'MSISDN',
+                partyIdentifier: '123456789',
+                fspId: 'dfspa',
             },
-            "consentId": "46876aac-5db8-4353-bb3c-a6a905843ce7"
-        }
+            consentId: '46876aac-5db8-4353-bb3c-a6a905843ce7',
+        };
         const uri = 'http://localhost:3000/validate-thirdparty-transaction-request';
 
         // Act
