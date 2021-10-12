@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [11.6.1](https://github.com/mojaloop/mojaloop-simulator/compare/v11.6.0...v11.6.1) (2021-10-12)
+
+
+### Bug Fixes
+
+* **api:** fix issues with thirdparty api after merge issues ([#119](https://github.com/mojaloop/mojaloop-simulator/issues/119)) ([e6f9ba0](https://github.com/mojaloop/mojaloop-simulator/commit/e6f9ba07aa5378148c6bfd5d83099216b852fc44))
+
 ## [11.6.0](https://github.com/mojaloop/mojaloop-simulator/compare/v11.5.1...v11.6.0) (2021-10-11)
 
 
