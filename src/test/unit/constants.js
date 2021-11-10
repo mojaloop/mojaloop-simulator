@@ -35,7 +35,7 @@ const bulkTransferId = uuid();
 const transactionRequestId = uuid();
 const idType = 'msisdn';
 const idValue = uuid();
-const subIdValue = uuid();
+const idSubValue = uuid();
 const currency = '$';
 const amount = 100;
 const amountType = 'SEND';
@@ -59,7 +59,7 @@ const partyWithSubIdValue = {
     dateOfBirth: '1970-01-01T00:00:00.000Z',
     idType,
     idValue,
-    subIdValue,
+    idSubValue,
 };
 
 const partyCreate = {
@@ -72,12 +72,12 @@ const partyCreate = {
     idValue,
     extensionList: [
         {
-            key: 'accountType',
-            value: 'Wallet',
-        },
-        {
             key: 'accountNumber',
             value: '12345343',
+        },
+        {
+            key: 'accountType',
+            value: 'Wallet',
         },
     ],
     accounts: [
@@ -102,15 +102,15 @@ const partyCreateWithSubIdValue = {
     dateOfBirth: '1970-01-01T00:00:00.000Z',
     idType,
     idValue,
-    subIdValue,
+    idSubValue,
     extensionList: [
-        {
-            key: 'accountType',
-            value: 'Wallet',
-        },
         {
             key: 'accountNumber',
             value: '12345343',
+        },
+        {
+            key: 'accountType',
+            value: 'Wallet',
         },
     ],
 };
@@ -460,9 +460,9 @@ module.exports = {
     partyCreate,
     idType,
     idValue,
+    idSubValue,
     transferId,
     partyWithSubIdValue,
     partyCreateWithSubIdValue,
-    subIdValue,
     authorizationRequest,
 };

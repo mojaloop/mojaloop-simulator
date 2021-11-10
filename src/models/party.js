@@ -41,26 +41,88 @@ module.exports = class Party {
     }
 
     /**
+    * Retrieves a Extensions.
+    *
+    * @async
+    * @param {String} idValue    The party idValue.
+    * @param {String} idSubValue    The optional party subIdValue.
+    * @returns {Promise<Object>} PartyExtensions object list.
+    */
+    async getPartyExtensions(idValue, idSubValue = null) {
+        let res;
+        if (!idSubValue) {
+            res = await this.db.all(`SELECT pe.key, pe.value, pe.key FROM ${partyExtensionTable} AS pe
+            WHERE pe.idValue = ? AND pe.subIdValue IS NULL`, [idValue]);
+        } else {
+            res = await this.db.all(`SELECT pe.key, pe.value, pe.key FROM ${partyExtensionTable} AS pe
+            WHERE pe.idValue = ? AND pe.subIdValue = ?`, [idValue, idSubValue]);
+        }
+        const resultMap = {};
+        res.forEach((row) => {
+            resultMap[row.key] = {
+                key: row.key,
+                value: row.value,
+            };
+        });
+        if (res && res.length && res.length > 0) {
+            return Object.values(resultMap);
+        }
+        return undefined;
+    }
+
+    /**
+    * Retrieves a PartyAccounts.
+    *
+    * @async
+    * @param {String} idType     The party idType.
+    * @param {String} idValue    The party idValue.
+    * @param {String} idSubValue    The optional party subIdValue.
+    * @returns {Promise<Object>} PartyAccounts object list.
+    */
+    async getPartyAccounts(idValue, idSubValue = null) {
+        let res;
+        if (!idSubValue) {
+            res = await this.db.all(`SELECT pa.address, pa.currency, pa.description FROM ${partyAccountsTable} AS pa
+            WHERE pa.idValue = ? AND pa.subIdValue IS NULL`, [idValue]);
+        } else {
+            res = await this.db.all(`SELECT pa.address, pa.currency, pa.description FROM ${partyAccountsTable} AS pa
+            WHERE pa.idValue = ? AND pa.subIdValue = ?`, [idValue, idSubValue]);
+        }
+        const resultMap = {};
+        res.forEach((row) => {
+            resultMap[row.address] = {
+                address: row.address,
+                currency: row.currency,
+                description: row.description,
+            };
+        });
+        if (res && res.length && res.length > 0) {
+            return Object.values(resultMap);
+        }
+        return undefined;
+    }
+
+    /**
     * Retrieves a Party.
     *
     * @async
     * @param {String} idType     The party idType.
     * @param {String} idValue    The party idValue.
-    * @param {String} subIdValue    The optional party subIdValue.
+    * @param {String} idSubValue    The optional party subIdValue.
     * @returns {Promise<Object>} Party object.
     */
-
-    async get(idType, idValue, subIdValue = null) {
+    async get(idType, idValue, idSubValue = null) {
         let res;
-        if (!subIdValue) {
-            res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value  FROM ${partyTable} p 
-            LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue WHERE p.idType = ? AND p.idValue = ? AND p.subIdValue IS NULL AND pe.subIdValue IS NULL`, [idType, idValue]);
+        if (!idSubValue) {
+            res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue FROM ${partyTable} AS p
+            WHERE p.idType = ? AND p.idValue = ? AND p.subIdValue IS NULL`, [idType, idValue]);
         } else {
-            res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value  FROM ${partyTable} p 
-            LEFT JOIN ${partyExtensionTable} pe ON p.idValue = pe.idValue  AND p.subIdValue = pe.subIdValue WHERE p.idType = ? AND p.idValue = ? AND p.subIdValue = ?`, [idType, idValue, subIdValue]);
+            res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue FROM ${partyTable} AS p
+            WHERE p.idType = ? AND p.idValue = ? AND p.subIdValue = ?`, [idType, idValue, idSubValue]);
         }
+
         const resultMap = {};
-        res.forEach((row) => {
+        for (const row of res) { // eslint-disable-line no-eval
             let party;
             if (resultMap[row.idValue]) {
                 party = resultMap[row.idValue];
@@ -79,24 +141,20 @@ module.exports = class Party {
                 }
                 resultMap[row.idValue] = party;
             }
-            if (row.key) {
-                if (!party.extensionList) {
-                    party.extensionList = [];
-                }
-                party.extensionList.push({ key: row.key, value: row.value });
+
+            // lets check for Extensions
+            const partyExtensionsRes = await this.getPartyExtensions(row.idValue, row.subIdValue); // eslint-disable-line no-eval
+            if (partyExtensionsRes) {
+                party.extensionList = partyExtensionsRes;
             }
-            if (row.address) {
-                if (!party.accounts) {
-                    party.accounts = [];
-                }
-                party.accounts.push({
-                    address: row.address,
-                    currency: row.currency,
-                    description: row.description,
-                });
+
+            // lets check for Accounts
+            const partyAccountsRes = await this.getPartyAccounts(row.idValue, row.subIdValue); // eslint-disable-line no-eval
+            if (partyAccountsRes) {
+                party.accounts = partyAccountsRes;
             }
-        });
-        if (res.length && res.length > 0) {
+        }
+        if (res && res.length && res.length > 0) {
             return Object.values(resultMap)[0];
         }
         return undefined;
@@ -109,11 +167,13 @@ module.exports = class Party {
     * @returns {Promise<Object>} Party object.
     */
     async getAll() {
-        const res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value  FROM ${partyTable} p 
-        LEFT JOIN ${partyExtensionTable} pe ON (p.idValue = pe.idValue AND pe.subIdValue IS NULL AND p.subIdValue IS NULL) OR (p.idValue = pe.idValue AND p.subIdValue = pe.subIdValue)`);
+        // const res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value, pa.address, pa.currency, pa.description FROM ${partyTable} p
+        // LEFT JOIN ${partyExtensionTable} pe ON (p.idValue = pe.idValue AND pe.subIdValue IS NULL AND p.subIdValue IS NULL) OR (p.idValue = pe.idValue AND p.subIdValue = pe.subIdValue)
+        // LEFT JOIN ${partyAccountsTable} pa ON (p.idValue = pa.idValue AND pe.subIdValue IS NULL AND p.subIdValue IS NULL) OR (p.idValue = pa.idValue AND p.subIdValue = pa.subIdValue)`);
+        const res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue FROM ${partyTable} AS p`);
 
         const resultMap = {};
-        res.forEach((row) => {
+        for (const row of res) { // eslint-disable-line no-eval
             let party;
             if (resultMap[`${row.idValue}-${row.subIdValue}`]) {
                 party = resultMap[`${row.idValue}-${row.subIdValue}`];
@@ -132,23 +192,19 @@ module.exports = class Party {
                 }
                 resultMap[`${row.idValue}-${row.subIdValue}`] = party;
             }
-            if (row.key) {
-                if (!party.extensionList) {
-                    party.extensionList = [];
-                }
-                party.extensionList.push({ key: row.key, value: row.value });
+
+            // lets check for Extensions
+            const partyExtensionsRes = await this.getPartyExtensions(row.idValue, row.subIdValue); // eslint-disable-line no-eval
+            if (partyExtensionsRes) {
+                party.extensionList = partyExtensionsRes;
             }
-            if (row.address) {
-                if (!party.accounts) {
-                    party.accounts = [];
-                }
-                party.accounts.push({
-                    address: row.address,
-                    currency: row.currency,
-                    description: row.description,
-                });
+
+            // lets check for Accounts
+            const partyAccountsRes = await this.getPartyAccounts(row.idValue, row.subIdValue); // eslint-disable-line no-eval
+            if (partyAccountsRes) {
+                party.accounts = partyAccountsRes;
             }
-        });
+        }
         return Object.values(resultMap);
     }
 
@@ -161,25 +217,25 @@ module.exports = class Party {
     */
     async create(party) {
         const {
-            displayName, firstName, middleName, lastName, dateOfBirth, idType, idValue, subIdValue,
+            displayName, firstName, middleName, lastName, dateOfBirth, idType, idValue, idSubValue,
         } = party;
         await this.db.get(`INSERT INTO ${partyTable} (displayName, firstName, middleName, lastName, dateOfBirth, idType, idValue, subIdValue)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [displayName, firstName, middleName, lastName, dateOfBirth, idType, idValue, subIdValue]);
+        [displayName, firstName, middleName, lastName, dateOfBirth, idType, idValue, idSubValue]);
         if (party.extensionList) {
             const { extensionList } = party;
             extensionList.forEach((extension) => {
                 this.db.get(`INSERT INTO ${partyExtensionTable} (idValue, subIdValue, key, value)
                 VALUES (?, ?, ?, ?)`,
-                [idValue, subIdValue, extension.key, extension.value]);
+                [idValue, idSubValue, extension.key, extension.value]);
             });
         }
         if (party.accounts) {
             const { accounts } = party;
             await Promise.all(accounts.map(async (account) => this.db.get(`
-                  INSERT INTO ${partyAccountsTable} (idValue, address, currency, description)
-                  VALUES (?, ?, ?, ?)`,
-            [idValue, account.address, account.currency, account.description])));
+                  INSERT INTO ${partyAccountsTable} (idValue, subIdValue, address, currency, description)
+                  VALUES (?, ?, ?, ?, ?)`,
+            [idValue, idSubValue, account.address, account.currency, account.description])));
         }
     }
 
@@ -189,13 +245,13 @@ module.exports = class Party {
     * @param {Object} newParty The new Party object.
     * @param {String} idType  The party idType to update.
     * @param {String} idValue  The party idValue to update.
-    * @param {String} subIdValue  The optional party subIdValue to update.
+    * @param {String} idSubValue  The optional party subIdValue to update.
     */
-    async update(newParty, idType, idValue, subIdValue = null) {
+    async update(newParty, idType, idValue, idSubValue = null) {
         const {
             displayName, firstName, middleName, lastName, dateOfBirth,
         } = newParty;
-        if (!subIdValue) {
+        if (!idSubValue) {
             // If subIdValue is not passed then only updated the record where subIdValue IS NULL
             // This will make sure we accidentally don't update all records for idValue by ignoring subIdValue
             await this.db.run(`
@@ -223,7 +279,21 @@ module.exports = class Party {
                     this.db.run(`
                     INSERT OR IGNORE INTO ${partyExtensionTable} (idValue, subIdValue, key, value)
                     VALUES (?, ?, ?, ?)`,
-                    [idValue, subIdValue, extension.key, extension.value]);
+                    [idValue, idSubValue, extension.key, extension.value]);
+                });
+            }
+            if (newParty.accounts) {
+                const { accounts } = newParty;
+                accounts.forEach((account) => {
+                    this.db.run(`
+                    UPDATE ${partyAccountsTable}
+                    SET currency = ?, description = ?
+                    WHERE address = ? AND idValue = ? AND subIdValue IS NULL`,
+                    [account.address, idValue]);
+                    this.db.get(`
+                    INSERT OR IGNORE INTO ${partyAccountsTable} (idValue, subIdValue, address, currency, description)
+                    VALUES (?, ?, ?, ?, ?)`,
+                    [idValue, idSubValue, account.address, account.currency, account.description]);
                 });
             }
         } else {
@@ -239,10 +309,10 @@ module.exports = class Party {
                 dateOfBirth,
                 idType,
                 idValue,
-                subIdValue,
+                idSubValue,
                 idType,
                 idValue,
-                subIdValue]);
+                idSubValue]);
             if (newParty.extensionList) {
                 const { extensionList } = newParty;
                 extensionList.forEach((extension) => {
@@ -250,14 +320,28 @@ module.exports = class Party {
                     UPDATE ${partyExtensionTable}
                     SET value = ?
                     WHERE key = ? AND idValue = ? AND subIdValue = ?`,
-                    [extension.value, extension.key, idValue, subIdValue]);
+                    [extension.value, extension.key, idValue, idSubValue]);
                     this.db.run(`
                     INSERT OR IGNORE INTO ${partyExtensionTable} (idValue, subIdValue, key, value)
                     VALUES (?, ?, ?, ?)`,
-                    [idValue, subIdValue, extension.key, extension.value]);
+                    [idValue, idSubValue, extension.key, extension.value]);
                 });
             }
-        }
+            if (newParty.accounts) {
+                const { accounts } = newParty;
+                accounts.forEach((account) => {
+                    this.db.run(`
+                    UPDATE ${partyAccountsTable}
+                    SET currency = ?, description = ?
+                    WHERE address = ? AND idValue = ? AND subIdValue = ?`,
+                    [account.address, idValue, idSubValue]);
+                    this.db.get(`
+                    INSERT OR IGNORE INTO ${partyAccountsTable} (idValue, subIdValue, address, currency, description)
+                    VALUES (?, ?, ?, ?, ?)`,
+                    [idValue, idSubValue, account.address, account.currency, account.description]);
+                });
+            }
+        } // /                  INSERT INTO ${partyAccountsTable} (idValue, subIdValue, address, currency, description)
     }
 
     /**
@@ -265,15 +349,17 @@ module.exports = class Party {
     *
     * @param {String} idType  The party idType.
     * @param {String} idValue The party idValue.
-    * @param {String} subIdValue The optional party subIdValue.
+    * @param {String} idSubValue The optional party subIdValue.
     */
-    async delete(idType, idValue, subIdValue = null) {
-        if (!subIdValue) {
+    async delete(idType, idValue, idSubValue = null) {
+        if (!idSubValue) {
             await this.db.run(`DELETE FROM ${partyTable} WHERE idType = ? AND idValue = ? AND subIdValue IS NULL`, [idType, idValue]);
             await this.db.run(`DELETE FROM ${partyExtensionTable} WHERE idValue = ? AND subIdValue IS NULL`, [idValue]);
+            await this.db.run(`DELETE FROM ${partyAccountsTable} WHERE idValue = ? AND subIdValue IS NULL`, [idValue]);
         } else {
-            await this.db.run(`DELETE FROM ${partyTable} WHERE idType = ? AND idValue = ? AND subIdValue = ?`, [idType, idValue, subIdValue]);
-            await this.db.run(`DELETE FROM ${partyExtensionTable} WHERE idValue = ? AND subIdValue = ?`, [idValue, subIdValue]);
+            await this.db.run(`DELETE FROM ${partyTable} WHERE idType = ? AND idValue = ? AND subIdValue = ?`, [idType, idValue, idSubValue]);
+            await this.db.run(`DELETE FROM ${partyExtensionTable} WHERE idValue = ? AND subIdValue = ?`, [idValue, idSubValue]);
+            await this.db.run(`DELETE FROM ${partyAccountsTable} WHERE idValue = ? AND subIdValue = ?`, [idValue, idSubValue]);
         }
     }
 };

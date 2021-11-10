@@ -39,7 +39,9 @@ const validQuerystring = stringify({ START_DATE_TIME: '2019-05-20T21:20:56', END
 const nonFindableQuerystring = stringify({ START_DATE_TIME: '2019-05-19T21:20:00', END_DATE_TIME: '2019-05-20T21:20:56' });
 
 test.before(async (t) => {
-    await model.init({ databaseFilepath: process.env.MODEL_DATABASE });
+    await model.init({ databaseFilepath: ':memory:' });
+    // // below line is useful for debugging
+    // await model.init({ databaseFilepath: process.env.MODEL_DATABASE });
     Array.from({ length: 10 }).forEach(async (x, i) => {
         quote.quoteId = uuid();
         await model.quote.create(quote);
