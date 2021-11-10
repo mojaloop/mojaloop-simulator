@@ -167,9 +167,6 @@ module.exports = class Party {
     * @returns {Promise<Object>} Party object.
     */
     async getAll() {
-        // const res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue, pe.key, pe.value, pa.address, pa.currency, pa.description FROM ${partyTable} p
-        // LEFT JOIN ${partyExtensionTable} pe ON (p.idValue = pe.idValue AND pe.subIdValue IS NULL AND p.subIdValue IS NULL) OR (p.idValue = pe.idValue AND p.subIdValue = pe.subIdValue)
-        // LEFT JOIN ${partyAccountsTable} pa ON (p.idValue = pa.idValue AND pe.subIdValue IS NULL AND p.subIdValue IS NULL) OR (p.idValue = pa.idValue AND p.subIdValue = pa.subIdValue)`);
         const res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.subIdValue FROM ${partyTable} AS p`);
 
         const resultMap = {};
