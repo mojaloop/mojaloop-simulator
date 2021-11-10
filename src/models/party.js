@@ -388,7 +388,7 @@ module.exports = class Party {
                     );
                 });
             }
-        } // /                  INSERT INTO ${partyAccountsTable} (idValue, subIdValue, address, currency, description)
+        }
     }
 
     /**
