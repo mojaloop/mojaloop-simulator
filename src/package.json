@@ -78,7 +78,7 @@
     "@types/jest": "^27.0.2",
     "ava": "3.15.0",
     "axios": "^0.24.0",
-    "eslint": "8.2.0",
+    "eslint": "7.28.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.25.3",
     "eslint-plugin-jest": "^25.2.4",

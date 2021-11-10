@@ -74,7 +74,7 @@ test('Evaluates a rule based on demo data', async (t) => {
         path: '/transfers',
         // body: '123', // <-- This still passes and seems to be a bug with the json-rules-engine: https://github.com/CacheControl/json-rules-engine/releases/tag/v2.3.6. This comment is kept here until this can be addressed in future with the library dependency.
         body: {
-            amount:'123'
+            amount: '123',
         },
         method: 'POST',
     };
