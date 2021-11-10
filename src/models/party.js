@@ -282,7 +282,8 @@ module.exports = class Party {
                     idType,
                     idValue,
                     idType,
-                    idValue],
+                    idValue
+                ],
             );
 
             if (newParty.extensionList) {
