@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [11.6.2](https://github.com/mojaloop/mojaloop-simulator/compare/v11.6.1...v11.6.2) (2021-11-11)
+
+
+### Bug Fixes
+
+* **mojaloop/#2574:** sdk-scheme-adapter is not returning party sub-id ([#120](https://github.com/mojaloop/mojaloop-simulator/issues/120)) ([b0e9504](https://github.com/mojaloop/mojaloop-simulator/commit/b0e950468ceeb129dc62f7ad8fdb84c86bf12749)), closes [mojaloop/#2574](https://github.com/mojaloop/mojaloop-simulator/issues/2574) [mojaloop/#2574](https://github.com/mojaloop/mojaloop-simulator/issues/2574) [mojaloop/#2575](https://github.com/mojaloop/mojaloop-simulator/issues/2575)
+
 ### [11.6.1](https://github.com/mojaloop/mojaloop-simulator/compare/v11.6.0...v11.6.1) (2021-10-12)
 
 
