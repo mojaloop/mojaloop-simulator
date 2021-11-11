@@ -126,7 +126,18 @@ CREATE TABLE IF NOT EXISTS ${partyAccountsTable} (
     address TEXT NOT NULL PRIMARY KEY,
     currency TEXT NOT NULL,
     description TEXT NOT NULL,
-    idValue TEXT NOT NULL
+    idValue TEXT NOT NULL,
+    subIdValue TEXT
+)
+`;
+
+// below index is a workaround to avoid the duplicates since sqlite treats every null as a unique value
+// thus allowing to insert multiple records for same the idValue/key having subIdValue as NULL
+const createAccountTableUniqueIndex = `
+CREATE UNIQUE INDEX IF NOT EXISTS idx_party_account_unique ON ${partyAccountsTable} (
+    idValue,
+    IFNULL(subIdValue, ''),
+    address
 )
 `;
 
@@ -149,4 +160,5 @@ module.exports = {
     createPartyExtensionTableUniqueIndex,
     partyAccountsTable,
     createAccountTable,
+    createAccountTableUniqueIndex,
 };

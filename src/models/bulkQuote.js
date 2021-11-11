@@ -86,8 +86,10 @@ module.exports = class BulkQuote {
         const resStr = JSON.stringify(response);
         const created = new Date().toISOString().slice(0, 19);
 
-        await this.db.get(`INSERT INTO ${bulkQuoteTable} (id, request, response, created) VALUES (?, ?, ?, ?)`,
-            [bulkQuoteId, reqStr, resStr, created]);
+        await this.db.get(
+            `INSERT INTO ${bulkQuoteTable} (id, request, response, created) VALUES (?, ?, ?, ?)`,
+            [bulkQuoteId, reqStr, resStr, created],
+        );
 
         return response;
     }

@@ -49,6 +49,7 @@ const {
     createPartyExtensionTable,
     createPartyExtensionTableUniqueIndex,
     createAccountTable,
+    createAccountTableUniqueIndex,
 } = require('./constants');
 
 /**
@@ -88,7 +89,7 @@ module.exports = class Model {
    * @param [{Object}] parties          Array of party objects to create after db initialisation
    * @throws {Error}
    */
-    async init({ databaseFilepath, parties }) {
+    async init({ databaseFilepath, parties = null }) {
         if (this.db) {
             throw new Error('Attempted to initialise database twice');
         }
@@ -108,6 +109,7 @@ module.exports = class Model {
         await this.db.run(createBulkQuoteTable);
         await this.db.run(createBulkTransferTable);
         await this.db.run(createAccountTable);
+        await this.db.run(createAccountTableUniqueIndex);
 
         this.party = new Party(this.db);
         this.quote = new Quote(this.db);

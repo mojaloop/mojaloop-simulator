@@ -72,7 +72,10 @@ test('Evaluates a rule based on demo data', async (t) => {
 
     const input = {
         path: '/transfers',
-        body: '123',
+        // body: '123', // <-- This still passes and seems to be a bug with the json-rules-engine: https://github.com/CacheControl/json-rules-engine/issues/285. This comment is kept here until this can be addressed in future with the library dependency, and once done we can add a negative test scenario for it.
+        body: {
+            amount: '123',
+        },
         method: 'POST',
     };
     const expected = [{
