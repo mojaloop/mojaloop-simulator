@@ -5,7 +5,7 @@
   "main": "onboard-dfsp.js",
   "dependencies": {
     "@mojaloop/finance-portal-lib": "0.0.19-snapshot",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.1.1",
     "uuid": "^8.2.0"
   },
   "devDependencies": {
