@@ -29,17 +29,17 @@ describe('handlers', () => {
             userId: 'dfspa.username',
             scopes: [
                 {
-                    accountId: 'dfspa.username.1234',
+                    address: 'dfspa.username.1234',
                     actions: [
-                        'accounts.transfer',
-                        'accounts.getBalance',
+                        'ACCOUNTS_TRANSFER',
+                        'ACCOUNTS_GET_BALANCE',
                     ],
                 },
                 {
-                    accountId: 'dfspa.username.5678',
+                    address: 'dfspa.username.5678',
                     actions: [
-                        'accounts.transfer',
-                        'accounts.getBalance',
+                        'ACCOUNTS_TRANSFER',
+                        'ACCOUNTS_GET_BALANCE',
                     ],
                 },
             ],

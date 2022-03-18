@@ -334,7 +334,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/errorResponse'
-  
+
   /bulkQuotes:
     post:
       summary: Requests a bulk quote
@@ -879,14 +879,14 @@ paths:
                 $ref: '#/components/schemas/ScopesIdResponse'
               example:
                 scopes:
-                  - accountId: dfspa.username.1234
+                  - address: dfspa.username.1234
                     actions:
-                      - accounts.transfer
-                      - accounts.getBalance
-                  - accountId: dfspa.username.5678
+                      - ACCOUNTS_TRANSFER
+                      - ACCOUNTS_GET_BALANCE
+                  - address: dfspa.username.5678
                     actions:
-                      - accounts.transfer
-                      - accounts.getBalance
+                      - ACCOUNTS_TRANSFER
+                      - ACCOUNTS_GET_BALANCE
         400:
           description: Malformed or missing required headers or parameters
           content:
@@ -915,14 +915,14 @@ paths:
               $ref: '#/components/schemas/ScopesIdResponse'
             example:
               scopes:
-                - accountId: dfspa.username.1234
+                - address: dfspa.username.1234
                   actions:
-                    - accounts.transfer
-                    - accounts.getBalance
-                - accountId: dfspa.username.5678
+                    - ACCOUNTS_TRANSFER
+                    - ACCOUNTS_GET_BALANCE
+                - address: dfspa.username.5678
                   actions:
-                    - accounts.transfer
-                    - accounts.getBalance
+                    - ACCOUNTS_TRANSFER
+                    - ACCOUNTS_GET_BALANCE
       responses:
         200:
           description: OK
@@ -1983,7 +1983,7 @@ components:
         extensionList:
           $ref: '#/components/schemas/extensionList'
           description: Optional extension, specific to deployment.
-        
+
     transactionRequestResponse:
       type: object
       required:
@@ -2271,30 +2271,30 @@ components:
       title: ConsentScopeType
       type: string
       enum:
-        - accounts.getBalance
-        - accounts.transfer
+        - ACCOUNTS_GET_BALANCE
+        - ACCOUNTS_TRANSFER
       description: |
         The scopes requested for a ConsentRequest.
-        - "accounts.getBalance" - Get the balance of a given account.
-        - "accounts.transfer" - Initiate a transfer from an account.
+        - "ACCOUNTS_GET_BALANCE" - Get the balance of a given account.
+        - "ACCOUNTS_TRANSFER" - Initiate a transfer from an account.
 
     Scope:
       title: Scope
       type: object
       example: |
         {
-          accountId: "dfsp.username.5678",
-          actions: [ "accounts.transfer", "accounts.getBalance" ]
+          address: "dfsp.username.5678",
+          actions: [ "ACCOUNTS_TRANSFER", "ACCOUNTS_GET_BALANCE" ]
         }
       properties:
-        accountId:
+        address:
           $ref: '#/components/schemas/AccountAddress'
         actions:
           type: array
           items:
             $ref: '#/components/schemas/ConsentScopeType'
       required:
-        - accountId
+        - address
         - actions
 
     ValidateOTPResponse:
@@ -2489,16 +2489,16 @@ components:
       example: Free text indicating reason for the refund.
     Refund:
       title: Refund
-      
+
     subIdValue:
       type: string
       minLength: 1
       maxLength: 128
-      
+
     money:
       pattern: ^([0]|([1-9][0-9]{0,17}))([.][0-9]{0,3}[1-9])?$
       type: string
-      
+
     transferResponse:
       type: object
       description: Data model for the complex type Refund.
@@ -2645,7 +2645,7 @@ components:
       title: PartyIdInfo
           type: string
           description: Up to 4 digits specifying the senders merchant classification, if known and applicable
-    
+
     bulkQuoteRequest:
       type: object
       description: A request for a bulk quote
@@ -2693,7 +2693,7 @@ components:
             $ref: '#/components/schemas/IndividualQuoteResult'
           description: Fees for each individual transaction, if any of them are charged per
             transaction.
-    
+
     IndividualQuote:
       type: object
       description: Data model for individual quote in a bulk quote request
@@ -2743,7 +2743,7 @@ components:
           minLength: 1
           maxLength: 128
           description: An optional note associated with the quote
-        
+
     IndividualQuoteResult:
       type: object
       description: Data model for individual quote in a bulk quote response
@@ -2757,7 +2757,7 @@ components:
         transferAmountCurrency:
           $ref: '#/components/schemas/currency'
           description: The currency of the transferAmount
-        payeeReceiveAmount:  
+        payeeReceiveAmount:
           $ref: '#/components/schemas/money'
           description: The amount that the Payee should receive in the end-to-end transaction. Optional as the Payee FSP might not want to disclose any optional Payee fees
         payeeReceiveAmountCurrency:
@@ -2767,20 +2767,20 @@ components:
           $ref: '#/components/schemas/money'
           description: Payee FSP’s part of the transaction fee
         payeeFspFeeAmountCurrency:
-          $ref: '#/components/schemas/currency'      
+          $ref: '#/components/schemas/currency'
           description: The currency of the payeeFspFeeAmount
         payeeFspCommissionAmount:
           $ref: '#/components/schemas/money'
           description: Transaction commission from the Payee FSP
         payeeFspCommissionAmountCurrency:
-          $ref: '#/components/schemas/currency'  
+          $ref: '#/components/schemas/currency'
           description: Currency of the payeeFspCommissionAmount
-    
+
     bulkQuoteId:
       pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
       type: string
       description: A Mojaloop API bulk quote identifier (UUID)
-    
+
     bulkTransferRequest:
       type: object
       required:
@@ -2799,7 +2799,7 @@ components:
           maxItems: 1000
           items:
             $ref: '#/components/schemas/IndividualTransfer'
-    
+
     IndividualTransfer:
       type: object
       description: Data model for individual transfer in a bulk transfer request
@@ -2840,7 +2840,7 @@ components:
           minLength: 1
           maxLength: 128
           description: An optional note associated with the quote
-    
+
     bulkTransferResponse:
       type: object
       required:
@@ -2864,7 +2864,7 @@ components:
       pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
       type: string
       description: A Mojaloop API transfer identifier (UUID)
-          
+
     PartyIdType:
       title: PartyIdType
       type: string
@@ -2976,15 +2976,15 @@ components:
 
         - THIRD_PARTY_LINK - TBD
       example: PERSONAL_ID
-   
- 
+
+
     longitude:
       type: string
       minLength: 1
       maxLength: 128
       pattern: ^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$
       description: The API data type Latitude is a JSON String in a lexical format that is restricted by a regular expression for interoperability reasons.
-    
+
     PartyIdentifier:
       title: PartyIdentifier
       description: Identifier of the Party.
@@ -3048,7 +3048,7 @@ components:
         message:
           type: string
           description: Error message text
-    
+
     extensionList:
       type: array
       items:
