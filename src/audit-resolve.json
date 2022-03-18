@@ -408,8 +408,9 @@
       "expiresAt": 1637161961051
     },
     "1064646|node-fetch": {
-      "decision": "fix",
-      "madeAt": 1647583527693
+      "decision": "ignore",
+      "madeAt": 1647583773764,
+      "expiresAt": 1650175765261
     },
     "1064730|sqlite3>node-gyp>request>http-signature>jsprim>json-schema": {
       "decision": "ignore",
