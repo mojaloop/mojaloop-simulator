@@ -214,22 +214,21 @@ const getAccountsByUserId = async (ctx) => {
 };
 
 const getScopesById = async (ctx) => {
-    // fake scopes for testing purposes until consents storage is
-    // more fleshed out
+    // default mock response, if rules not configured
     const res = {
         scopes: [
             {
-                accountId: 'dfsp.blue.account.one',
+                address: 'dfsp.blue.account.one',
                 actions: [
-                    'accounts.getBalance',
-                    'accounts.transfer',
+                    'ACCOUNTS_GET_BALANCE',
+                    'ACCOUNTS_TRANSFER',
                 ],
             },
             {
-                accountId: 'dfsp.blue.account.two',
+                address: 'dfsp.blue.account.two',
                 actions: [
-                    'accounts.getBalance',
-                    'accounts.transfer',
+                    'ACCOUNTS_GET_BALANCE',
+                    'ACCOUNTS_TRANSFER',
                 ],
             },
         ],

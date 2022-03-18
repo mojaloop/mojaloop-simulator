@@ -406,6 +406,176 @@
       "decision": "ignore",
       "madeAt": 1636557209048,
       "expiresAt": 1637161961051
+    },
+    "1064646|node-fetch": {
+      "decision": "ignore",
+      "madeAt": 1647583773764,
+      "expiresAt": 1650175765261
+    },
+    "1064730|sqlite3>node-gyp>request>http-signature>jsprim>json-schema": {
+      "decision": "ignore",
+      "madeAt": 1647583540544,
+      "expiresAt": 1650175537269
+    },
+    "1064730|00unidentified>sqlite3>node-gyp>request>http-signature>jsprim>json-schema": {
+      "decision": "ignore",
+      "madeAt": 1647583540544,
+      "expiresAt": 1650175537269
+    },
+    "1064730|00unidentified>00unidentified>sqlite3>node-gyp>request>http-signature>jsprim>json-schema": {
+      "decision": "ignore",
+      "madeAt": 1647583540544,
+      "expiresAt": 1650175537269
+    },
+    "1067200|sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067200|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067200|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067200|sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067200|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067200|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067203|sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067203|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067203|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067203|sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067203|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067203|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067206|sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067206|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067206|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067206|sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067206|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067206|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067209|sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067209|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067209|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067210|sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067210|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067210|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067213|sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534832,
+      "expiresAt": 1650175516992
+    },
+    "1067213|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534833,
+      "expiresAt": 1650175516992
+    },
+    "1067213|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534833,
+      "expiresAt": 1650175516992
+    },
+    "1067214|sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534833,
+      "expiresAt": 1650175516992
+    },
+    "1067214|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534833,
+      "expiresAt": 1650175516992
+    },
+    "1067214|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "ignore",
+      "madeAt": 1647583534833,
+      "expiresAt": 1650175516992
     }
   },
   "rules": {},
