@@ -51,7 +51,7 @@ executors:
   default-docker:
     working_directory: /home/circleci/project/git
     docker:
-      - image: node:12.22.12-alpine
+      - image: node:12.18.0-alpine
 
   default-machine:
     working_directory: /home/circleci/project/git
