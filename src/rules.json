@@ -153,8 +153,8 @@
     }
   },
   {
-    "ruleId": 1,
-    "description": "Returns an invalid fulfillment from the simulator when transfer value is 1234 in any currency",
+    "ruleId": 5,
+    "description": "Returns an invalid fulfillment from the simulator when transfer value is 123123123123123 in any currency",
     "conditions": {
       "all": [
         {
@@ -170,20 +170,18 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "1234",
+          "value": "123123123123123",
           "path": "$.amount"
         }
       ]
     },
     "event": {
-      "type": "simulateError",
+      "type": "simulateResponse",
       "params": {
-        "statusCode": 500,
+        "statusCode": 200,
         "body": {
             {
-                "fulfilment": "Lw8ygZt5_ZxQ9uPDoT0pSezu7Jyj_CNtmvFFZMgJHo5",
-                "completedTimestamp": "2020-08-19T20:52:59.356Z",
-                "transferState": "RESERVED"
+                "fulfilment": "Lw8ygZt5_ZxQ9uPDoT0pSezu7Jyj_CNtmvFFZMgJHo5"
             }
         }
       }
