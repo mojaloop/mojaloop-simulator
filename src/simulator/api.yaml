@@ -1778,6 +1778,7 @@ components:
         homeTransactionId:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the switch and DFSP backend systems
+          example: "274107e7-cac7-427b-8485-065c919db2e6"
         fulfilment:
           $ref: '#/components/schemas/IlpFulfilment'
           description: Fulfilment from the DFSP backend, used for testing purposes to inject an invalid fulfilment via a rule.
