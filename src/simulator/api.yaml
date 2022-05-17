@@ -1779,7 +1779,7 @@ components:
           type: string
           description: Transaction ID from the DFSP backend, used to reconcile transactions between the switch and DFSP backend systems
         fulfilment:
-          type: string
+          $ref: '#/components/schemas/IlpFulfilment'
           description: Fulfilment from the DFSP backend, used for testing purposes to inject an invalid fulfilment via a rule.
         transferState:
           $ref: '#/components/schemas/transferState'
