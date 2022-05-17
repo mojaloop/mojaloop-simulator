@@ -181,8 +181,7 @@
         "statusCode": 200,
         "body": {
           "homeTransactionId": "123ABC",
-          "fulfilment": "Lw8ygZt5_ZxQ9uPDoT0pSezu7Jyj_CNtmvFFZMgJHo5",
-          "transferState": "ABORTED"
+          "fulfilment": "Lw8ygZt5_ZxQ9uPDoT0pSezu7Jyj_CNtmvFFZMgJHo5"
         }
       }
     }
