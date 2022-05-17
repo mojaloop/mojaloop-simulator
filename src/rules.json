@@ -180,7 +180,7 @@
       "params": {
         "statusCode": 200,
         "body": {
-          "homeTransactionId": "123ABC",
+          "homeTransactionId": "274107e7-cac7-427b-8485-065c919db2e6",
           "fulfilment": "Lw8ygZt5_ZxQ9uPDoT0pSezu7Jyj_CNtmvFFZMgJHo5"
         }
       }
