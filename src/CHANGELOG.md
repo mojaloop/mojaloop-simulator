@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.1.0](https://github.com/mojaloop/mojaloop-simulator/compare/v12.0.0...v12.1.0) (2022-05-17)
+
+
+### Features
+
+* **mbp/#286:** add simulator rule to trigger patch transferState=aborted notification ([#138](https://github.com/mojaloop/mojaloop-simulator/issues/138)) ([d4a407a](https://github.com/mojaloop/mojaloop-simulator/commit/d4a407aad73c4eef353fddf324db212d97f3b3f6)), closes [mbp/#286](https://github.com/mbp/mojaloop-simulator/issues/286)
+
+
+### Chore
+
+* update and re-enable pr-tools ([#134](https://github.com/mojaloop/mojaloop-simulator/issues/134)) ([22e4f33](https://github.com/mojaloop/mojaloop-simulator/commit/22e4f335b3c6758101d22ea98a5a5c89919987a0))
+
 ## [12.0.0](https://github.com/mojaloop/mojaloop-simulator/compare/v11.6.2...v12.0.0) (2022-03-18)
 
 
