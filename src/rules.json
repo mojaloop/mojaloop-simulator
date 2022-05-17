@@ -151,5 +151,39 @@
         }
       }
     }
+  },
+  {
+    "ruleId": 5,
+    "description": "Returns an invalid fulfillment from the simulator when transfer value is 123123123123123 in any currency",
+    "conditions": {
+      "all": [
+        {
+          "fact": "path",
+          "operator": "equal",
+          "value": "/transfers"
+        },
+        {
+          "fact": "method",
+          "operator": "equal",
+          "value": "POST"
+        },
+        {
+          "fact": "body",
+          "operator": "equal",
+          "value": "123123123123123",
+          "path": "$.amount"
+        }
+      ]
+    },
+    "event": {
+      "type": "simulateResponse",
+      "params": {
+        "statusCode": 200,
+        "body": {
+          "homeTransactionId": "274107e7-cac7-427b-8485-065c919db2e6",
+          "fulfilment": "Lw8ygZt5_ZxQ9uPDoT0pSezu7Jyj_CNtmvFFZMgJHo5"
+        }
+      }
+    }
   }
 ]

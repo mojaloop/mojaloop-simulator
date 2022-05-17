@@ -576,6 +576,174 @@
       "decision": "ignore",
       "madeAt": 1647583534833,
       "expiresAt": 1650175516992
+    },
+    "1070277|sqlite3": {
+      "decision": "postpone",
+      "madeAt": 1652793816820
+    },
+    "1070363|sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793816820
+    },
+    "1070363|sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793816820
+    },
+    "1070366|sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793816820
+    },
+    "1070366|sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793816820
+    },
+    "1070369|sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793816820
+    },
+    "1070369|sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793816820
+    },
+    "1070372|sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793816820
+    },
+    "1070373|sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793816820
+    },
+    "1070376|sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793816820
+    },
+    "1070377|sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793816820
+    },
+    "1067342|sqlite3>node-gyp>mkdirp>minimist": {
+      "decision": "postpone",
+      "madeAt": 1652793819010
+    },
+    "1067342|sqlite3>node-gyp>fstream>mkdirp>minimist": {
+      "decision": "postpone",
+      "madeAt": 1652793819010
+    },
+    "1067342|00unidentified>sqlite3>node-gyp>fstream>mkdirp>minimist": {
+      "decision": "postpone",
+      "madeAt": 1652793819010
+    },
+    "1067342|00unidentified>00unidentified>sqlite3>node-gyp>fstream>mkdirp>minimist": {
+      "decision": "postpone",
+      "madeAt": 1652793819010
+    },
+    "1067342|00unidentified>00unidentified>sqlite3>node-gyp>tar>fstream>mkdirp>minimist": {
+      "decision": "postpone",
+      "madeAt": 1652793819010
+    },
+    "1067524|sqlite3>node-gyp>request>http-signature>jsprim>json-schema": {
+      "decision": "postpone",
+      "madeAt": 1652793820635
+    },
+    "1067524|00unidentified>sqlite3>node-gyp>request>http-signature>jsprim>json-schema": {
+      "decision": "postpone",
+      "madeAt": 1652793820635
+    },
+    "1067524|00unidentified>00unidentified>sqlite3>node-gyp>request>http-signature>jsprim>json-schema": {
+      "decision": "postpone",
+      "madeAt": 1652793820635
+    },
+    "1070022|node-fetch": {
+      "decision": "postpone",
+      "madeAt": 1652793822418
+    },
+    "1070277|00unidentified>sqlite3": {
+      "decision": "postpone",
+      "madeAt": 1652793823995
+    },
+    "1070277|00unidentified>00unidentified>sqlite3": {
+      "decision": "postpone",
+      "madeAt": 1652793823995
+    },
+    "1070363|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070363|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070363|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070363|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070366|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070366|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070366|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070366|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070369|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070369|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070369|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070369|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070372|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070372|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070373|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825481
+    },
+    "1070373|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825482
+    },
+    "1070376|00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825482
+    },
+    "1070376|00unidentified>00unidentified>sqlite3>node-pre-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825482
+    },
+    "1070377|00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825482
+    },
+    "1070377|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
+      "decision": "postpone",
+      "madeAt": 1652793825482
     }
   },
   "rules": {},
