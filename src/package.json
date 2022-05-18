@@ -71,7 +71,7 @@
     "node-fetch": "^2.6.6",
     "openapi-jsonschema-parameters": "9.3.0",
     "sqlite": "4.0.23",
-    "sqlite3": "5.0.2",
+    "sqlite3": "5.0.3",
     "yamljs": "0.3.0"
   },
   "devDependencies": {
