@@ -154,7 +154,7 @@
   },
   {
     "ruleId": 5,
-    "description": "Returns an invalid fulfillment from the simulator when transfer value is 123123123123123 in any currency",
+    "description": "Returns an invalid fulfillment from the simulator when transfer value is 123456789 in any currency",
     "conditions": {
       "all": [
         {
@@ -170,7 +170,7 @@
         {
           "fact": "body",
           "operator": "equal",
-          "value": "123123123123123",
+          "value": "123456789",
           "path": "$.amount"
         }
       ]
