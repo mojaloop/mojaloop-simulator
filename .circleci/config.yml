@@ -157,29 +157,19 @@ jobs:
           prefix: test
       - store_test_results:
           path: ./src/coverage
-      - run:
-          name: Copy code coverage to SonarQube
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ];
-            then
-                echo "Sending lcov.info to SonarQube..."
-                aws s3 cp src/coverage/lcov.info $AWS_S3_DIR_SONARQUBE/$CIRCLE_PROJECT_REPONAME/lcov.info
-            else
-                echo "Not a release (env CIRCLE_BRANCH != 'master'), skipping sending lcov.info to SonarQube."
-            fi
 
   test-integration:
     executor: default-machine
     steps:
       - checkout
+      - run:
+          <<: *defaults_configure_nvm
       - restore_cache:
           key: dependency-cache-v1-{{ checksum "src/package-lock.json" }}
           paths:
             - src/node_modules
             - src/lib/log/node_modules
             - src/lib/validate/node_modules
-      - run:
-          <<: *defaults_configure_nvm
       - run:
           name: install modules
           command: |
@@ -197,7 +187,7 @@ jobs:
       - run:
           name: Execute integration tests
           command: |
-            cd ~/project/git/src
+            cd ~/project/src
             npm ci
             npm -s run test:integration
 
