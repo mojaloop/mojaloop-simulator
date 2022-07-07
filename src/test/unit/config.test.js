@@ -27,7 +27,7 @@
 'use strict';
 
 const test = require('ava');
-const { setConfig, getConfig } = require('../../config');
+const { setConfig, getConfig } = require('~/config');
 const { party } = require('./constants');
 
 // Note: these were originally 3 different tests, which I had to combine into 1

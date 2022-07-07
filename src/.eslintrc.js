@@ -1,52 +1,30 @@
 const config = {
-    extends: 'airbnb-base',
-    plugins: ['jest'],
     env: {
+        es2020: true,
         node: true,
-        'jest/globals': true,
     },
+    extends: 'eslint:recommended',
     rules: {
         indent: [
             'error',
             4,
             { SwitchCase: 1 },
         ],
-        'spaced-comment': [
-            'error',
-            'always',
-            {
-                exceptions: ['*'],
-            },
-        ],
-        'max-len': [
-            'error',
-            100,
+        'linebreak-style': [
             2,
-            {
-                ignoreUrls: true,
-                ignoreComments: true,
-                ignoreRegExpLiterals: true,
-                ignoreStrings: true,
-                ignoreTemplateLiterals: true,
-            },
+            'unix',
         ],
-        strict: [
-            'off',
+        quotes: [
+            2,
+            'single',
         ],
-        'lines-around-directive': [
-            'error',
-            {
-                before: 'never',
-                after: 'always',
-            },
+        semi: [
+            2,
+            'always',
         ],
-        'no-await-in-loop': [
-            'off',
-        ],
-        'no-restricted-syntax': [
-            'off',
-        ],
-    },
+        'no-console': 2,
+        'no-prototype-builtins': 'off',
+    }
 };
 
 module.exports = config;

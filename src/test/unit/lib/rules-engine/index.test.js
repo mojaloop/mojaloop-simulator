@@ -26,9 +26,9 @@
 
 const test = require('ava');
 
-const RulesEngine = require('../../../../lib/rules-engine');
-const { testLogger } = require('../../TestUtils');
-const rules = require('../../../../rules.json');
+const RulesEngine = require('~/lib/rules-engine');
+const { testLogger } = require('~/test/unit/TestUtils');
+const rules = require('~/rules.json');
 
 test('Sets up the rules engine with empty rules', (t) => {
     // Arrange

@@ -24,8 +24,8 @@
 
 const test = require('ava');
 
-const Model = require('../../models/model');
-const { map } = require('../../test-api/handlers');
+const Model = require('~/models/model');
+const { map } = require('~/test-api/handlers');
 const { party, idType, idValue } = require('./constants');
 
 test.beforeEach(async (t) => {

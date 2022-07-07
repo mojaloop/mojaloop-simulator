@@ -29,6 +29,9 @@
   "engines": {
     "node": "=16.x"
   },
+  "_moduleAliases": {
+    "~": "./"
+  },
   "scripts": {
     "start": "node ./index.js",
     "lint": "eslint .",
@@ -56,6 +59,7 @@
     "json-schema-ref-parser": "^9.0.9",
     "koa": "2.13.4",
     "koa-body": "5.0.0",
+    "module-alias": "^2.2.2",
     "mustache": "4.2.0",
     "node-fetch": "^2.6.6",
     "openapi-jsonschema-parameters": "12.0.0",
@@ -87,6 +91,9 @@
     "files": [
       "test/**/*.js",
       "!test/**/TestUtils.js"
+    ],
+    "require": [
+      "module-alias/register"
     ]
   }
 }
