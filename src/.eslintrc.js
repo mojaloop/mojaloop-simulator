@@ -2,7 +2,9 @@ const config = {
     env: {
         es2020: true,
         node: true,
+        'jest/globals': true,
     },
+    plugins: ['ava', 'jest'],
     extends: 'eslint:recommended',
     rules: {
         indent: [

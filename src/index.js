@@ -44,7 +44,6 @@ const { Logger, Transports, getStackOrInspect } = require('./lib/log/log');
 const RulesEngine = require('./lib/rules-engine');
 require('dotenv').config();
 
-// eslint-disable-next-line import/no-dynamic-require
 const rules = require(process.env.RULES_FILE);
 
 const simHandlers = require('./simulator/handlers');
