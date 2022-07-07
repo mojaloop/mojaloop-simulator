@@ -183,6 +183,23 @@ jobs:
             npm ci
             npm -s run test:integration
 
+  test-dependencies:
+    executor: default-docker
+    steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_Dependencies
+      - checkout
+      - run:
+          <<: *defaults_configure_nvm
+      - restore_cache:
+          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - src/node_modules
+      - run:
+          name: Execute dependency tests
+          command: cd src && npm run dep:check
+
   vulnerability-check:
     executor: default-docker
     steps:
@@ -593,7 +610,17 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-                - /hotfix*/
+      - test-dependencies:
+          context: org-global
+          requires:
+            - setup
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore:
+                - /feature*/
+                - /bugfix*/
       - test-unit:
           context: org-global
           requires:
@@ -605,7 +632,6 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-                - /hotfix*/
       - test-coverage:
           context: org-global
           requires:
@@ -617,7 +643,6 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-                - /hotfix*/
       - test-integration:
           context: org-global
           requires:
@@ -629,7 +654,6 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-                - /hotfix*/
       - vulnerability-check:
           context: org-global
           requires:
@@ -641,7 +665,6 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-                - /hotfix*/
       - audit-licenses:
           context: org-global
           requires:
@@ -653,11 +676,11 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-                - /hotfix*/
       - build:
           context: org-global
           requires:
             - setup
+            - test-dependencies
             - test-unit
             - test-coverage
             - test-integration
@@ -665,7 +688,7 @@ workflows:
             - audit-licenses
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
             branches:
               ignore:
                 - /.*/
@@ -675,7 +698,7 @@ workflows:
             - build
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
             branches:
               ignore:
                 - /.*/
@@ -685,7 +708,7 @@ workflows:
             - build
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
             branches:
               ignore:
                 - /.*/
@@ -695,8 +718,10 @@ workflows:
           context: org-global
           requires:
             - pr-tools/pr-title-check
+            - test-dependencies
             - test-unit
             - test-coverage
+            - test-integration
             - vulnerability-check
             - audit-licenses
             - license-scan
@@ -719,15 +744,17 @@ workflows:
           context: org-global
           requires:
             - pr-tools/pr-title-check
+            - test-dependencies
             - test-unit
             - test-coverage
+            - test-integration
             - vulnerability-check
             - audit-licenses
             - license-scan
             - image-scan
           filters:
             tags:
-              only: /.*/
+              only: /v[0-9]+(\.[0-9]+)*/
             branches:
               ignore:
                 - /.*/
@@ -735,8 +762,10 @@ workflows:
           context: org-global
           requires:
             - pr-tools/pr-title-check
+            - test-dependencies
             - test-unit
             - test-coverage
+            - test-integration
             - vulnerability-check
             - audit-licenses
             - license-scan
