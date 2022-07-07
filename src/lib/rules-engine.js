@@ -24,7 +24,7 @@
 
 const util = require('util');
 const { Engine } = require('json-rules-engine');
-const { getStackOrInspect } = require('@internal/log');
+const { getStackOrInspect } = require('./log/log');
 
 class RulesEngine {
     constructor(config) {

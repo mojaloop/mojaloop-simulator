@@ -25,7 +25,7 @@
 
 const test = require('ava');
 
-const router = require('@internal/router');
+const router = require('../../../../lib/router');
 const { testLogger } = require('../../TestUtils');
 
 test('Handles when a route cannot be found with a 404', async (t) => {

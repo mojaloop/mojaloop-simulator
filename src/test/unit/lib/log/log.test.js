@@ -27,7 +27,7 @@ const test = require('ava');
 
 const {
     Logger, Transports, getStackOrInspect, _replaceOutput,
-} = require('@internal/log');
+} = require('../../../../lib/log/log');
 
 test('sets the space', (t) => {
     const testTransport = (input) => input;

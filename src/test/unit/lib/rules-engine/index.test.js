@@ -26,7 +26,7 @@
 
 const test = require('ava');
 
-const RulesEngine = require('@internal/rules-engine');
+const RulesEngine = require('../../../../lib/rules-engine');
 const { testLogger } = require('../../TestUtils');
 const rules = require('../../../../rules.json');
 

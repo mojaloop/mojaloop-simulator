@@ -29,17 +29,17 @@
 // Ignore this file in coverage checks since most of it can't be tested in unit tests
 /* istanbul ignore file */
 
-const { Logger, Transports, getStackOrInspect } = require('@internal/log');
 const Koa = require('koa');
 const koaBody = require('koa-body');
-const randomPhrase = require('@internal/randomphrase');
-const Validate = require('@internal/validate');
+const { generateSlug } = require('random-word-slugs');
 const yaml = require('yamljs');
 const util = require('util');
-const router = require('@internal/router');
 const https = require('https');
 const cors = require('@koa/cors');
-const RulesEngine = require('@internal/rules-engine');
+const router = require('./lib/router');
+const Validate = require('./lib/validate');
+const { Logger, Transports, getStackOrInspect } = require('./lib/log/log');
+const RulesEngine = require('./lib/rules-engine');
 require('dotenv').config();
 
 // eslint-disable-next-line import/no-dynamic-require
@@ -124,7 +124,7 @@ async function rewriteContentTypeHeader(ctx, next) {
     simulator.use(async (ctx, next) => {
         ctx.state.logger = simLogger.push({
             request: {
-                id: randomPhrase(),
+                id: generateSlug(4),
                 path: ctx.path,
                 method: ctx.method,
             },
@@ -139,7 +139,7 @@ async function rewriteContentTypeHeader(ctx, next) {
     report.use(async (ctx, next) => {
         ctx.state.logger = reportLogger.push({
             request: {
-                id: randomPhrase(),
+                id: generateSlug(4),
                 path: ctx.path,
                 method: ctx.method,
             },
@@ -154,7 +154,7 @@ async function rewriteContentTypeHeader(ctx, next) {
     testApi.use(async (ctx, next) => {
         ctx.state.logger = testApiLogger.push({
             request: {
-                id: randomPhrase(),
+                id: generateSlug(4),
                 path: ctx.path,
                 method: ctx.method,
             },
