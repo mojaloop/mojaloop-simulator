@@ -62,6 +62,7 @@ defaults_configure_nvm: &defaults_configure_nvm
     nvm install $(cat .nvmrc)
     nvm alias default $(cat .nvmrc)
     nvm use $(cat .nvmrc)
+
 ##
 # Executors
 #
@@ -93,14 +94,12 @@ jobs:
       - checkout
       - run:
           name: Update NPM install (using `npm ci`)
-          command: cd src && npm ci
+          command: npm ci
       - run:
           name: Delete build dependencies
           command: apk del build-dependencies
       - save_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - src/node_modules
 
   test-unit:
     executor: default-docker
@@ -111,17 +110,15 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - src/node_modules
       - run:
           name: Execute linting pass
-          command: cd src && npm run lint
+          command: npm run lint
       - run:
           name: Create dir for test results
           command: mkdir -p ./test/results
       - run:
           name: Execute unit tests
-          command: cd src && npm run test > ../test/results/results.txt
+          command: npm run test > ../test/results/results.txt
       - store_artifacts:
           path: ./test/results
           prefix: test
@@ -134,8 +131,6 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - src/node_modules
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
@@ -145,12 +140,12 @@ jobs:
           command: *defaults_awsCliDependencies
       - run:
           name: Execute code coverage check
-          command: cd src && npm -s run test:coverage-check
+          command: npm -s run test:coverage-check
       - store_artifacts:
-          path: ./src/coverage
+          path: ./coverage
           prefix: test
       - store_test_results:
-          path: ./src/coverage
+          path: ./coverage
 
   test-integration:
     executor: default-machine
@@ -160,17 +155,15 @@ jobs:
           <<: *defaults_configure_nvm
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - src/node_modules
       - run:
           name: install modules
           command: |
             node --version
-            cd src && npm ci
+            npm ci
       - run:
           name: Spin up core docker compose
           command: |
-            cd src && docker-compose build
+            docker-compose build
             docker-compose up -d
       - run:
           name: Sleep for 30 seconds while waiting for docker
@@ -179,7 +172,6 @@ jobs:
       - run:
           name: Execute integration tests
           command: |
-            cd ~/project/src
             npm ci
             npm -s run test:integration
 
@@ -194,11 +186,9 @@ jobs:
           <<: *defaults_configure_nvm
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - src/node_modules
       - run:
           name: Execute dependency tests
-          command: cd src && npm run dep:check
+          command: npm run dep:check
 
   vulnerability-check:
     executor: default-docker
@@ -206,8 +196,6 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - src/node_modules
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
@@ -221,7 +209,7 @@ jobs:
           command: mkdir -p ./audit/results
       - run:
           name: Check for new npm vulnerabilities
-          command: cd src && npm run audit:check --silent -- --json > ../audit/results/auditResults.json
+          command: npm run audit:check --silent -- --json > ../audit/results/auditResults.json
       - store_artifacts:
           path: ./audit/results
           prefix: audit
@@ -232,8 +220,6 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - src/node_modules
       - run:
           name: Install general dependencies
           command: *defaults_Dependencies
@@ -257,8 +243,6 @@ jobs:
           <<: *defaults_configure_nvm
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - src/node_modules
       - run:
           <<: *defaults_configure_git
       - run:

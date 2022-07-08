@@ -9,7 +9,6 @@ services:
     env_file: ./sim-backend.env
     volumes:
        - ./src/rules.json:/src/rules.json
-
     ports:
       - "3000:3000"
       - "3001:3001"
