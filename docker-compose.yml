@@ -5,11 +5,11 @@ services:
 
   sim:
     image: "mojaloop-simulator-backend"
-    build: ../
+    build: ./
     env_file: ./sim-backend.env
     volumes:
-       - ./rules.json:/src/rules.json
-  
+       - ./src/rules.json:/src/rules.json
+
     ports:
       - "3000:3000"
       - "3001:3001"

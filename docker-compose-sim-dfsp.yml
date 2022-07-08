@@ -4,7 +4,7 @@ services:
    image: "redis:5.0.4-alpine"
  sim:
    image: "mojaloop-simulator-backend"
-   build: ../
+   build: ./
    env_file: ./sim-backend.env
    ports:
      - "3000:3000"
@@ -19,7 +19,7 @@ services:
      - "4000:4000"
      - "4001:4001"
    depends_on:
-     - redis-sim 
+     - redis-sim
  redis-dfsp:
    image: "redis:5.0.4-alpine"
  scheme-adapter-dfsp:
@@ -37,4 +37,4 @@ services:
      - "6000:3000"
    depends_on:
       - scheme-adapter-dfsp
-      
+

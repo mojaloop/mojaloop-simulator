@@ -4,7 +4,7 @@ services:
    image: "redis:5.0.4-alpine"
  sim:
    image: "mojaloop-simulator-backend"
-   build: ../
+   build: ./
    env_file: ./sim-backend.env
    ports:
      - "3000:3000"
