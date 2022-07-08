@@ -3,7 +3,7 @@
   "version": "13.0.0-snapshot.0",
   "description": "A canonical test example implementation of the parties, transfers and quotes resources of the Mojaloop API",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "author": "Matt Kingston, ModusBox Inc.",
   "contributors": [
     "Aaron Reynoza <aaron.reynoza@modusbox.com>",
@@ -30,12 +30,12 @@
     "node": "=16.x"
   },
   "_moduleAliases": {
-    "~": "./"
+    "~": "./src"
   },
   "scripts": {
-    "start": "node ./index.js",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "start": "node ./src/index.js",
+    "lint": "eslint ./src/",
+    "lint:fix": "eslint ./src/ --fix",
     "test": "npm run test:unit",
     "test:unit": "ava -c 1 './test/unit/**/*.test.js'",
     "test:coverage-check": "nyc ava './test/unit/**/*.test.js'",

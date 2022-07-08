@@ -29,9 +29,9 @@ const yaml = require('yamljs');
 const { v1: uuid } = require('uuid');
 
 const Validate = require('~/lib/validate');
-const { testLogger } = require('~/test/unit/TestUtils');
+const { testLogger } = require('../../TestUtils');
 
-const simApiSpec = yaml.load('./simulator/api.yaml');
+const simApiSpec = yaml.load('./src/simulator/api.yaml');
 
 test('Validates a simple request', async (t) => {
     // Arrange
