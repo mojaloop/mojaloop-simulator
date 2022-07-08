@@ -17,3 +17,4 @@ exclude:
   - '**/coverage/**'
   - '**/.eslintrc.js'
   - '**/jest.integration.config.js'
+  - '**/init/**'
