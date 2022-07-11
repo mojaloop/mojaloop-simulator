@@ -29,7 +29,6 @@
  */
 const { bulkQuoteTable } = require('./constants');
 
-// eslint-disable-next-line import/no-unresolved
 require('dotenv').config();
 
 /**

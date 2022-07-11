@@ -26,7 +26,7 @@ const { parse } = require('querystring');
 const sqlite = require('sqlite');
 const sqlite3 = require('sqlite3');
 
-const { getStackOrInspect } = require('@internal/log');
+const { getStackOrInspect } = require('../lib/log/log');
 const { ApiErrorCodes } = require('../models/errors');
 const { quoteTable } = require('../models/constants');
 

@@ -41,8 +41,8 @@ docker-compose up
 
 
 ## Configure
-A sample simulator configuration is given in the file `\src\.env`.
-A sample scheme adapter configuration is given in the file `\local.env`.
+A sample simulator configuration is given in the file `.env`.
+A sample scheme adapter configuration is given in the file `scheme-adapter.env`.
 
 Configuration of parties and test execution steps is via...TODO
 
@@ -153,14 +153,12 @@ docker-compose up
 ## Unit Tests
 
 ```bash
-cd ./src
 npm run test:unit
 ```
 
 ## Integration Tests
 
 ```bash
-cd ./src
 docker-compose up -d
 
 # wait until mojaloop-simulator is up and running
