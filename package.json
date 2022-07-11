@@ -1,13 +1,14 @@
 {
   "name": "mojaloop-simulator",
   "version": "13.0.0-snapshot.3",
-  "description": "A canonical test example implementation of the parties, transfers and quotes resources of the Mojaloop API",
+  "description": "A canonical test example implementation of the parties, transfers and quotes resources of the Mojaloop FSP Interoperability API",
   "license": "Apache-2.0",
   "main": "src/index.js",
-  "author": "Matt Kingston, ModusBox Inc.",
+  "initial author": "Matt Kingston, ModusBox Inc.",
   "contributors": [
     "Aaron Reynoza <aaron.reynoza@modusbox.com>",
     "Kamuela Franco <kamuela.franco@modusbox.com>",
+    "Kevin Leyow <kevin.leyow@modusbox.com>",
     "Matt Kingston <matt.kingston@modusbox.com>",
     "Steven Oderayi <steven.oderayi@modusbox.com>",
     "Valentin Genev <valentin.genev@modusbox.com>",
