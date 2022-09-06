@@ -8,7 +8,7 @@ services:
     build: ./
     env_file: ./sim-backend.env
     volumes:
-       - ./src/rules.json:/opt/app/src/rules.json
+       - ./rules/example.json:/opt/app/rules.json
     ports:
       - "3000:3000"
       - "3001:3001"
