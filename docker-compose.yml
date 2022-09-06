@@ -14,6 +14,7 @@ services:
 
   sim:
     container_name: simulator
+    command: sh -c "sleep infinity"
     image: "mojaloop-simulator-backend"
     build: ./
     env_file: ./sim-backend.env
