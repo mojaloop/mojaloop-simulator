@@ -2,8 +2,18 @@ version: '3'
 services:
   redis:
     image: "redis:5.0.4-alpine"
+    container_name: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD" ,"sh", "-c", "redis-cli","ping"]
+      timeout: 20s
+      retries: 10
+      start_period: 40s
+      interval: 30s
 
   sim:
+    container_name: simulator
     image: "mojaloop-simulator-backend"
     build: ./
     env_file: ./sim-backend.env
@@ -15,12 +25,39 @@ services:
       - "3003:3003"
     depends_on:
       - scheme-adapter
+    user: root # Set Root so we can install Curl for Healthchecks
+    healthcheck:
+      test: [
+        "CMD" ,
+        "apk", "add", "--no-cache", "curl", # Install curl
+        "&&",
+        "curl", "-f", "http://localhost:3000/health" # Check if api is up
+        ]
+      timeout: 20s
+      retries: 10
+      start_period: 40s
+      interval: 30s
 
   scheme-adapter:
+    container_name: scheme-adapter
     image: "mojaloop/sdk-scheme-adapter:latest"
     env_file: ./scheme-adapter.env
     ports:
       - "3500:3000"
       - "3501:4000"
+    volumes:
+      - ./test/secrets:/opt/app/secrets
     depends_on:
       - redis
+    user: root # Set Root so we can install Curl for Healthchecks
+    healthcheck:
+      test: [
+        "CMD" ,
+        "apk", "add", "--no-cache", "curl", # Install curl
+        "&&",
+        "curl", "-f", "http://localhost:4001" # Check if api is up
+        ]
+      timeout: 20s
+      retries: 10
+      start_period: 40s
+      interval: 30s
