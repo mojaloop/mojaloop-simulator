@@ -121,6 +121,10 @@ async function rewriteContentTypeHeader(ctx, next) {
     report.use(failSafe);
     testApi.use(failSafe);
 
+    simulator.use(koaBody());
+    report.use(koaBody());
+    testApi.use(koaBody());
+
     // Add a log context for each request, log the receipt and handling thereof
     simulator.use(async (ctx, next) => {
         ctx.state.logger = simLogger.push({
@@ -157,7 +161,7 @@ async function rewriteContentTypeHeader(ctx, next) {
             request: {
                 id: generateSlug(4),
                 path: ctx.path,
-                method: ctx.method,
+                method: ctx.method
             },
         });
         ctx.state.logger.push({ body: ctx.request.body }).log('Request received');
@@ -169,9 +173,6 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     simulator.use(rewriteContentTypeHeader);
     testApi.use(cors());
-    simulator.use(koaBody());
-    report.use(koaBody());
-    testApi.use(koaBody());
 
     // Add validation and data model for each request
     const simValidator = new Validate();
