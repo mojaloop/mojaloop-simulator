@@ -26,8 +26,6 @@
  ******/
 'use strict';
 
-require('module-alias/register');
-
 // Ignore this file in coverage checks since most of it can't be tested in unit tests
 /* istanbul ignore file */
 
