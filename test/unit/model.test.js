@@ -27,7 +27,7 @@
 
 const test = require('ava');
 
-const Model = require('~/models/model');
+const Model = require('#src/models/model');
 
 const { cloneDeep } = require('./TestUtils');
 

@@ -27,8 +27,8 @@ const test = require('ava');
 const { stringify } = require('querystring');
 const { v1: uuid } = require('uuid');
 
-const { map } = require('~/reports/handlers');
-const Model = require('~/models/model');
+const { map } = require('#src/reports/handlers');
+const Model = require('#src/models/model');
 const { quote } = require('./constants');
 require('dotenv').config();
 

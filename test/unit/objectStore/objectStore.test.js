@@ -24,7 +24,7 @@
 'use strict';
 
 const test = require('ava');
-const objectStore = require('~/lib/objectStore/objectStoreInterface');
+const objectStore = require('#src/lib/objectStore/objectStoreInterface');
 
 test('test store and get', async (t) => {
     const testObj = {
