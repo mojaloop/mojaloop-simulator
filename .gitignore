@@ -138,3 +138,6 @@ jspm_packages
 secrets
 # Ignore any log files or application data
 *.sqlite
+
+# .env configs
+**/*.env

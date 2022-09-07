@@ -29,8 +29,6 @@
  */
 const { quoteTable } = require('./constants');
 
-require('dotenv').config();
-
 /**
  * @typedef {Object} Quote
  *

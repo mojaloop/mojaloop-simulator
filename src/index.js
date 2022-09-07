@@ -40,7 +40,16 @@ const router = require('./lib/router');
 const Validate = require('./lib/validate');
 const { Logger, Transports, getStackOrInspect } = require('./lib/log/log');
 const RulesEngine = require('./lib/rules-engine');
-require('dotenv').config();
+
+// const path = require('path');
+
+// const configFile = process.env.CONFIG_OVERRIDE || '.env';
+
+// module.exports = require('dotenv').config({
+//     path: path.resolve(process.cwd(), configFile)
+// });
+
+const configLib = require('./lib/config');
 
 const rules = require(process.env.RULES_FILE);
 
@@ -82,6 +91,7 @@ async function rewriteContentTypeHeader(ctx, next) {
 }
 
 (async function start() {
+    console.log(configLib);
     // Set up the config from the environment
     await setConfig(process.env);
     const conf = getConfig();

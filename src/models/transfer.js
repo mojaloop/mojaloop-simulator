@@ -28,7 +28,6 @@
  * @description Defines the transfer model structure and operations within the simulator.
  */
 const { transferTable } = require('./constants');
-require('dotenv').config();
 
 /**
  * @typedef {Object} Transfer

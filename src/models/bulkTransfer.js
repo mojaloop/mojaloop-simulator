@@ -28,7 +28,6 @@
  * @description Defines the bulk transfer model structure and operations within the simulator.
  */
 const { bulkTransferTable } = require('./constants');
-require('dotenv').config();
 
 /**
  * @typedef {Object} BulkTransfer

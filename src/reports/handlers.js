@@ -30,8 +30,6 @@ const { getStackOrInspect } = require('../lib/log/log');
 const { ApiErrorCodes } = require('../models/errors');
 const { quoteTable } = require('../models/constants');
 
-require('dotenv').config();
-
 /**
  * Parses all quotes and returns responses.
  *

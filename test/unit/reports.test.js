@@ -23,6 +23,8 @@
 'use strict';
 
 /* eslint-disable no-unused-vars */
+
+require('#src/lib/config');
 const test = require('ava');
 const { stringify } = require('querystring');
 const { v1: uuid } = require('uuid');
@@ -30,7 +32,6 @@ const { v1: uuid } = require('uuid');
 const { map } = require('#src/reports/handlers');
 const Model = require('#src/models/model');
 const { quote } = require('./constants');
-require('dotenv').config();
 
 const model = new Model();
 const end = new Date();
