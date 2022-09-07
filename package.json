@@ -90,7 +90,8 @@
   "ava": {
     "files": [
       "test/**/*.js",
-      "!test/**/TestUtils.js"
+      "!test/**/TestUtils.js",
+      "!scripts/**/*.js"
     ]
   }
 }
