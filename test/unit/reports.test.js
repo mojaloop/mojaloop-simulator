@@ -24,7 +24,9 @@
 
 /* eslint-disable no-unused-vars */
 
+// Load config
 require('#src/lib/config');
+
 const test = require('ava');
 const { stringify } = require('querystring');
 const { v1: uuid } = require('uuid');

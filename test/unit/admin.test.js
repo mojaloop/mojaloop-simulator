@@ -22,6 +22,9 @@
  ******/
 'use strict';
 
+// Load config
+require('#src/lib/config');
+
 const test = require('ava');
 
 const Model = require('#src/models/model');

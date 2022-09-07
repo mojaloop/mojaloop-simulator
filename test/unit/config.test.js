@@ -26,6 +26,9 @@
  ******/
 'use strict';
 
+// Load config
+require('#src/lib/config');
+
 const test = require('ava');
 const { setConfig, getConfig } = require('#src/config');
 const { party } = require('./constants');
