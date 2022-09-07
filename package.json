@@ -37,7 +37,7 @@
     "lint:fix": "eslint ./src/ --fix",
     "test": "npm run test:unit",
     "test:unit": "CONFIG_OVERRIDE=./example.env ava -c 1 './test/unit/**/*.test.js'",
-    "test:coverage-check": "CONFIG_OVERRIDE=./example.env nyc --reporter=lcov ava './test/unit/**/*.test.js'",
+    "test:coverage-check": "CONFIG_OVERRIDE=./example.env nyc ava './test/unit/**/*.test.js'",
     "test:integration": "CONFIG_OVERRIDE=./example.env jest --config './jest.integration.config.js' --testMatch '**/test/integration/**/*.(test|spec).js' --runInBand",
     "test:functional": "echo 'No test specified' && exit 1",
     "audit:resolve": "resolve-audit --production",
