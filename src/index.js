@@ -41,14 +41,6 @@ const Validate = require('./lib/validate');
 const { Logger, Transports, getStackOrInspect } = require('./lib/log/log');
 const RulesEngine = require('./lib/rules-engine');
 
-// const path = require('path');
-
-// const configFile = process.env.CONFIG_OVERRIDE || '.env';
-
-// module.exports = require('dotenv').config({
-//     path: path.resolve(process.cwd(), configFile)
-// });
-
 const Config = require('./lib/config');
 
 const rules = require(process.env.RULES_FILE);
