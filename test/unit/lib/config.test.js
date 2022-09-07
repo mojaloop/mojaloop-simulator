@@ -25,6 +25,7 @@
 'use strict';
 
 const test = require('ava');
+const fs = require('fs');
 
 test.before(async () => {
     // clear require caches in-case config is pre-loaded
@@ -64,4 +65,37 @@ test('Check config fails to load', async (t) => {
 
     // ASSERT
     t.truthy(config.error);
+});
+
+test('Check config with defaults', async (t) => {
+    // SETUP
+    const testConfig = './.env';
+
+    // ACT
+    try {
+        // lets handle the case that the default config exists
+        if (fs.existsSync(testConfig)) {
+            // Load config with defaults
+            const config = await require('#src/lib/config')();
+            // eslint-disable-next-line no-console
+            console.log(config);
+
+            // ASSERT
+            t.truthy(config.parsed);
+        } else { // lets handle the case that the default config does not exist
+            // ACT
+            // Load config with defaults
+            const config = await require('#src/lib/config')();
+            // eslint-disable-next-line no-console
+            console.log(config);
+
+            // ASSERT
+            t.truthy(config.error);
+        }
+    } catch(err) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        // ASSERT
+        t.fail(err);
+    }
 });
