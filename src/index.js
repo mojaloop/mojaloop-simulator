@@ -91,6 +91,7 @@ async function rewriteContentTypeHeader(ctx, next) {
 }
 
 (async function start() {
+    // eslint-disable-next-line no-console
     console.log(configLib);
     // Set up the config from the environment
     await setConfig(process.env);
