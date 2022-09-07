@@ -43,8 +43,6 @@ const RulesEngine = require('./lib/rules-engine');
 
 const Config = require('./lib/config');
 
-const rules = require(process.env.RULES_FILE);
-
 const simHandlers = require('./simulator/handlers');
 const reportHandlers = require('./reports/handlers');
 const testApiHandlers = require('./test-api/handlers');
@@ -102,6 +100,11 @@ async function rewriteContentTypeHeader(ctx, next) {
     const testApiLogger = new Logger({ context: { app: 'test-api' }, space, transports });
 
     const rulesEngine = new RulesEngine({ logger: simLogger });
+
+    // parse rules file
+    const rules = require(process.env.RULES_FILE);
+
+    // load rules file into engine
     rulesEngine.loadRules(rules);
 
     // Initialise the model
