@@ -29,8 +29,8 @@
 
 const path = require('path');
 
-const configFile = process.env.CONFIG_OVERRIDE || '.env';
-
-module.exports = require('dotenv').config({
-    path: path.resolve(process.cwd(), configFile)
-});
+module.exports = async (configFile = '.env') => {
+    return require('dotenv').config({
+        path: path.resolve(process.cwd(), configFile)
+    });
+};

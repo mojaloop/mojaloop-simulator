@@ -49,7 +49,7 @@ const RulesEngine = require('./lib/rules-engine');
 //     path: path.resolve(process.cwd(), configFile)
 // });
 
-const configLib = require('./lib/config');
+const Config = require('./lib/config');
 
 const rules = require(process.env.RULES_FILE);
 
@@ -91,8 +91,10 @@ async function rewriteContentTypeHeader(ctx, next) {
 }
 
 (async function start() {
+    // Try overload config file
+    const configResult = await Config(process.env.CONFIG_OVERRIDE);
     // eslint-disable-next-line no-console
-    console.log(configLib);
+    console.log(configResult);
     // Set up the config from the environment
     await setConfig(process.env);
     const conf = getConfig();

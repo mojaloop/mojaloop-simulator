@@ -17,50 +17,51 @@
  optionally within square brackets <email>.
  * Gates Foundation
  - Name Surname <name.surname@gatesfoundation.com>
- * Mowali
+
+ * Vessels Tech
+ - Lewis Daly <lewis@vesselstech.com>
  --------------
  ******/
 'use strict';
 
-// Load config
-const Config = require('#src/lib/config');
-
 const test = require('ava');
 
-const Model = require('#src/models/model');
-const { map } = require('#src/test-api/handlers');
-const { party, idType, idValue } = require('./constants');
-
 test.before(async () => {
-    const configResult = await Config(process.env.CONFIG_OVERRIDE);
+    // clear require caches in-case config is pre-loaded
+    delete require.cache[require.resolve('#src/lib/config')];
+    delete require.cache[require.resolve('dotenv')];
+});
+
+test.afterEach(async () => {
+    // clear require caches for other tests
+    delete require.cache[require.resolve('#src/lib/config')];
+    delete require.cache[require.resolve('dotenv')];
+});
+
+test('Check config is loaded with example.env', async (t) => {
+    // SETUP
+    const testConfig = './example.env';
+
+    // ACT
+    // Load config
+    const config = await require('#src/lib/config')(testConfig);
     // eslint-disable-next-line no-console
-    console.log(configResult);
+    console.log(config);
+
+    // ASSERT
+    t.truthy(config.parsed);
 });
 
-test.beforeEach(async (t) => {
-    const model = new Model();
-    await model.init({ databaseFilepath: ':memory:' });
-    // eslint-disable-next-line no-param-reassign
-    t.context = { state: { model }, response: {} };
-});
+test('Check config fails to load', async (t) => {
+    // SETUP
+    const testConfig = 'doesNotExist.env';
 
-test.afterEach(async (t) => {
-    await t.context.state.model.close();
-});
+    // ACT
+    // Load config
+    const config = await require('#src/lib/config')(testConfig);
+    // eslint-disable-next-line no-console
+    console.log(config.error);
 
-test('create a party', async (t) => {
-    // eslint-disable-next-line no-param-reassign
-    t.context.request = { body: party };
-    await map['/repository/parties'].post(t.context);
-    t.is(t.context.response.status, 204);
-    const data = await t.context.state.model.party.get(idType, idValue);
-    t.truthy(data);
-});
-
-test('should return 400 when creating a non valid party', async (t) => {
-    // eslint-disable-next-line no-param-reassign
-    t.context.request = { body: { hello: 'world' } };
-    await map['/repository/parties'].post(t.context);
-    t.truthy(t.context.response.body);
-    t.is(t.context.response.status, 400);
+    // ASSERT
+    t.truthy(config.error);
 });

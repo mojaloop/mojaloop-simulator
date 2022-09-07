@@ -26,7 +26,7 @@
 'use strict';
 
 // Load config
-require('#src/lib/config');
+const Config = require('#src/lib/config');
 
 const test = require('ava');
 
@@ -40,6 +40,12 @@ const {
     bulkTransferId, idType, idValue, partyCreate, transferId, transactionRequestId,
     partyWithSubIdValue, partyCreateWithSubIdValue, idSubValue,
 } = require('./constants');
+
+test.before(async () => {
+    const configResult = await Config(process.env.CONFIG_OVERRIDE);
+    // eslint-disable-next-line no-console
+    console.log(configResult);
+});
 
 test.beforeEach(async (t) => {
     const model = new Model();
