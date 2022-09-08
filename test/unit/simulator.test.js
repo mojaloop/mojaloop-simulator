@@ -25,10 +25,13 @@
  ******/
 'use strict';
 
+// Load config
+const Config = require('#src/lib/config');
+
 const test = require('ava');
 const { cloneDeep } = require('./TestUtils');
-const Model = require('~/models/model');
-const { map } = require('~/simulator/handlers');
+const Model = require('#src/models/model');
+const { map } = require('#src/simulator/handlers');
 const {
     transfer,
     transferWithoutQuote,
@@ -43,7 +46,13 @@ const {
     bulkTransferId,
     authorizationRequest,
 } = require('./constants');
-const { ApiErrorCodes } = require('~/models/errors');
+const { ApiErrorCodes } = require('#src/models/errors');
+
+test.before(async () => {
+    const configResult = await Config(process.env.CONFIG_OVERRIDE);
+    // eslint-disable-next-line no-console
+    console.log(configResult);
+});
 
 test.beforeEach(async (t) => {
     const model = new Model();

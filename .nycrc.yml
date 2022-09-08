@@ -18,3 +18,4 @@ exclude:
   - '**/.eslintrc.js'
   - '**/jest.integration.config.js'
   - '**/init/**'
+  - '**/scripts/**'

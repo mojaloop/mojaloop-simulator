@@ -62,7 +62,7 @@
 
 const util = require('util');
 
-const Transports = require('~/lib/log/transports');
+const Transports = require('#src/lib/log/transports');
 
 const contextSym = Symbol('Logger context symbol');
 

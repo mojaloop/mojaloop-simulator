@@ -22,11 +22,20 @@
  ******/
 'use strict';
 
+// Load config
+const Config = require('#src/lib/config');
+
 const test = require('ava');
 
-const Model = require('~/models/model');
-const { map } = require('~/test-api/handlers');
+const Model = require('#src/models/model');
+const { map } = require('#src/test-api/handlers');
 const { party, idType, idValue } = require('./constants');
+
+test.before(async () => {
+    const configResult = await Config(process.env.CONFIG_OVERRIDE);
+    // eslint-disable-next-line no-console
+    console.log(configResult);
+});
 
 test.beforeEach(async (t) => {
     const model = new Model();

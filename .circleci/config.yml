@@ -168,9 +168,10 @@ jobs:
             docker-compose build
             docker-compose up -d
       - run:
-          name: Sleep for 30 seconds while waiting for docker
+          name: Wait for services to be running and report healthy
           command: |
-            sleep 30
+            ## wait for services to be up and running
+            npm run wait-4-docker
       - run:
           name: Execute integration tests
           command: |

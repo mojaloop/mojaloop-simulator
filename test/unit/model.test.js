@@ -25,9 +25,12 @@
  ******/
 'use strict';
 
+// Load config
+const Config = require('#src/lib/config');
+
 const test = require('ava');
 
-const Model = require('~/models/model');
+const Model = require('#src/models/model');
 
 const { cloneDeep } = require('./TestUtils');
 
@@ -37,6 +40,12 @@ const {
     bulkTransferId, idType, idValue, partyCreate, transferId, transactionRequestId,
     partyWithSubIdValue, partyCreateWithSubIdValue, idSubValue,
 } = require('./constants');
+
+test.before(async () => {
+    const configResult = await Config(process.env.CONFIG_OVERRIDE);
+    // eslint-disable-next-line no-console
+    console.log(configResult);
+});
 
 test.beforeEach(async (t) => {
     const model = new Model();

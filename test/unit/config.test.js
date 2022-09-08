@@ -26,13 +26,22 @@
  ******/
 'use strict';
 
+// Load config
+const Config = require('#src/lib/config');
+
 const test = require('ava');
-const { setConfig, getConfig } = require('~/config');
+const { setConfig, getConfig } = require('#src/config');
 const { party } = require('./constants');
 
 // Note: these were originally 3 different tests, which I had to combine into 1
 // because of the way that ava tries to run the tests in paralell, which was causing
 // issues with the global scope of config
+
+test.before(async () => {
+    const configResult = await Config(process.env.CONFIG_OVERRIDE);
+    // eslint-disable-next-line no-console
+    console.log(configResult);
+});
 
 test('Sets the basic config', async (t) => {
     // Arrange

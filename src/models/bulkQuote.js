@@ -29,8 +29,6 @@
  */
 const { bulkQuoteTable } = require('./constants');
 
-require('dotenv').config();
-
 /**
  * @typedef {Object} BulkQuote
  *

@@ -26,8 +26,6 @@
  ******/
 'use strict';
 
-require('module-alias/register');
-
 // Ignore this file in coverage checks since most of it can't be tested in unit tests
 /* istanbul ignore file */
 
@@ -42,9 +40,8 @@ const router = require('./lib/router');
 const Validate = require('./lib/validate');
 const { Logger, Transports, getStackOrInspect } = require('./lib/log/log');
 const RulesEngine = require('./lib/rules-engine');
-require('dotenv').config();
 
-const rules = require(process.env.RULES_FILE);
+const Config = require('./lib/config');
 
 const simHandlers = require('./simulator/handlers');
 const reportHandlers = require('./reports/handlers');
@@ -84,6 +81,10 @@ async function rewriteContentTypeHeader(ctx, next) {
 }
 
 (async function start() {
+    // Try overload config file
+    const configResult = await Config(process.env.CONFIG_OVERRIDE);
+    // eslint-disable-next-line no-console
+    console.log(configResult);
     // Set up the config from the environment
     await setConfig(process.env);
     const conf = getConfig();
@@ -99,6 +100,11 @@ async function rewriteContentTypeHeader(ctx, next) {
     const testApiLogger = new Logger({ context: { app: 'test-api' }, space, transports });
 
     const rulesEngine = new RulesEngine({ logger: simLogger });
+
+    // parse rules file
+    const rules = require(process.env.RULES_FILE);
+
+    // load rules file into engine
     rulesEngine.loadRules(rules);
 
     // Initialise the model
@@ -120,6 +126,10 @@ async function rewriteContentTypeHeader(ctx, next) {
     simulator.use(failSafe);
     report.use(failSafe);
     testApi.use(failSafe);
+
+    simulator.use(koaBody());
+    report.use(koaBody());
+    testApi.use(koaBody());
 
     // Add a log context for each request, log the receipt and handling thereof
     simulator.use(async (ctx, next) => {
@@ -157,7 +167,7 @@ async function rewriteContentTypeHeader(ctx, next) {
             request: {
                 id: generateSlug(4),
                 path: ctx.path,
-                method: ctx.method,
+                method: ctx.method
             },
         });
         ctx.state.logger.push({ body: ctx.request.body }).log('Request received');
@@ -169,9 +179,6 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     simulator.use(rewriteContentTypeHeader);
     testApi.use(cors());
-    simulator.use(koaBody());
-    report.use(koaBody());
-    testApi.use(koaBody());
 
     // Add validation and data model for each request
     const simValidator = new Validate();

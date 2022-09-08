@@ -28,7 +28,7 @@ const test = require('ava');
 const yaml = require('yamljs');
 const { v1: uuid } = require('uuid');
 
-const Validate = require('~/lib/validate');
+const Validate = require('#src/lib/validate');
 const { testLogger } = require('../../TestUtils');
 
 const simApiSpec = yaml.load('./src/simulator/api.yaml');
