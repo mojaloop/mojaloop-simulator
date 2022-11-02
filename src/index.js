@@ -40,7 +40,8 @@ const https = require('https');
 const cors = require('@koa/cors');
 const router = require('./lib/router');
 const Validate = require('./lib/validate');
-const { Logger, Transports, getStackOrInspect } = require('./lib/log/log');
+const { getStackOrInspect } = require('./lib/log/log');
+const Logger = require('@mojaloop/central-services-logger');
 const RulesEngine = require('./lib/rules-engine');
 require('dotenv').config();
 
@@ -88,17 +89,7 @@ async function rewriteContentTypeHeader(ctx, next) {
     await setConfig(process.env);
     const conf = getConfig();
 
-    // Set up a logger for each running server
-    const space = Number(process.env.LOG_INDENT);
-    const transports = await Promise.all([
-        Transports.consoleDir(),
-        Transports.sqlite(process.env.SQLITE_LOG_FILE),
-    ]);
-    const simLogger = new Logger({ context: { app: 'simulator' }, space, transports });
-    const reportLogger = new Logger({ context: { app: 'report' }, space, transports });
-    const testApiLogger = new Logger({ context: { app: 'test-api' }, space, transports });
-
-    const rulesEngine = new RulesEngine({ logger: simLogger });
+    const rulesEngine = new RulesEngine({ logger: Logger });
     rulesEngine.loadRules(rules);
 
     // Initialise the model
@@ -123,48 +114,72 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     // Add a log context for each request, log the receipt and handling thereof
     simulator.use(async (ctx, next) => {
-        ctx.state.logger = simLogger.push({
+        const message = {
+            context: { app: 'simulator' },
             request: {
                 id: generateSlug(4),
                 path: ctx.path,
                 method: ctx.method,
             },
-        });
-        ctx.state.logger.push({ body: ctx.request.body }).log('Request received');
+        };
+        Logger.isInfoEnabled && Logger.info(message);
+
+        message.body = ctx.request.body;
+        message.msg = 'Request received';
+        Logger.isInfoEnabled && Logger.info(message);
+
         await next();
 
         const { body, status } = ctx.response;
-        ctx.state.logger.push({ response: { body, status } }).log('Request processed');
+        message.response = { body, status };
+        message.msg = 'Request processed';
+        Logger.isInfoEnabled && Logger.info(message);
     });
 
     report.use(async (ctx, next) => {
-        ctx.state.logger = reportLogger.push({
+        const message = {
+            context: { app: 'report' },
             request: {
                 id: generateSlug(4),
                 path: ctx.path,
                 method: ctx.method,
             },
-        });
-        ctx.state.logger.push({ body: ctx.request.body }).log('Request received');
+        };
+        Logger.isInfoEnabled && Logger.info(message);
+
+        message.body = ctx.request.body;
+        message.msg = 'Request received';
+        Logger.isInfoEnabled && Logger.info(message);
+
         await next();
 
         const { body, status } = ctx.response;
-        ctx.state.logger.push({ response: { body, status } }).log('Request processed');
+        message.response = { body, status };
+        message.msg = 'Request processed';
+        Logger.isInfoEnabled && Logger.info(message);
     });
 
     testApi.use(async (ctx, next) => {
-        ctx.state.logger = testApiLogger.push({
+        const message = {
+            context: { app: 'test-api' },
             request: {
                 id: generateSlug(4),
                 path: ctx.path,
                 method: ctx.method,
             },
-        });
-        ctx.state.logger.push({ body: ctx.request.body }).log('Request received');
+        };
+        Logger.isInfoEnabled && Logger.info(message);
+
+        message.body = ctx.request.body;
+        message.msg = 'Request received';
+        Logger.isInfoEnabled && Logger.info(message);
+
         await next();
 
         const { body, status } = ctx.response;
-        ctx.state.logger.push({ response: { body, status } }).log('Request processed');
+        message.response = { body, status };
+        message.msg = 'Request processed';
+        Logger.isInfoEnabled && Logger.info(message);
     });
 
     simulator.use(rewriteContentTypeHeader);
@@ -177,15 +192,14 @@ async function rewriteContentTypeHeader(ctx, next) {
     const simValidator = new Validate();
 
     simulator.use(async (ctx, next) => {
-        ctx.state.logger.log('Validating request');
         try {
-            ctx.state.logger.push({ ctx_request: ctx.request }).log('validating request');
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Validating request - ${ctx.request}`);
             ctx.state.path = simValidator.validateRequest(ctx, ctx.state.logger);
-            ctx.state.logger.log('Request passed validation');
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Request passed validation - ${ctx.request}`);
             ctx.state.model = model;
             await next();
         } catch (err) {
-            ctx.state.logger.push({ err }).log('Request failed validation.');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Request failed validation. - ${err}`);
             ctx.response.status = 400;
             ctx.response.body = {
                 message: err.message,
@@ -197,13 +211,13 @@ async function rewriteContentTypeHeader(ctx, next) {
     const reportValidator = new Validate();
 
     report.use(async (ctx, next) => {
-        ctx.state.logger.log('Validating request');
         try {
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Validating request - ${ctx.request}`);
             ctx.state.path = reportValidator.validateRequest(ctx, ctx.state.logger);
-            ctx.state.logger.log('Request passed validation');
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Request passed validation - ${ctx.request}`);
             await next();
         } catch (err) {
-            ctx.state.logger.push({ err }).log('Request failed validation.');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Request failed validation. - ${err}`);
             ctx.response.status = 400;
             ctx.response.body = {
                 message: err.message,
@@ -215,14 +229,14 @@ async function rewriteContentTypeHeader(ctx, next) {
     const testApiValidator = new Validate();
 
     testApi.use(async (ctx, next) => {
-        ctx.state.logger.log('Validating request');
         try {
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Validating request - ${ctx.request}`);
             ctx.state.path = testApiValidator.validateRequest(ctx, ctx.state.logger);
-            ctx.state.logger.log('Request passed validation');
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Request passed validation - ${ctx.request}`);
             ctx.state.model = model;
             await next();
         } catch (err) {
-            ctx.state.logger.push({ err }).log('Request failed validation.');
+            ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Request failed validation. - ${err}`);
             ctx.response.status = 400;
             ctx.response.body = {
                 message: err.message,
@@ -239,7 +253,7 @@ async function rewriteContentTypeHeader(ctx, next) {
             method: ctx.request.method,
         };
 
-        ctx.state.logger.log(`Rules engine evaluating request against facts: ${util.inspect(facts)}`);
+        ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Rules engine evaluating request against facts: ${util.inspect(facts)}`);
 
         const res = await rulesEngine.evaluate(facts);
         if (res && res.length > 0) {
@@ -251,7 +265,7 @@ async function rewriteContentTypeHeader(ctx, next) {
 
             if (evt.noResponse) {
                 // simulating no response
-                ctx.state.logger.log('Rule engine is triggering a no response scenario');
+                ctx.state.logger.isInfoEnabled && ctx.state.logger.info('Rule engine is triggering a no response scenario');
                 ctx.res.end();
                 return;
             }
@@ -283,7 +297,7 @@ async function rewriteContentTypeHeader(ctx, next) {
             }
 
             const { body, statusCode } = res[0];
-            ctx.state.logger.log(`Rules engine returned a response for request: ${util.inspect(res)}.`);
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Rules engine returned a response for request: ${util.inspect(res)}.`);
             ctx.response.body = body;
             ctx.response.status = statusCode;
             return;
@@ -328,11 +342,11 @@ async function rewriteContentTypeHeader(ctx, next) {
     } else {
         simServer = simulator.listen(simulatorPort);
     }
-    simLogger.log(`Serving simulator on port ${simulatorPort}`);
+    Logger.isInfoEnabled && Logger.info(`Serving simulator on port ${simulatorPort}`);
     const reportServer = report.listen(reportPort);
-    reportLogger.log(`Serving report API on port ${reportPort}`);
+    Logger.isInfoEnabled && Logger.info(`Serving report API on port ${reportPort}`);
     const testApiServer = testApi.listen(testApiPort);
-    testApiLogger.log(`Serving test API on port ${testApiPort}`);
+    Logger.isInfoEnabled && Logger.info(`Serving test API on port ${testApiPort}`);
 
     // Gracefully handle shutdown. This should drain the servers.
     process.on('SIGTERM', () => {

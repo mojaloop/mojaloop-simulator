@@ -180,7 +180,7 @@ class Validator {
             .slice(1)
             .map((m, i) => ({ [result.matcher.params[i]]: m })));
 
-        logger.push({ path, result }).log('Matched path');
+        this.logger.isInfoEnabled && logger.info({ path, result }).log('Matched path');
         return result;
     }
 
