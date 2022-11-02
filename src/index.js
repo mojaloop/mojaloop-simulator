@@ -30,7 +30,7 @@
 /* istanbul ignore file */
 
 const Koa = require('koa');
-const koaBody = require('koa-body');
+const koaBody = require('koa-body').default;
 const { generateSlug } = require('random-word-slugs');
 const yaml = require('yamljs');
 const util = require('util');
