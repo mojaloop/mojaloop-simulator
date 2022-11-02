@@ -23,14 +23,17 @@
 'use strict';
 
 /* eslint-disable no-unused-vars */
+
+// Load config
+const Config = require('#src/lib/config');
+
 const test = require('ava');
 const { stringify } = require('querystring');
 const { v1: uuid } = require('uuid');
 
-const { map } = require('~/reports/handlers');
-const Model = require('~/models/model');
+const { map } = require('#src/reports/handlers');
+const Model = require('#src/models/model');
 const { quote } = require('./constants');
-require('dotenv').config();
 
 const model = new Model();
 const end = new Date();
@@ -39,6 +42,9 @@ const validQuerystring = stringify({ START_DATE_TIME: '2019-05-20T21:20:56', END
 const nonFindableQuerystring = stringify({ START_DATE_TIME: '2019-05-19T21:20:00', END_DATE_TIME: '2019-05-20T21:20:56' });
 
 test.before(async (t) => {
+    const configResult = await Config(process.env.CONFIG_OVERRIDE);
+    // eslint-disable-next-line no-console
+    console.log(configResult);
     // // below line is useful for debugging
     // await model.init({ databaseFilepath: ':memory:' });
     await model.init({ databaseFilepath: process.env.MODEL_DATABASE });

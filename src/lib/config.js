@@ -16,22 +16,21 @@
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
  * Gates Foundation
- - Name Surname <name.surname@gatesfoundation.com>
 
- - Sridhar Voruganti - sridhar.voruganti@modusbox.com
+ - Name Surname <name.surname@gatesfoundation.com>
+ * Mowali
+
+ * ModusBox <https://modusbox.com>
+ - Miguel de Barros <miguel.debarros@modusbox.com>
  --------------
  ******/
+
 'use strict';
 
-const test = require('ava');
-const objectStore = require('#src/lib/objectStore/objectStoreInterface');
+const path = require('path');
 
-test('test store and get', async (t) => {
-    const testObj = {
-        testKey: 'test=value',
-    };
-    await objectStore.init();
-    await objectStore.set('test', testObj);
-    const storedValue = await objectStore.get('test');
-    t.deepEqual(storedValue, testObj, 'Response did not match expected');
-});
+module.exports = async (configFile = '.env') => {
+    return require('dotenv').config({
+        path: path.resolve(process.cwd(), configFile)
+    });
+};

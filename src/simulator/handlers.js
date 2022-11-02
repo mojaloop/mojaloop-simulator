@@ -27,7 +27,7 @@
 
 const util = require('util');
 const crypto = require('crypto');
-require('dotenv').config();
+
 const { getStackOrInspect } = require('../lib/log/log');
 const { ApiErrorCodes } = require('../models/errors');
 const objectStore = require('../lib/objectStore/objectStoreInterface');

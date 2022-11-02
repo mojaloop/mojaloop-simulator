@@ -24,7 +24,7 @@
 
 const util = require('util');
 
-const Transports = require('~/lib/log/transports');
+const Transports = require('#src/lib/log/transports');
 
 // TODO: Is `key` necessary input to the replaceOutput function?
 const replaceOutput = (key, value) => {
