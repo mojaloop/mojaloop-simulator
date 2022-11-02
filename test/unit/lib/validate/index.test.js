@@ -25,13 +25,28 @@
 'use strict';
 
 const test = require('ava');
+const sinon = require('sinon');
 const yaml = require('yamljs');
 const { v1: uuid } = require('uuid');
 
 const Validate = require('#src/lib/validate');
-const { testLogger } = require('../../TestUtils');
+const Logger = require('@mojaloop/central-services-logger');
 
 const simApiSpec = yaml.load('./src/simulator/api.yaml');
+
+let sandbox;
+
+test.beforeEach(async () => {
+    sandbox = sinon.createSandbox();
+    sandbox.stub(Logger, 'info');
+    sandbox.stub(Logger, 'error');
+    sandbox.stub(Logger, 'isInfoEnabled').value(true);
+    sandbox.stub(Logger, 'isErrorEnabled').value(true);
+});
+
+test.afterEach(async () => {
+    sandbox.restore();
+});
 
 test('Validates a simple request', async (t) => {
     // Arrange
@@ -49,7 +64,7 @@ test('Validates a simple request', async (t) => {
 
     // Act
     await validator.initialise(simApiSpec);
-    validator.validateRequest(ctx, testLogger(t));
+    validator.validateRequest(ctx, Logger);
 
     // Assert
     t.pass();
@@ -72,7 +87,7 @@ test('Validation fails with wrong method', async (t) => {
     // Act
     await validator.initialise(simApiSpec);
     t.throws(() => {
-        validator.validateRequest(ctx, testLogger(t));
+        validator.validateRequest(ctx, Logger);
     });
 
     // Assert
@@ -96,7 +111,7 @@ test('Validation fails with wrong path', async (t) => {
     // Act
     await validator.initialise(simApiSpec);
     t.throws(() => {
-        validator.validateRequest(ctx, testLogger(t));
+        validator.validateRequest(ctx, Logger);
     });
 
     // Assert
@@ -122,7 +137,7 @@ test('Validation gets a path param', async (t) => {
 
     // Act
     await validator.initialise(simApiSpec);
-    validator.validateRequest(ctx, testLogger(t));
+    validator.validateRequest(ctx, Logger);
 
     // Assert
     t.pass();
@@ -166,7 +181,7 @@ test('Validation parses a request body', async (t) => {
 
     // Act
     await validator.initialise(simApiSpec);
-    validator.validateRequest(ctx, testLogger(t));
+    validator.validateRequest(ctx, Logger);
 
     // Assert
     t.pass();
@@ -212,7 +227,7 @@ test('Validation fails on an invalid body', async (t) => {
     // Act
     await validator.initialise(simApiSpec);
     t.throws(() => {
-        validator.validateRequest(ctx, testLogger(t));
+        validator.validateRequest(ctx, Logger);
     });
 
     // Assert
