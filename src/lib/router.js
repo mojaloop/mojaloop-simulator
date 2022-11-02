@@ -31,7 +31,7 @@ module.exports = (handlerMap) => async (ctx, next) => {
         // TODO: response content according to API spec. Should probably actually be a 404 here.
         ctx.response.body = { statusCode: 404, message: 'Not found' };
     } else {
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Found handler - ${handler}`);
+        ctx.state.logger.isInfoEnabled && ctx.state.logger.child(`${handler}`).info('Found handler');
         await handler(ctx);
     }
     await next();

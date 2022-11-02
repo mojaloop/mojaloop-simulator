@@ -90,7 +90,12 @@ async function rewriteContentTypeHeader(ctx, next) {
     await setConfig(process.env);
     const conf = getConfig();
 
-    const rulesEngine = new RulesEngine({ logger: Logger });
+    // Set up a logger for each running server
+    const simLogger = Logger.child({ context: { app: 'simulator' } });
+    const reportLogger = Logger.child({ context: { app: 'report' } });
+    const testApiLogger = Logger.child({ context: { app: 'test-api' } });
+
+    const rulesEngine = new RulesEngine({ logger: simLogger });
 
     // parse rules file
     const rules = require(process.env.RULES_FILE);
@@ -124,72 +129,57 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     // Add a log context for each request, log the receipt and handling thereof
     simulator.use(async (ctx, next) => {
-        const message = {
-            context: { app: 'simulator' },
+        ctx.state.logger = simLogger;
+        ctx.state.logger.child({
             request: {
                 id: generateSlug(4),
                 path: ctx.path,
                 method: ctx.method,
-            },
-        };
-        Logger.isInfoEnabled && Logger.info(util.inspect(message));
-
-        message.body = ctx.request.body;
-        message.msg = 'Request received';
-        Logger.isInfoEnabled && Logger.info(util.inspect(message));
+            }
+        });
+        // debug only for health endpoint
+        Logger.isInfoEnabled && ctx.state.logger.child({ body: ctx.request.body }).info('Request received');
 
         await next();
 
         const { body, status } = ctx.response;
-        message.response = { body, status };
-        message.msg = 'Request processed';
-        Logger.isInfoEnabled && Logger.info(util.inspect(message));
+        Logger.isInfoEnabled && ctx.state.logger.child({ response: { body, status } }).info('Request processed');
     });
 
     report.use(async (ctx, next) => {
-        const message = {
-            context: { app: 'report' },
+        ctx.state.logger = reportLogger;
+        ctx.state.logger.child({
             request: {
                 id: generateSlug(4),
                 path: ctx.path,
                 method: ctx.method,
-            },
-        };
-        Logger.isInfoEnabled && Logger.info(util.inspect(message));
-
-        message.body = ctx.request.body;
-        message.msg = 'Request received';
-        Logger.isInfoEnabled && Logger.info(util.inspect(message));
+            }
+        });
+        // debug only for health endpoint
+        Logger.isInfoEnabled && ctx.state.logger.child({ body: ctx.request.body }).info('Request received');
 
         await next();
 
         const { body, status } = ctx.response;
-        message.response = { body, status };
-        message.msg = 'Request processed';
-        Logger.isInfoEnabled && Logger.info(util.inspect(message));
+        Logger.isInfoEnabled && ctx.state.logger.child({ response: { body, status } }).info('Request processed');
     });
 
     testApi.use(async (ctx, next) => {
-        const message = {
-            context: { app: 'test-api' },
+        ctx.state.logger = testApiLogger;
+        ctx.state.logger.child({
             request: {
                 id: generateSlug(4),
                 path: ctx.path,
                 method: ctx.method,
-            },
-        };
-        Logger.isInfoEnabled && Logger.info(util.inspect(message));
-
-        message.body = ctx.request.body;
-        message.msg = 'Request received';
-        Logger.isInfoEnabled && Logger.info(util.inspect(message));
+            }
+        });
+        // debug only for health endpoint
+        Logger.isInfoEnabled && ctx.state.logger.child({ body: ctx.request.body }).info('Request received');
 
         await next();
 
         const { body, status } = ctx.response;
-        message.response = { body, status };
-        message.msg = 'Request processed';
-        Logger.isInfoEnabled && Logger.info(util.inspect(message));
+        Logger.isInfoEnabled && ctx.state.logger.child({ response: { body, status } }).info('Request processed');
     });
 
     simulator.use(rewriteContentTypeHeader);
@@ -199,7 +189,6 @@ async function rewriteContentTypeHeader(ctx, next) {
     const simValidator = new Validate();
 
     simulator.use(async (ctx, next) => {
-        ctx.state.logger = Logger;
         try {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Validating request - ${util.inspect(ctx.request)}`);
             ctx.state.path = simValidator.validateRequest(ctx, ctx.state.logger);
@@ -219,7 +208,6 @@ async function rewriteContentTypeHeader(ctx, next) {
     const reportValidator = new Validate();
 
     report.use(async (ctx, next) => {
-        ctx.state.logger = Logger;
         try {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Validating request - ${util.inspect(ctx.request)}`);
             ctx.state.path = reportValidator.validateRequest(ctx, ctx.state.logger);
@@ -238,7 +226,6 @@ async function rewriteContentTypeHeader(ctx, next) {
     const testApiValidator = new Validate();
 
     testApi.use(async (ctx, next) => {
-        ctx.state.logger = Logger;
         try {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Validating request - ${util.inspect(ctx.request)}`);
             ctx.state.path = testApiValidator.validateRequest(ctx, ctx.state.logger);
@@ -352,11 +339,11 @@ async function rewriteContentTypeHeader(ctx, next) {
     } else {
         simServer = simulator.listen(simulatorPort);
     }
-    Logger.isInfoEnabled && Logger.info(`Serving simulator on port ${simulatorPort}`);
+    Logger.isInfoEnabled && simLogger.info(`Serving simulator on port ${simulatorPort}`);
     const reportServer = report.listen(reportPort);
-    Logger.isInfoEnabled && Logger.info(`Serving report API on port ${reportPort}`);
+    Logger.isInfoEnabled && reportLogger.info(`Serving report API on port ${reportPort}`);
     const testApiServer = testApi.listen(testApiPort);
-    Logger.isInfoEnabled && Logger.info(`Serving test API on port ${testApiPort}`);
+    Logger.isInfoEnabled && testApiLogger.info(`Serving test API on port ${testApiPort}`);
 
     // Gracefully handle shutdown. This should drain the servers.
     process.on('SIGTERM', () => {

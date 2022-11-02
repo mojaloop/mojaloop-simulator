@@ -24,6 +24,7 @@
 
 const util = require('util');
 
+
 /**
  * @function getStackOrInspect
  * @description Given an anonymous error, return said error's stack if it has it, or util.inspect it
