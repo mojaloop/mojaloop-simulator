@@ -26,78 +26,8 @@
 const test = require('ava');
 
 const {
-    Logger, Transports, getStackOrInspect, _replaceOutput,
+    getStackOrInspect, _replaceOutput,
 } = require('#src/lib/log/log');
-
-test('sets the space', (t) => {
-    const testTransport = (input) => input;
-    const logger = new Logger({
-        context: { app: 'simulator' },
-        space: 2,
-        transports: [testTransport],
-    });
-
-    logger.setSpace(10);
-    t.is(true, true);
-});
-
-test('initializes the logger and prints', (t) => {
-    // Arrange
-    const logger = new Logger({
-        context: { app: 'simulator' },
-        space: 2,
-        transports: [Transports.nullTransport],
-    });
-
-    // Act
-    logger.push('Testing 123').log('Testing 456');
-
-    // Assert
-    t.pass();
-});
-
-test('initializes with an empty or no context', (t) => {
-    // Arrange
-    const logger = new Logger();
-
-    // Act
-    logger.push('Testing 123').log('Testing 456');
-
-    // Assert
-    t.pass();
-});
-
-test('logs an empty message', (t) => {
-    // Arrange
-    const logger = new Logger();
-
-    // Act
-    logger.push();
-    logger.log();
-
-    // Assert
-    t.pass();
-});
-
-test('Throws when initializing a logger with reserved words', (t) => {
-    // Arrange
-    t.throws(() => {
-        // eslint-disable-next-line no-new
-        new Logger({
-            context: { timestamp: '12345' },
-        });
-    });
-
-    t.throws(() => {
-        // eslint-disable-next-line no-new
-        new Logger({
-            context: { msg: '12345' },
-        });
-    });
-
-    // Assert
-    t.pass();
-});
 
 test('getStackOrInspect prints an error stack', (t) => {
     // Arrange

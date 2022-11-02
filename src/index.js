@@ -132,18 +132,18 @@ async function rewriteContentTypeHeader(ctx, next) {
                 method: ctx.method,
             },
         };
-        Logger.isInfoEnabled && Logger.info(message);
+        Logger.isInfoEnabled && Logger.info(util.inspect(message));
 
         message.body = ctx.request.body;
         message.msg = 'Request received';
-        Logger.isInfoEnabled && Logger.info(message);
+        Logger.isInfoEnabled && Logger.info(util.inspect(message));
 
         await next();
 
         const { body, status } = ctx.response;
         message.response = { body, status };
         message.msg = 'Request processed';
-        Logger.isInfoEnabled && Logger.info(message);
+        Logger.isInfoEnabled && Logger.info(util.inspect(message));
     });
 
     report.use(async (ctx, next) => {
@@ -155,18 +155,18 @@ async function rewriteContentTypeHeader(ctx, next) {
                 method: ctx.method,
             },
         };
-        Logger.isInfoEnabled && Logger.info(message);
+        Logger.isInfoEnabled && Logger.info(util.inspect(message));
 
         message.body = ctx.request.body;
         message.msg = 'Request received';
-        Logger.isInfoEnabled && Logger.info(message);
+        Logger.isInfoEnabled && Logger.info(util.inspect(message));
 
         await next();
 
         const { body, status } = ctx.response;
         message.response = { body, status };
         message.msg = 'Request processed';
-        Logger.isInfoEnabled && Logger.info(message);
+        Logger.isInfoEnabled && Logger.info(util.inspect(message));
     });
 
     testApi.use(async (ctx, next) => {
@@ -178,18 +178,18 @@ async function rewriteContentTypeHeader(ctx, next) {
                 method: ctx.method,
             },
         };
-        Logger.isInfoEnabled && Logger.info(message);
+        Logger.isInfoEnabled && Logger.info(util.inspect(message));
 
         message.body = ctx.request.body;
         message.msg = 'Request received';
-        Logger.isInfoEnabled && Logger.info(message);
+        Logger.isInfoEnabled && Logger.info(util.inspect(message));
 
         await next();
 
         const { body, status } = ctx.response;
         message.response = { body, status };
         message.msg = 'Request processed';
-        Logger.isInfoEnabled && Logger.info(message);
+        Logger.isInfoEnabled && Logger.info(util.inspect(message));
     });
 
     simulator.use(rewriteContentTypeHeader);
@@ -199,10 +199,11 @@ async function rewriteContentTypeHeader(ctx, next) {
     const simValidator = new Validate();
 
     simulator.use(async (ctx, next) => {
+        ctx.state.logger = Logger;
         try {
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Validating request - ${ctx.request}`);
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Validating request - ${util.inspect(ctx.request)}`);
             ctx.state.path = simValidator.validateRequest(ctx, ctx.state.logger);
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Request passed validation - ${ctx.request}`);
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Request passed validation - ${util.inspect(ctx.request)}`);
             ctx.state.model = model;
             await next();
         } catch (err) {
@@ -218,10 +219,11 @@ async function rewriteContentTypeHeader(ctx, next) {
     const reportValidator = new Validate();
 
     report.use(async (ctx, next) => {
+        ctx.state.logger = Logger;
         try {
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Validating request - ${ctx.request}`);
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Validating request - ${util.inspect(ctx.request)}`);
             ctx.state.path = reportValidator.validateRequest(ctx, ctx.state.logger);
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Request passed validation - ${ctx.request}`);
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Request passed validation - ${util.inspect(ctx.request)}`);
             await next();
         } catch (err) {
             ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Request failed validation. - ${err}`);
@@ -236,10 +238,11 @@ async function rewriteContentTypeHeader(ctx, next) {
     const testApiValidator = new Validate();
 
     testApi.use(async (ctx, next) => {
+        ctx.state.logger = Logger;
         try {
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Validating request - ${ctx.request}`);
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Validating request - ${util.inspect(ctx.request)}`);
             ctx.state.path = testApiValidator.validateRequest(ctx, ctx.state.logger);
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Request passed validation - ${ctx.request}`);
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Request passed validation - ${util.inspect(ctx.request)}`);
             ctx.state.model = model;
             await next();
         } catch (err) {
