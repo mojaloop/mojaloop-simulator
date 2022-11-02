@@ -1,6 +1,7 @@
 const testLogger = (t) => ({
     log: (message) => t.log(message),
-    push: () => ({ log: (message) => t.log(message) }),
+    info: () => ({ log: (message) => t.log(message) }),
+    error: () => ({ log: (message) => t.log(message) }),
 });
 
 /**
