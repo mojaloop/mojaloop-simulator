@@ -26,7 +26,7 @@
 const test = require('ava');
 
 const {
-    getStackOrInspect, _replaceOutput,
+    getStackOrInspect
 } = require('#src/lib/log/log');
 
 test('getStackOrInspect prints an error stack', (t) => {
@@ -61,28 +61,4 @@ test('getStackOrInspect gets nested data', (t) => {
 
     // Assert
     t.notDeepEqual(resultDefault, resultDepth4, 'Values should not match.');
-});
-
-test('replaceOutput handles a function', (t) => {
-    // Arrange
-    const input = (a) => `You gave me ${a}.`;
-    const expected = '[Function: input]';
-
-    // Act
-    const result = _replaceOutput(null, input);
-
-    // Assert
-    t.is(result, expected, 'Expected values to match');
-});
-
-test('replaceOutput handles a regex', (t) => {
-    // Arrange
-    const input = /\{[^{}]+\}/g;
-    const expected = '/\\{[^{}]+\\}/g';
-
-    // Act
-    const result = _replaceOutput(null, input);
-
-    // Assert
-    t.is(result, expected, 'Expected values to match');
 });

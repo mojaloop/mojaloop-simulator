@@ -24,24 +24,6 @@
 
 const util = require('util');
 
-const Transports = require('#src/lib/log/transports');
-
-// TODO: Is `key` necessary input to the replaceOutput function?
-const replaceOutput = (key, value) => {
-    if (value instanceof Error) {
-        return Object
-            .getOwnPropertyNames(value)
-            .reduce((acc, objectKey) => ({ ...acc, [objectKey]: value[objectKey] }), {});
-    }
-    if (value instanceof RegExp) {
-        return value.toString();
-    }
-    if (value instanceof Function) {
-        return `[Function: ${value.name || 'anonymous'}]`;
-    }
-    return value;
-};
-
 /**
  * @function getStackOrInspect
  * @description Given an anonymous error, return said error's stack if it has it, or util.inspect it
@@ -50,8 +32,5 @@ const replaceOutput = (key, value) => {
 const getStackOrInspect = (err, options = null) => err.stack || util.inspect(err, options);
 
 module.exports = {
-    Transports,
     getStackOrInspect,
-    // Export for unit testing only
-    _replaceOutput: replaceOutput,
 };

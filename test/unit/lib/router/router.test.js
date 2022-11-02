@@ -26,14 +26,31 @@
 const test = require('ava');
 
 const router = require('#src/lib/router');
-const { testLogger } = require('../../TestUtils');
+const Logger = require('@mojaloop/central-services-logger');
+const sinon = require('sinon');
+
+let sandbox;
+
+test.beforeEach(async () => {
+    sandbox = sinon.createSandbox();
+    sandbox.stub(Logger, 'info');
+    sandbox.stub(Logger, 'error');
+    sandbox.stub(Logger, 'isInfoEnabled').value(true);
+    sandbox.stub(Logger, 'isErrorEnabled').value(true);
+});
+
+
+test.afterEach(async () => {
+    sandbox.restore();
+});
+
 
 test('Handles when a route cannot be found with a 404', async (t) => {
     // Arrange
     const ctx = {
         state: {
             path: { pattern: '*' },
-            logger: testLogger(t),
+            logger: Logger,
         },
         response: {},
     };
@@ -45,6 +62,7 @@ test('Handles when a route cannot be found with a 404', async (t) => {
 
     // Assert
     t.is(ctx.response.status, 404, 'Router returned the wrong status');
+    t.truthy(Logger.info.calledWith('No handler found'));
 });
 
 test('Handles when a route can be found', async (t) => {
@@ -53,7 +71,7 @@ test('Handles when a route can be found', async (t) => {
         method: 'method1',
         state: {
             path: { pattern: '*' },
-            logger: testLogger(t),
+            logger: Logger,
         },
         response: {},
     };
@@ -71,4 +89,5 @@ test('Handles when a route can be found', async (t) => {
 
     // Assert
     t.is(ctx.response.status, 200, 'Router returned the wrong status');
+    t.truthy(Logger.info.called);
 });

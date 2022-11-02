@@ -54,7 +54,7 @@ class RulesEngine {
             rules.forEach((r) => { this.engine.addRule(r); });
             this.logger.isInfoEnabled && this.logger.info(`Rules loaded: ${util.inspect(rules, { depth: 20 })}`);
         } catch (err) {
-            this.logger.isErrorEnabled &&this.logger.error(`Error loading rules: ${getStackOrInspect(err)}`);
+            this.logger.isErrorEnabled && this.logger.error(`Error loading rules: ${getStackOrInspect(err)}`);
             throw err;
         }
     }

@@ -41,6 +41,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
             ctx.response.status = 404;
             return;
         }
+        ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`getParticipantsByTypeAndId is returning body: ${util.inspect(res)}`);
         ctx.response.body = { fspId: process.env.DFSP_ID };
         ctx.response.status = 200;
     } catch (err) {
@@ -60,6 +61,7 @@ const getPartiesByTypeAndId = async (ctx) => {
             ctx.response.status = 404;
             return;
         }
+        ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`getPartiesByTypeAndId is returning body: ${util.inspect(res)}`);
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
@@ -70,17 +72,12 @@ const getPartiesByTypeAndId = async (ctx) => {
 };
 
 const getOTPById = async (ctx) => {
-    try {
-        const res = {
-            otpValue: Math.floor(Math.random() * 90000) + 10000,
-        };
-        ctx.response.body = res;
-        ctx.response.status = 200;
-    } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in getOTPById: ${getStackOrInspect(err)}`);
-        ctx.response.body = ApiErrorCodes.SERVER_ERROR;
-        ctx.response.status = 500;
-    }
+    const res = {
+        otpValue: Math.floor(Math.random() * 90000) + 10000,
+    };
+    ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`getOTPById is returning body: ${util.inspect(res)}`);
+    ctx.response.body = res;
+    ctx.response.status = 200;
 };
 
 const postTransfers = async (ctx) => {
@@ -146,6 +143,7 @@ const getBulkQuoteById = async (ctx) => {
             ctx.response.status = 404;
             return;
         }
+        ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`getBulkQuoteById is returning body: ${util.inspect(res)}`);
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
@@ -190,6 +188,7 @@ const getBulkTransferById = async (ctx) => {
             ctx.response.status = 404;
             return;
         }
+        ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`getBulkTransferById is returning body: ${util.inspect(res)}`);
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
@@ -239,6 +238,7 @@ const getScopesById = async (ctx) => {
             },
         ],
     };
+    ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`getScopesById is returning body: ${res}`);
     ctx.response.body = res;
     ctx.response.status = 200;
 };
