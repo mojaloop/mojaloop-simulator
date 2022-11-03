@@ -64,8 +64,10 @@ test.beforeEach(async (t) => {
     sandbox = sinon.createSandbox();
     sandbox.stub(Logger, 'info');
     sandbox.stub(Logger, 'error');
+    sandbox.stub(Logger, 'debug');
     sandbox.stub(Logger, 'isInfoEnabled').value(true);
     sandbox.stub(Logger, 'isErrorEnabled').value(true);
+    sandbox.stub(Logger, 'isDebugEnabled').value(true);
     logLayer = new LogLayer({
         logger: {
             instance: Logger,
@@ -80,6 +82,7 @@ test.beforeEach(async (t) => {
     });
     sandbox.stub(logLayer, 'info');
     sandbox.stub(logLayer, 'error');
+    sandbox.stub(logLayer, 'debug');
 
     const model = new Model();
     await model.init({ databaseFilepath: ':memory:' });

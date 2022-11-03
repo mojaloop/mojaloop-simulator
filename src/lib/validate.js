@@ -180,7 +180,9 @@ class Validator {
             .slice(1)
             .map((m, i) => ({ [result.matcher.params[i]]: m })));
 
+        /* istanbul ignore next */
         if (path == '/' || path == '/health' || path) {
+            /* istanbul ignore next */
             logger.getLoggerInstance().isDebugEnabled && logger.child(({ path, result })).debug('Matched path');
         } else {
             logger.getLoggerInstance().isInfoEnabled && logger.child(({ path, result })).info('Matched path');
