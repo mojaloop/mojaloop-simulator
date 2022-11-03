@@ -173,17 +173,30 @@ async function rewriteContentTypeHeader(ctx, next) {
                 method: ctx.method,
             }
         });
-        // debug only for health endpoint
-        ctx.state.logger.getLoggerInstance().isInfoEnabled && ctx.state.logger.withContext({
-            body: ctx.request.body
-        }).info('Request received');
 
-        await next();
+        if (ctx.path == '/' || ctx.path == '/health') {
+            ctx.state.logger.getLoggerInstance().isDebugEnabled && ctx.state.logger.withContext({
+                body: ctx.request.body
+            }).debug('Request received');
 
-        const { body, status } = ctx.response;
-        ctx.state.logger.getLoggerInstance().isInfoEnabled && ctx.state.logger.withContext({
-            response: { body, status }
-        }).info('Request processed');
+            await next();
+
+            const { body, status } = ctx.response;
+            ctx.state.logger.getLoggerInstance().isDebugEnabled && ctx.state.logger.withContext({
+                response: { body, status }
+            }).debug('Request processed');
+        } else {
+            ctx.state.logger.getLoggerInstance().isInfoEnabled && ctx.state.logger.withContext({
+                body: ctx.request.body
+            }).info('Request received');
+
+            await next();
+
+            const { body, status } = ctx.response;
+            ctx.state.logger.getLoggerInstance().isInfoEnabled && ctx.state.logger.withContext({
+                response: { body, status }
+            }).info('Request processed');
+        }
     });
 
     report.use(async (ctx, next) => {
@@ -238,10 +251,17 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     simulator.use(async (ctx, next) => {
         try {
-            ctx.state.logger.getLoggerInstance().isInfoEnabled && ctx.state.logger.info(`Validating request - ${util.inspect(ctx.request)}`);
-            ctx.state.path = simValidator.validateRequest(ctx, ctx.state.logger);
-            ctx.state.logger.getLoggerInstance().isInfoEnabled && ctx.state.logger.info(`Request passed validation - ${util.inspect(ctx.request)}`);
-            ctx.state.model = model;
+            if (ctx.path == '/' || ctx.path == '/health') {
+                ctx.state.logger.getLoggerInstance().isDebugEnabled && ctx.state.logger.debug(`Validating request - ${util.inspect(ctx.request)}`);
+                ctx.state.path = simValidator.validateRequest(ctx, ctx.state.logger);
+                ctx.state.logger.getLoggerInstance().isDebugEnabled && ctx.state.logger.debug(`Request passed validation - ${util.inspect(ctx.request)}`);
+                ctx.state.model = model;
+            } else {
+                ctx.state.logger.getLoggerInstance().isInfoEnabled && ctx.state.logger.info(`Validating request - ${util.inspect(ctx.request)}`);
+                ctx.state.path = simValidator.validateRequest(ctx, ctx.state.logger);
+                ctx.state.logger.getLoggerInstance().isInfoEnabled && ctx.state.logger.info(`Request passed validation - ${util.inspect(ctx.request)}`);
+                ctx.state.model = model;
+            }
             await next();
         } catch (err) {
             ctx.state.logger.getLoggerInstance().isErrorEnabled && ctx.state.logger.error(`Request failed validation. - ${err}`);
@@ -297,8 +317,11 @@ async function rewriteContentTypeHeader(ctx, next) {
             body: ctx.request.body,
             method: ctx.request.method,
         };
-
-        ctx.state.logger.getLoggerInstance().isInfoEnabled && ctx.state.logger.info(`Rules engine evaluating request against facts: ${util.inspect(facts)}`);
+        if (ctx.path == '/' || ctx.path == '/health') {
+            ctx.state.logger.getLoggerInstance().isDebugEnabled && ctx.state.logger.debug(`Rules engine evaluating request against facts: ${util.inspect(facts)}`);
+        } else {
+            ctx.state.logger.getLoggerInstance().isInfoEnabled && ctx.state.logger.info(`Rules engine evaluating request against facts: ${util.inspect(facts)}`);
+        }
 
         const res = await rulesEngine.evaluate(facts);
         if (res && res.length > 0) {

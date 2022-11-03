@@ -68,13 +68,21 @@ class RulesEngine {
      */
     async evaluate(facts) {
         return new Promise((resolve, reject) => {
-            this.logger.getLoggerInstance().isInfoEnabled && this.logger.info(`Rule engine evaluating facts: ${util.inspect(facts)}`);
+            if (facts.path == '/' || facts.path == '/health') {
+                this.logger.getLoggerInstance().isDebugEnabled && this.logger.debug(`Rule engine evaluating facts: ${util.inspect(facts)}`);
+            } else {
+                this.logger.getLoggerInstance().isInfoEnabled && this.logger.info(`Rule engine evaluating facts: ${util.inspect(facts)}`);
+
+            }
             this.engine
                 .run(facts)
                 .then((engineResult) => {
                     const { events } = engineResult;
-
-                    this.logger.getLoggerInstance().isInfoEnabled && this.logger.info(`Rule engine returning events: ${util.inspect(engineResult)}`);
+                    if (facts.path == '/' || facts.path == '/health') {
+                        this.logger.getLoggerInstance().isDebugEnabled && this.logger.debug(`Rule engine returning events: ${util.inspect(engineResult)}`);
+                    } else {
+                        this.logger.getLoggerInstance().isInfoEnabled && this.logger.info(`Rule engine returning events: ${util.inspect(engineResult)}`);
+                    }
                     // Events is always longer than 0 for istanbul
                     /* istanbul ignore next */
                     return resolve(events.length === 0 ? null : events.map((e) => e.params));
