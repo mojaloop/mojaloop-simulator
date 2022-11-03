@@ -28,8 +28,10 @@ const test = require('ava');
 const router = require('#src/lib/router');
 const Logger = require('@mojaloop/central-services-logger');
 const sinon = require('sinon');
+const { LogLayer, LoggerType } = require('loglayer');
 
 let sandbox;
+let logLayer;
 
 test.beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -37,10 +39,24 @@ test.beforeEach(async () => {
     sandbox.stub(Logger, 'error');
     sandbox.stub(Logger, 'isInfoEnabled').value(true);
     sandbox.stub(Logger, 'isErrorEnabled').value(true);
+    logLayer = new LogLayer({
+        logger: {
+            instance: Logger,
+            type: LoggerType.WINSTON,
+        },
+        context: {
+            // we'll put our context into a field called context
+            fieldName: 'context'
+        }
+    }).withContext({
+        app: 'simulator'
+    });
+    sandbox.stub(logLayer, 'info');
+    sandbox.stub(logLayer, 'error');
 });
 
 
-test.afterEach(async () => {
+test.afterEach.always(async () => {
     sandbox.restore();
 });
 
@@ -50,7 +66,7 @@ test('Handles when a route cannot be found with a 404', async (t) => {
     const ctx = {
         state: {
             path: { pattern: '*' },
-            logger: Logger,
+            logger: logLayer,
         },
         response: {},
     };
@@ -62,7 +78,7 @@ test('Handles when a route cannot be found with a 404', async (t) => {
 
     // Assert
     t.is(ctx.response.status, 404, 'Router returned the wrong status');
-    t.truthy(Logger.info.calledWith('No handler found'));
+    t.truthy(logLayer.info.calledWith('No handler found'));
 });
 
 test('Handles when a route can be found', async (t) => {
@@ -71,7 +87,7 @@ test('Handles when a route can be found', async (t) => {
         method: 'method1',
         state: {
             path: { pattern: '*' },
-            logger: Logger,
+            logger: logLayer,
         },
         response: {},
     };
@@ -89,5 +105,5 @@ test('Handles when a route can be found', async (t) => {
 
     // Assert
     t.is(ctx.response.status, 200, 'Router returned the wrong status');
-    t.truthy(Logger.info.called);
+    t.truthy(logLayer.info.called);
 });

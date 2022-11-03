@@ -27,11 +27,13 @@
 const test = require('ava');
 const Logger = require('@mojaloop/central-services-logger');
 const sinon = require('sinon');
+const { LogLayer, LoggerType } = require('loglayer');
 
 const RulesEngine = require('#src/lib/rules-engine');
 const rules = require('#rules/example');
 
 let sandbox;
+let logLayer;
 
 test.beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -39,16 +41,30 @@ test.beforeEach(async () => {
     sandbox.stub(Logger, 'error');
     sandbox.stub(Logger, 'isInfoEnabled').value(true);
     sandbox.stub(Logger, 'isErrorEnabled').value(true);
+    logLayer = new LogLayer({
+        logger: {
+            instance: Logger,
+            type: LoggerType.WINSTON,
+        },
+        context: {
+            // we'll put our context into a field called context
+            fieldName: 'context'
+        }
+    }).withContext({
+        app: 'simulator'
+    });
+    sandbox.stub(logLayer, 'info');
+    sandbox.stub(logLayer, 'error');
 });
 
-test.afterEach(async () => {
+test.afterEach.always(async () => {
     sandbox.restore();
 });
 
 test('Sets up the rules engine with empty rules', (t) => {
     // Arrange
     const emptyRules = [];
-    const rulesEngine = new RulesEngine({ logger: Logger });
+    const rulesEngine = new RulesEngine({ logger: logLayer });
 
     // Act
     rulesEngine.loadRules(emptyRules);
@@ -61,31 +77,31 @@ test('Sets up the rules engine with empty rules', (t) => {
 test('Fails to load the rules with invalid input', (t) => {
     // Arrange
     const invalidRules = {};
-    const rulesEngine = new RulesEngine({ logger: Logger });
+    const rulesEngine = new RulesEngine({ logger: logLayer });
 
     // Act
     t.throws(() => rulesEngine.loadRules(invalidRules));
 
     // Assert
-    t.truthy(Logger.error.called);
+    t.truthy(logLayer.error.called);
     t.pass();
 });
 
 test('Sets up the rules engine with default rules', (t) => {
     // Arrange
-    const rulesEngine = new RulesEngine({ logger: Logger });
+    const rulesEngine = new RulesEngine({ logger: logLayer });
 
     // Act
     rulesEngine.loadRules(rules);
 
     // Assert
-    t.truthy(Logger.info.called);
+    t.truthy(logLayer.info.called);
     t.pass();
 });
 
 test('Evaluates a rule based on demo data', async (t) => {
     // Arrange
-    const rulesEngine = new RulesEngine({ logger: Logger });
+    const rulesEngine = new RulesEngine({ logger: logLayer });
     rulesEngine.loadRules(rules);
 
     const input = {
@@ -108,6 +124,6 @@ test('Evaluates a rule based on demo data', async (t) => {
     const response = await rulesEngine.evaluate(input);
 
     // Assert
-    t.truthy(Logger.info.called);
+    t.truthy(logLayer.info.called);
     t.deepEqual(response, expected, 'Expected values to match');
 });

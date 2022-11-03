@@ -60,6 +60,7 @@
     "json-schema-ref-parser": "^9.0.9",
     "koa": "2.13.4",
     "koa-body": "6.0.1",
+    "loglayer": "^1.4.2",
     "mustache": "4.2.0",
     "node-fetch": "^2.6.6",
     "openapi-jsonschema-parameters": "12.0.2",

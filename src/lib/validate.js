@@ -180,7 +180,7 @@ class Validator {
             .slice(1)
             .map((m, i) => ({ [result.matcher.params[i]]: m })));
 
-        logger.isInfoEnabled && logger.child(({ path, result })).info('Matched path');
+        logger.getLoggerInstance().isInfoEnabled && logger.child(({ path, result })).info('Matched path');
         return result;
     }
 
