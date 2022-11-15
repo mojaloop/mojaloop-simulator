@@ -300,7 +300,7 @@ const storeConsentRequest = async (ctx) => {
 const getConsentRequest = async (ctx) => {
     const { ID } = ctx.state.path.params;
     ctx.state.logger.getLoggerInstance().isInfoEnabled && ctx.state.logger.info(`getConsentRequest : ${ID}`);
-    // default mock reponse, if rules not configured
+    // default mock response, if rules not configured
     const res = await objectStore.get(`${ID}-CR`);
     ctx.state.logger.getLoggerInstance().isInfoEnabled && ctx.state.logger.info(`getConsentRequest : ${ID} is returning body: ${util.inspect(res)}`);
     ctx.response.body = res;
