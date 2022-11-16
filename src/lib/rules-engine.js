@@ -53,9 +53,9 @@ class RulesEngine {
     loadRules(rules) {
         try {
             rules.forEach((r) => { this.engine.addRule(r); });
-            this.logger.getLoggerInstance().isInfoEnabled && this.logger.info(`Rules loaded: ${util.inspect(rules, { depth: 20 })}`);
+            this.logger.isInfoEnabled && this.logger.info(`Rules loaded: ${util.inspect(rules, { depth: 20 })}`);
         } catch (err) {
-            this.logger.getLoggerInstance().isErrorEnabled && this.logger.error(`Error loading rules: ${getStackOrInspect(err)}`);
+            this.logger.isErrorEnabled && this.logger.error(`Error loading rules: ${getStackOrInspect(err)}`);
             throw err;
         }
     }
@@ -72,9 +72,9 @@ class RulesEngine {
             /* istanbul ignore next */
             if (facts.path == '/' || facts.path == '/health') {
                 /* istanbul ignore next */
-                this.logger.getLoggerInstance().isDebugEnabled && this.logger.debug(`Rule engine evaluating facts: ${util.inspect(facts)}`);
+                this.logger.isDebugEnabled && this.logger.debug(`Rule engine evaluating facts: ${util.inspect(facts)}`);
             } else {
-                this.logger.getLoggerInstance().isInfoEnabled && this.logger.info(`Rule engine evaluating facts: ${util.inspect(facts)}`);
+                this.logger.isInfoEnabled && this.logger.info(`Rule engine evaluating facts: ${util.inspect(facts)}`);
 
             }
             this.engine
@@ -84,9 +84,9 @@ class RulesEngine {
                     /* istanbul ignore next */
                     if (facts.path == '/' || facts.path == '/health') {
                         /* istanbul ignore next */
-                        this.logger.getLoggerInstance().isDebugEnabled && this.logger.debug(`Rule engine returning events: ${util.inspect(engineResult)}`);
+                        this.logger.isDebugEnabled && this.logger.debug(`Rule engine returning events: ${util.inspect(engineResult)}`);
                     } else {
-                        this.logger.getLoggerInstance().isInfoEnabled && this.logger.info(`Rule engine returning events: ${util.inspect(engineResult)}`);
+                        this.logger.isInfoEnabled && this.logger.info(`Rule engine returning events: ${util.inspect(engineResult)}`);
                     }
                     // Events is always longer than 0 for istanbul
                     /* istanbul ignore next */

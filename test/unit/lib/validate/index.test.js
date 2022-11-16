@@ -31,12 +31,10 @@ const { v1: uuid } = require('uuid');
 
 const Validate = require('#src/lib/validate');
 const Logger = require('@mojaloop/central-services-logger');
-const { LogLayer, LoggerType } = require('loglayer');
 
 const simApiSpec = yaml.load('./src/simulator/api.yaml');
 
 let sandbox;
-let logLayer;
 
 test.beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -46,21 +44,6 @@ test.beforeEach(async () => {
     sandbox.stub(Logger, 'isInfoEnabled').value(true);
     sandbox.stub(Logger, 'isErrorEnabled').value(true);
     sandbox.stub(Logger, 'isDebugEnabled').value(true);
-    logLayer = new LogLayer({
-        logger: {
-            instance: Logger,
-            type: LoggerType.WINSTON,
-        },
-        context: {
-            // we'll put our context into a field called context
-            fieldName: 'context'
-        }
-    }).withContext({
-        app: 'simulator'
-    });
-    sandbox.stub(logLayer, 'info');
-    sandbox.stub(logLayer, 'error');
-    sandbox.stub(logLayer, 'debug');
 });
 
 test.afterEach.always(async () => {
@@ -83,7 +66,7 @@ test('Validates a simple request', async (t) => {
 
     // Act
     await validator.initialise(simApiSpec);
-    validator.validateRequest(ctx, logLayer);
+    validator.validateRequest(ctx, Logger);
 
     // Assert
     t.pass();
@@ -106,7 +89,7 @@ test('Validation fails with wrong method', async (t) => {
     // Act
     await validator.initialise(simApiSpec);
     t.throws(() => {
-        validator.validateRequest(ctx, logLayer);
+        validator.validateRequest(ctx, Logger);
     });
 
     // Assert
@@ -130,7 +113,7 @@ test('Validation fails with wrong path', async (t) => {
     // Act
     await validator.initialise(simApiSpec);
     t.throws(() => {
-        validator.validateRequest(ctx, logLayer);
+        validator.validateRequest(ctx, Logger);
     });
 
     // Assert
@@ -156,7 +139,7 @@ test('Validation gets a path param', async (t) => {
 
     // Act
     await validator.initialise(simApiSpec);
-    validator.validateRequest(ctx, logLayer);
+    validator.validateRequest(ctx, Logger);
 
     // Assert
     t.pass();
@@ -200,7 +183,7 @@ test('Validation parses a request body', async (t) => {
 
     // Act
     await validator.initialise(simApiSpec);
-    validator.validateRequest(ctx, logLayer);
+    validator.validateRequest(ctx, Logger);
 
     // Assert
     t.pass();
@@ -246,7 +229,7 @@ test('Validation fails on an invalid body', async (t) => {
     // Act
     await validator.initialise(simApiSpec);
     t.throws(() => {
-        validator.validateRequest(ctx, logLayer);
+        validator.validateRequest(ctx, Logger);
     });
 
     // Assert

@@ -183,9 +183,9 @@ class Validator {
         /* istanbul ignore next */
         if (path == '/' || path == '/health' || path) {
             /* istanbul ignore next */
-            logger.getLoggerInstance().isDebugEnabled && logger.child(({ path, result })).debug('Matched path');
+            logger.isDebugEnabled && logger.debug({'msg': 'Matched path', path, result});
         } else {
-            logger.getLoggerInstance().isInfoEnabled && logger.child(({ path, result })).info('Matched path');
+            logger.isInfoEnabled && logger.info({'msg': 'Matched path', path, result});
         }
         return result;
     }

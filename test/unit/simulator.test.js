@@ -49,10 +49,8 @@ const {
 } = require('./constants');
 const { ApiErrorCodes } = require('#src/models/errors');
 const Logger = require('@mojaloop/central-services-logger');
-const { LogLayer, LoggerType } = require('loglayer');
 
 let sandbox;
-let logLayer;
 
 test.before(async () => {
     const configResult = await Config(process.env.CONFIG_OVERRIDE);
@@ -68,27 +66,12 @@ test.beforeEach(async (t) => {
     sandbox.stub(Logger, 'isInfoEnabled').value(true);
     sandbox.stub(Logger, 'isErrorEnabled').value(true);
     sandbox.stub(Logger, 'isDebugEnabled').value(true);
-    logLayer = new LogLayer({
-        logger: {
-            instance: Logger,
-            type: LoggerType.WINSTON,
-        },
-        context: {
-            // we'll put our context into a field called context
-            fieldName: 'context'
-        }
-    }).withContext({
-        app: 'simulator'
-    });
-    sandbox.stub(logLayer, 'info');
-    sandbox.stub(logLayer, 'error');
-    sandbox.stub(logLayer, 'debug');
 
     const model = new Model();
     await model.init({ databaseFilepath: ':memory:' });
     // eslint-disable-next-line no-param-reassign
     t.context = {
-        state: { model, logger: logLayer }, response: {},
+        state: { model, logger: Logger }, response: {},
     };
 });
 
@@ -103,7 +86,7 @@ test('get an otp', async (t) => {
     await map['/otp/{requestToPayId}'].get(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('get accounts by user Id', async (t) => {
@@ -112,7 +95,7 @@ test('get accounts by user Id', async (t) => {
     await map['/accounts/{ID}'].get(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 404);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('get scopes by Id', async (t) => {
@@ -121,7 +104,7 @@ test('get scopes by Id', async (t) => {
     await map['/scopes/{ID}'].get(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('post validateConsentRequests', async (t) => {
@@ -133,7 +116,7 @@ test('post validateConsentRequests', async (t) => {
     t.truthy(t.context.response.body);
     t.is(t.context.response.body.isValid, true);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('post sendOTP', async (t) => {
@@ -144,7 +127,7 @@ test('post sendOTP', async (t) => {
     await map['/sendOTP'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('post storeConsentRequest', async (t) => {
@@ -158,7 +141,7 @@ test('post storeConsentRequest', async (t) => {
     t.truthy(t.context.response.body);
     t.is(t.context.response.body.status, 'OK');
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('get consentRequest', async (t) => {
@@ -168,7 +151,7 @@ test('get consentRequest', async (t) => {
     await map['/store/consentRequests/{ID}'].get(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('post validate authToken valid', async (t) => {
@@ -183,7 +166,7 @@ test('post validate authToken valid', async (t) => {
     t.truthy(t.context.response.body);
     t.is(t.context.response.body.isValid, true);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('post validate authToken invalid', async (t) => {
@@ -198,7 +181,7 @@ test('post validate authToken invalid', async (t) => {
     t.truthy(t.context.response.body);
     t.is(t.context.response.body.isValid, false);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('get a party', async (t) => {
@@ -208,7 +191,7 @@ test('get a party', async (t) => {
     await map['/parties/{idType}/{idValue}'].get(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('create a quote', async (t) => {
@@ -217,7 +200,7 @@ test('create a quote', async (t) => {
     await map['/quoterequests'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('create a bulk quote', async (t) => {
@@ -226,7 +209,7 @@ test('create a bulk quote', async (t) => {
     await map['/bulkQuotes'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('get a bulk quote', async (t) => {
@@ -236,7 +219,7 @@ test('get a bulk quote', async (t) => {
     await map['/bulkQuotes/{idValue}'].get(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('create a transfer', async (t) => {
@@ -245,7 +228,7 @@ test('create a transfer', async (t) => {
     await map['/transfers'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('create a bulk transfer', async (t) => {
@@ -254,7 +237,7 @@ test('create a bulk transfer', async (t) => {
     await map['/bulkTransfers'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('get a bulk transfer', async (t) => {
@@ -264,7 +247,7 @@ test('get a bulk transfer', async (t) => {
     await map['/bulkTransfers/{idValue}'].get(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('create a transactionrequest', async (t) => {
@@ -273,7 +256,7 @@ test('create a transactionrequest', async (t) => {
     await map['/transactionrequests'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('get signed challenge', async (t) => {
@@ -283,7 +266,7 @@ test('get signed challenge', async (t) => {
     t.truthy(t.context.response.body);
     t.assert({}.hasOwnProperty.call(t.context.response.body, 'pinValue'));
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('create a transfer without a quote', async (t) => {
@@ -292,7 +275,7 @@ test('create a transfer without a quote', async (t) => {
     await map['/transfers'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('get a participant', async (t) => {
@@ -304,7 +287,7 @@ test('get a participant', async (t) => {
     t.truthy(t.context.response.body);
     t.assert({}.hasOwnProperty.call(t.context.response.body, 'fspId'));
     t.is(t.context.response.status, 200);
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
 });
 
 test('should return 404 while getting a non existing party', async (t) => {
@@ -321,7 +304,7 @@ test('should return 500 while posting a non valid quote object', async (t) => {
     await map['/quoterequests'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 500);
-    t.truthy(logLayer.error.called);
+    t.truthy(Logger.error.called);
 });
 
 test('should return 500 while posting a non valid transfer object', async (t) => {
@@ -330,7 +313,7 @@ test('should return 500 while posting a non valid transfer object', async (t) =>
     await map['/transfers'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 500);
-    t.truthy(logLayer.error.called);
+    t.truthy(Logger.error.called);
 });
 
 test('should return 500 while posting a non valid bulk quote object', async (t) => {
@@ -339,7 +322,7 @@ test('should return 500 while posting a non valid bulk quote object', async (t) 
     await map['/bulkQuotes'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 500);
-    t.truthy(logLayer.error.called);
+    t.truthy(Logger.error.called);
 });
 
 test('should return 500 while posting a non valid bulk transfer object', async (t) => {
@@ -348,7 +331,7 @@ test('should return 500 while posting a non valid bulk transfer object', async (
     await map['/bulkTransfers'].post(t.context);
     t.truthy(t.context.response.body);
     t.is(t.context.response.status, 500);
-    t.truthy(logLayer.error.called);
+    t.truthy(Logger.error.called);
 });
 
 test('should return 404 while getting a non existing participant', async (t) => {
@@ -409,7 +392,7 @@ test('postQuotes should handle 500 errors', async (t) => {
     await map['/quoterequests'].post(t.context);
     // Assert
     t.deepEqual(t.context.response, expected, 'Response did not match expected');
-    t.truthy(logLayer.error.called);
+    t.truthy(Logger.error.called);
     t.pass();
 });
 
@@ -431,7 +414,7 @@ test('postBulkQuotes should handle 500 errors', async (t) => {
     await map['/bulkQuotes'].post(t.context);
     // Assert
     t.deepEqual(t.context.response, expected, 'Response did not match expected');
-    t.truthy(logLayer.error.called);
+    t.truthy(Logger.error.called);
     t.pass();
 });
 
@@ -449,7 +432,7 @@ test('putTransfersById should handle request', async (t) => {
     await map['/transfers/{transferId}'].put(t.context);
     const expected = t.context.request.body;
     t.deepEqual(t.context.response, { body: { ...expected }, status: 200 }, 'response is received');
-    t.truthy(logLayer.info.called);
+    t.truthy(Logger.info.called);
     t.pass();
 });
 
@@ -466,7 +449,7 @@ test('getParticipantsByTypeAndId should handle 500 errors', async (t) => {
 
     // Assert
     t.deepEqual(t.context.response, expected, 'Response did not match expected');
-    t.truthy(logLayer.error.called);
+    t.truthy(Logger.error.called);
     t.pass();
 });
 
@@ -483,7 +466,7 @@ test('getPartiesByTypeAndId should handle 500 errors', async (t) => {
 
     // Assert
     t.deepEqual(t.context.response, expected, 'Response did not match expected');
-    t.truthy(logLayer.error.called);
+    t.truthy(Logger.error.called);
     t.pass();
 });
 
@@ -500,7 +483,7 @@ test('getBulkQuoteById should handle 500 errors', async (t) => {
 
     // Assert
     t.deepEqual(t.context.response, expected, 'Response did not match expected');
-    t.truthy(logLayer.error.called);
+    t.truthy(Logger.error.called);
     t.pass();
 });
 
@@ -515,7 +498,7 @@ test('postTransactionRequests should handle 500 errors', async (t) => {
 
     // Assert
     t.deepEqual(t.context.response, expected, 'Response did not match expected');
-    t.truthy(logLayer.error.called);
+    t.truthy(Logger.error.called);
     t.pass();
 });
 
@@ -532,6 +515,6 @@ test('getBulkTransferById should handle 500 errors', async (t) => {
 
     // Assert
     t.deepEqual(t.context.response, expected, 'Response did not match expected');
-    t.truthy(logLayer.error.called);
+    t.truthy(Logger.error.called);
     t.pass();
 });
