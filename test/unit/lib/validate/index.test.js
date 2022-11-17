@@ -235,3 +235,45 @@ test('Validation fails on an invalid body', async (t) => {
     // Assert
     t.pass();
 });
+
+test('Root endpoint validation logs to debug', async (t) => {
+    // Arrange
+    const validator = new Validate();
+
+    // Act
+    await validator.initialise(simApiSpec);
+    validator.validatePath('/', Logger);
+
+    // Assert
+    t.truthy(Logger.debug.called);
+    t.truthy(!Logger.info.called);
+    t.pass();
+});
+
+test('Health endpoint validation logs to debug', async (t) => {
+    // Arrange
+    const validator = new Validate();
+
+    // Act
+    await validator.initialise(simApiSpec);
+    validator.validatePath('/health', Logger);
+
+    // Assert
+    t.truthy(Logger.debug.called);
+    t.truthy(!Logger.info.called);
+    t.pass();
+});
+
+test('Endpoints other than health log to info', async (t) => {
+    // Arrange
+    const validator = new Validate();
+
+    // Act
+    await validator.initialise(simApiSpec);
+    validator.validatePath('/parties/MSISDN/1', Logger);
+
+    // Assert
+    t.truthy(Logger.info.called);
+    t.truthy(!Logger.debug.called);
+    t.pass();
+});

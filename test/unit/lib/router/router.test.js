@@ -35,8 +35,10 @@ test.beforeEach(async () => {
     sandbox = sinon.createSandbox();
     sandbox.stub(Logger, 'info');
     sandbox.stub(Logger, 'error');
+    sandbox.stub(Logger, 'debug');
     sandbox.stub(Logger, 'isInfoEnabled').value(true);
     sandbox.stub(Logger, 'isErrorEnabled').value(true);
+    sandbox.stub(Logger, 'isDebugEnabled').value(true);
 });
 
 
@@ -91,3 +93,60 @@ test('Handles when a route can be found', async (t) => {
     t.is(ctx.response.status, 200, 'Router returned the wrong status');
     t.truthy(Logger.info.called);
 });
+
+test('Health endpoint logs to debug', async (t) => {
+    // Arrange
+    const ctx = {
+        method: 'method1',
+        state: {
+            path: { pattern: '*' },
+            logger: Logger,
+        },
+        response: {},
+        path: '/health'
+    };
+    const nextFunction = () => {};
+
+    // Simple handler that sets the status to 200
+    const handler = async (handlerCtx) => {
+        // eslint-disable-next-line no-param-reassign
+        handlerCtx.response.status = 200;
+    };
+    const handlerMap = { '*': { method1: handler } }; // simple handler
+
+    // Act
+    await router(handlerMap)(ctx, nextFunction);
+
+    // Assert
+    t.is(ctx.response.status, 200, 'Router returned the wrong status');
+    t.truthy(Logger.debug.called);
+});
+
+test('Root endpoint logs to debug', async (t) => {
+    // Arrange
+    const ctx = {
+        method: 'method1',
+        state: {
+            path: { pattern: '*' },
+            logger: Logger,
+        },
+        response: {},
+        path: '/'
+    };
+    const nextFunction = () => {};
+
+    // Simple handler that sets the status to 200
+    const handler = async (handlerCtx) => {
+        // eslint-disable-next-line no-param-reassign
+        handlerCtx.response.status = 200;
+    };
+    const handlerMap = { '*': { method1: handler } }; // simple handler
+
+    // Act
+    await router(handlerMap)(ctx, nextFunction);
+
+    // Assert
+    t.is(ctx.response.status, 200, 'Router returned the wrong status');
+    t.truthy(Logger.debug.called);
+});
+
