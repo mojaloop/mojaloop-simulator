@@ -25,49 +25,82 @@
 'use strict';
 
 const test = require('ava');
+const Logger = require('@mojaloop/central-services-logger');
+const sinon = require('sinon');
 
 const RulesEngine = require('#src/lib/rules-engine');
-const { testLogger } = require('../../TestUtils');
 const rules = require('#rules/example');
+
+let sandbox;
+
+test.beforeEach(async () => {
+    sandbox = sinon.createSandbox();
+    sandbox.stub(Logger, 'info');
+    sandbox.stub(Logger, 'error');
+    sandbox.stub(Logger, 'debug');
+    sandbox.stub(Logger, 'isInfoEnabled').value(true);
+    sandbox.stub(Logger, 'isErrorEnabled').value(true);
+    sandbox.stub(Logger, 'isDebugEnabled').value(true);
+});
+
+test.afterEach.always(async () => {
+    sandbox.restore();
+});
 
 test('Sets up the rules engine with empty rules', (t) => {
     // Arrange
     const emptyRules = [];
-    const rulesEngine = new RulesEngine({ logger: testLogger(t) });
+    const rulesEngine = new RulesEngine({ logger: Logger });
 
     // Act
     rulesEngine.loadRules(emptyRules);
 
     // Assert
     t.pass();
+
+});
+
+test('Sets up the rules engine with empty rules with console logger', (t) => {
+    // Arrange
+    const emptyRules = [];
+    const rulesEngine = new RulesEngine({ logger: console });
+
+    // Act
+    rulesEngine.loadRules(emptyRules);
+
+    // Assert
+    t.pass();
+
 });
 
 test('Fails to load the rules with invalid input', (t) => {
     // Arrange
     const invalidRules = {};
-    const rulesEngine = new RulesEngine({});
+    const rulesEngine = new RulesEngine({ logger: Logger });
 
     // Act
     t.throws(() => rulesEngine.loadRules(invalidRules));
 
     // Assert
+    t.truthy(Logger.error.called);
     t.pass();
 });
 
 test('Sets up the rules engine with default rules', (t) => {
     // Arrange
-    const rulesEngine = new RulesEngine({ logger: testLogger(t) });
+    const rulesEngine = new RulesEngine({ logger: Logger });
 
     // Act
     rulesEngine.loadRules(rules);
 
     // Assert
+    t.truthy(Logger.info.called);
     t.pass();
 });
 
 test('Evaluates a rule based on demo data', async (t) => {
     // Arrange
-    const rulesEngine = new RulesEngine({ logger: testLogger(t) });
+    const rulesEngine = new RulesEngine({ logger: Logger });
     rulesEngine.loadRules(rules);
 
     const input = {
@@ -90,5 +123,43 @@ test('Evaluates a rule based on demo data', async (t) => {
     const response = await rulesEngine.evaluate(input);
 
     // Assert
+    t.truthy(Logger.info.called);
     t.deepEqual(response, expected, 'Expected values to match');
+});
+
+test('Health endpoint evaluates and logs to debug', async (t) => {
+    // Arrange
+    const rulesEngine = new RulesEngine({ logger: Logger });
+    rulesEngine.loadRules(rules);
+
+    const input = {
+        path: '/health',
+        method: 'GET',
+        body: {},
+    };
+
+    // Act
+    await rulesEngine.evaluate(input);
+
+    // Assert
+    t.truthy(Logger.debug.called);
+});
+
+
+test('Root endpoint evaluates and logs to debug', async (t) => {
+    // Arrange
+    const rulesEngine = new RulesEngine({ logger: Logger });
+    rulesEngine.loadRules(rules);
+
+    const input = {
+        path: '/health',
+        method: 'GET',
+        body: {},
+    };
+
+    // Act
+    await rulesEngine.evaluate(input);
+
+    // Assert
+    t.truthy(Logger.debug.called);
 });

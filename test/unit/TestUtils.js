@@ -1,8 +1,3 @@
-const testLogger = (t) => ({
-    log: (message) => t.log(message),
-    push: () => ({ log: (message) => t.log(message) }),
-});
-
 /**
  * Makes a deep clone of an object or array.
  *
@@ -16,6 +11,5 @@ const testLogger = (t) => ({
 const cloneDeep = (o) => JSON.parse(JSON.stringify(o));
 
 module.exports = {
-    testLogger,
     cloneDeep,
 };

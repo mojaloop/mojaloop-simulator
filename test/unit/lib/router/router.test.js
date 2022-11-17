@@ -26,14 +26,33 @@
 const test = require('ava');
 
 const router = require('#src/lib/router');
-const { testLogger } = require('../../TestUtils');
+const Logger = require('@mojaloop/central-services-logger');
+const sinon = require('sinon');
+
+let sandbox;
+
+test.beforeEach(async () => {
+    sandbox = sinon.createSandbox();
+    sandbox.stub(Logger, 'info');
+    sandbox.stub(Logger, 'error');
+    sandbox.stub(Logger, 'debug');
+    sandbox.stub(Logger, 'isInfoEnabled').value(true);
+    sandbox.stub(Logger, 'isErrorEnabled').value(true);
+    sandbox.stub(Logger, 'isDebugEnabled').value(true);
+});
+
+
+test.afterEach.always(async () => {
+    sandbox.restore();
+});
+
 
 test('Handles when a route cannot be found with a 404', async (t) => {
     // Arrange
     const ctx = {
         state: {
             path: { pattern: '*' },
-            logger: testLogger(t),
+            logger: Logger,
         },
         response: {},
     };
@@ -45,6 +64,7 @@ test('Handles when a route cannot be found with a 404', async (t) => {
 
     // Assert
     t.is(ctx.response.status, 404, 'Router returned the wrong status');
+    t.truthy(Logger.info.calledWith('No handler found'));
 });
 
 test('Handles when a route can be found', async (t) => {
@@ -53,7 +73,7 @@ test('Handles when a route can be found', async (t) => {
         method: 'method1',
         state: {
             path: { pattern: '*' },
-            logger: testLogger(t),
+            logger: Logger,
         },
         response: {},
     };
@@ -71,4 +91,62 @@ test('Handles when a route can be found', async (t) => {
 
     // Assert
     t.is(ctx.response.status, 200, 'Router returned the wrong status');
+    t.truthy(Logger.info.called);
 });
+
+test('Health endpoint logs to debug', async (t) => {
+    // Arrange
+    const ctx = {
+        method: 'method1',
+        state: {
+            path: { pattern: '*' },
+            logger: Logger,
+        },
+        response: {},
+        path: '/health'
+    };
+    const nextFunction = () => {};
+
+    // Simple handler that sets the status to 200
+    const handler = async (handlerCtx) => {
+        // eslint-disable-next-line no-param-reassign
+        handlerCtx.response.status = 200;
+    };
+    const handlerMap = { '*': { method1: handler } }; // simple handler
+
+    // Act
+    await router(handlerMap)(ctx, nextFunction);
+
+    // Assert
+    t.is(ctx.response.status, 200, 'Router returned the wrong status');
+    t.truthy(Logger.debug.called);
+});
+
+test('Root endpoint logs to debug', async (t) => {
+    // Arrange
+    const ctx = {
+        method: 'method1',
+        state: {
+            path: { pattern: '*' },
+            logger: Logger,
+        },
+        response: {},
+        path: '/'
+    };
+    const nextFunction = () => {};
+
+    // Simple handler that sets the status to 200
+    const handler = async (handlerCtx) => {
+        // eslint-disable-next-line no-param-reassign
+        handlerCtx.response.status = 200;
+    };
+    const handlerMap = { '*': { method1: handler } }; // simple handler
+
+    // Act
+    await router(handlerMap)(ctx, nextFunction);
+
+    // Assert
+    t.is(ctx.response.status, 200, 'Router returned the wrong status');
+    t.truthy(Logger.debug.called);
+});
+
