@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [13.1.0](https://github.com/mojaloop/mojaloop-simulator/compare/v13.0.1...v13.1.0) (2022-11-17)
+
+
+### Features
+
+* **mojaloop/#2928:** upgrade logger to central-services-logger ([#148](https://github.com/mojaloop/mojaloop-simulator/issues/148)) ([8a1573e](https://github.com/mojaloop/mojaloop-simulator/commit/8a1573ec984d994777de773a678024476dc0fb35)), closes [mojaloop/#2928](https://github.com/mojaloop/mojaloop-simulator/issues/2928)
+
 ### [13.0.1](https://github.com/mojaloop/mojaloop-simulator/compare/v13.0.0...v13.0.1) (2022-09-08)
 
 
