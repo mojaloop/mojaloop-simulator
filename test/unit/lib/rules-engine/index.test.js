@@ -60,6 +60,19 @@ test('Sets up the rules engine with empty rules', (t) => {
 
 });
 
+test('Sets up the rules engine with empty rules with console logger', (t) => {
+    // Arrange
+    const emptyRules = [];
+    const rulesEngine = new RulesEngine({ logger: console });
+
+    // Act
+    rulesEngine.loadRules(emptyRules);
+
+    // Assert
+    t.pass();
+
+});
+
 test('Fails to load the rules with invalid input', (t) => {
     // Arrange
     const invalidRules = {};
@@ -112,4 +125,41 @@ test('Evaluates a rule based on demo data', async (t) => {
     // Assert
     t.truthy(Logger.info.called);
     t.deepEqual(response, expected, 'Expected values to match');
+});
+
+test('Health endpoint evaluates and logs to debug', async (t) => {
+    // Arrange
+    const rulesEngine = new RulesEngine({ logger: Logger });
+    rulesEngine.loadRules(rules);
+
+    const input = {
+        path: '/health',
+        method: 'GET',
+        body: {},
+    };
+
+    // Act
+    await rulesEngine.evaluate(input);
+
+    // Assert
+    t.truthy(Logger.debug.called);
+});
+
+
+test('Root endpoint evaluates and logs to debug', async (t) => {
+    // Arrange
+    const rulesEngine = new RulesEngine({ logger: Logger });
+    rulesEngine.loadRules(rules);
+
+    const input = {
+        path: '/health',
+        method: 'GET',
+        body: {},
+    };
+
+    // Act
+    await rulesEngine.evaluate(input);
+
+    // Assert
+    t.truthy(Logger.debug.called);
 });

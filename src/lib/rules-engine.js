@@ -29,7 +29,6 @@ const { getStackOrInspect } = require('./log/log');
 class RulesEngine {
     constructor(config) {
         this.config = config;
-        /* istanbul ignore next */
         this.logger = config.logger || console;
         this.engine = new Engine();
         // eslint-disable-next-line no-underscore-dangle
@@ -69,21 +68,16 @@ class RulesEngine {
      */
     async evaluate(facts) {
         return new Promise((resolve, reject) => {
-            /* istanbul ignore next */
             if (facts.path == '/' || facts.path == '/health') {
-                /* istanbul ignore next */
                 this.logger.isDebugEnabled && this.logger.debug(`Rule engine evaluating facts: ${util.inspect(facts)}`);
             } else {
                 this.logger.isInfoEnabled && this.logger.info(`Rule engine evaluating facts: ${util.inspect(facts)}`);
-
             }
             this.engine
                 .run(facts)
                 .then((engineResult) => {
                     const { events } = engineResult;
-                    /* istanbul ignore next */
                     if (facts.path == '/' || facts.path == '/health') {
-                        /* istanbul ignore next */
                         this.logger.isDebugEnabled && this.logger.debug(`Rule engine returning events: ${util.inspect(engineResult)}`);
                     } else {
                         this.logger.isInfoEnabled && this.logger.info(`Rule engine returning events: ${util.inspect(engineResult)}`);
