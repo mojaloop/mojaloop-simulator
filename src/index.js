@@ -93,20 +93,20 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     // Set up a logger for each running server
     const simLogger = Logger.child({
-            context: {
-                app: 'simulator'
-            }
-        });
+        context: {
+            app: 'simulator'
+        }
+    });
     const reportLogger =  Logger.child({
-            context: {
-                app: 'report'
-            }
-        });
+        context: {
+            app: 'report'
+        }
+    });
     const testApiLogger =  Logger.child({
-            context: {
-                app: 'test-api'
-            }
-        });
+        context: {
+            app: 'test-api'
+        }
+    });
 
     const rulesEngine = new RulesEngine({ logger: simLogger });
 
