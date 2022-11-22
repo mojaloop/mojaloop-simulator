@@ -33,7 +33,6 @@ const Koa = require('koa');
 const koaBody = require('koa-body').default;
 const { generateSlug } = require('random-word-slugs');
 const yaml = require('yamljs');
-const util = require('util');
 const https = require('https');
 const cors = require('@koa/cors');
 const router = require('./lib/router');
@@ -289,9 +288,9 @@ async function rewriteContentTypeHeader(ctx, next) {
             method: ctx.request.method,
         };
         if (ctx.path == '/' || ctx.path == '/health') {
-            ctx.state.logger.isDebugEnabled && ctx.state.logger.debug(`Rules engine evaluating request against facts: ${util.inspect(facts)}`);
+            ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg':'Rules engine evaluating request against facts', facts});
         } else {
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Rules engine evaluating request against facts: ${util.inspect(facts)}`);
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg':'Rules engine evaluating request against facts', facts});
         }
 
         const res = await rulesEngine.evaluate(facts);
@@ -336,7 +335,7 @@ async function rewriteContentTypeHeader(ctx, next) {
             }
 
             const { body, statusCode } = res[0];
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Rules engine returned a response for request: ${util.inspect(res)}.`);
+            ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Rules engine returned a response for request', res});
             ctx.response.body = body;
             ctx.response.status = statusCode;
             return;

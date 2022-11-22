@@ -119,8 +119,6 @@ const transformApiDoc = (apiDoc) => ({
                     return {
                         [method]: {
                             validator: (ctx, path) => {
-                                // console.log(util.inspect(validatorF.schema,
-                                //  { depth: Infinity }));
                                 const result = validatorF({
                                     body: ctx.request.body,
                                     headers: ctx.request.headers,
