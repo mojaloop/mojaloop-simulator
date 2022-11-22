@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [13.1.1](https://github.com/mojaloop/mojaloop-simulator/compare/v13.1.0...v13.1.1) (2022-11-22)
+
+
+### Chore
+
+* bump logger and change logger statements for valid json ([#153](https://github.com/mojaloop/mojaloop-simulator/issues/153)) ([6583dec](https://github.com/mojaloop/mojaloop-simulator/commit/6583dec2e76ec45bd100650813bee905eb94ca9a))
+
 ## [13.1.0](https://github.com/mojaloop/mojaloop-simulator/compare/v13.0.1...v13.1.0) (2022-11-17)
 
 
