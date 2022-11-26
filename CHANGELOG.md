@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [13.1.2](https://github.com/mojaloop/mojaloop-simulator/compare/v13.1.1...v13.1.2) (2022-11-26)
+
+
+### Chore
+
+* **mojaloop/#2740:** add test currencies to api ([#154](https://github.com/mojaloop/mojaloop-simulator/issues/154)) ([64c80a1](https://github.com/mojaloop/mojaloop-simulator/commit/64c80a12559276da74617b6cdeff5a27e10c9e81)), closes [mojaloop/#2740](https://github.com/mojaloop/mojaloop-simulator/issues/2740)
+
 ### [13.1.1](https://github.com/mojaloop/mojaloop-simulator/compare/v13.1.0...v13.1.1) (2022-11-22)
 
 
