@@ -744,6 +744,11 @@
     "1070377|00unidentified>00unidentified>sqlite3>node-gyp>tar": {
       "decision": "postpone",
       "madeAt": 1652793825482
+    },
+    "1085139|formidable>qs": {
+      "decision": "ignore",
+      "madeAt": 1671122793845,
+      "expiresAt": 1673714790497
     }
   },
   "rules": {},
