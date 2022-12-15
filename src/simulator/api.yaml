@@ -1653,9 +1653,31 @@ components:
       title: PartyIdInfo
       type: object
     PartyIdInfoTPLink:
-      description: Up to 4 digits specifying the senders merchant classification, if known and applicable
-      title: PartyIdInfoTPLink
+      title: PartyIdInfo
+      type: object
+      description: Data model for the complex type PartyIdInfo.
+      properties:
+        partyIdType:
+          $ref: '#/components/schemas/PartyIdTypeTPLink'
+        partyIdentifier:
+          $ref: '#/components/schemas/PartyIdentifier'
+        partySubIdOrType:
+          $ref: '#/components/schemas/PartySubIdOrType'
+        fspId:
+          $ref: '#/components/schemas/FspId'
+        extensionList:
+          $ref: '#/components/schemas/ExtensionList'
+      required:
+        - partyIdType
+        - partyIdentifier
+    PartyIdTypeTPLink:
+      title: PartyIdTypeTPLink
       type: string
+      enum:
+        - THIRD_PARTY_LINK
+      description: |
+        - THIRD_PARTY_LINK - is the DFSP's internal reference which allows DFSP to find out the corresponding consent
+      example: PERSONAL_ID
     PartyIdType:
       description: |
         This is a variant based on FSPIOP `PartyIdType` specification.
