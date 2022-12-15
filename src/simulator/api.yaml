@@ -2564,16 +2564,15 @@ components:
       description: Fulfilment that must be attached to the transfer by the Payee.
       example: 'WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8'
     ilpPacketData:
-      description: Object containing transfer object.
       properties:
         amount:
           $ref: '#/components/schemas/amountCurrency'
           description: Amount and currency of the transaction
         payee:
-          $ref: '#/components/schemas/transferParty'
+          $ref: '#/components/schemas/Party'
           description: Information about the Payee in the proposed financial transaction.
         payer:
-          $ref: '#/components/schemas/transferParty'
+          $ref: '#/components/schemas/Party'
           description: Information about the Payer in the proposed financial transaction.
         quoteId:
           $ref: '#/components/schemas/quoteId'
@@ -2583,14 +2582,6 @@ components:
         transactionType:
           $ref: '#/components/schemas/transactionTypeObject'
           description: Information about type of transaction and initiator.
-      required:
-        - quoteId
-        - transactionId
-        - payer
-        - payee
-        - amount
-        - transactionType
-      type: object
     initiator:
       enum:
         - PAYER
