@@ -1627,7 +1627,7 @@ components:
           $ref: '#/components/schemas/LastName'
         middleName:
           $ref: '#/components/schemas/MiddleName'
-        subIdValue:
+        idSubValue:
           description: The sub identifier string used to identify the sender
           type: string
         type:
@@ -1733,16 +1733,6 @@ components:
         - THIRD_PARTY_LINK
       example: PERSONAL_ID
       title: PartyIdType
-      type: string
-    PartyIdTypeTPLink:
-      description: |
-        This is a variant based on FSPIOP `PartyIdType` specification.
-        This validation interface should be use by `POST /thirdpartyRequests/transactions`
-        - THIRD_PARTY_LINK - is the DFSP's internal reference which allows DFSP to find out the corresponding consent
-      enum:
-        - THIRD_PARTY_LINK
-      example: PERSONAL_ID
-      title: PartyIdTypeTPLink
       type: string
     PartyIdentifier:
       description: Identifier of the Party.

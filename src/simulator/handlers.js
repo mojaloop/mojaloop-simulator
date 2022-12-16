@@ -33,8 +33,8 @@ const objectStore = require('../lib/objectStore/objectStoreInterface');
 
 const getParticipantsByTypeAndId = async (ctx) => {
     try {
-        const { idValue, idType, subIdValue } = ctx.state.path.params;
-        const res = await ctx.state.model.party.get(idType, idValue, subIdValue);
+        const { idValue, idType, idSubValue } = ctx.state.path.params;
+        const res = await ctx.state.model.party.get(idType, idValue, idSubValue);
         if (!res) {
             ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
             ctx.response.status = 404;
@@ -53,8 +53,8 @@ const getParticipantsByTypeAndId = async (ctx) => {
 const getPartiesByTypeAndId = async (ctx) => {
     // TODO: check that the provided type was MSISDN? Or just encode that in the API spec..
     try {
-        const { idValue, idType, subIdValue } = ctx.state.path.params;
-        const res = await ctx.state.model.party.get(idType, idValue, subIdValue);
+        const { idValue, idType, idSubValue } = ctx.state.path.params;
+        const res = await ctx.state.model.party.get(idType, idValue, idSubValue);
         if (!res) {
             ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
             ctx.response.status = 404;
@@ -332,13 +332,13 @@ const map = {
     '/participants/{idType}/{idValue}': {
         get: getParticipantsByTypeAndId,
     },
-    '/participants/{idType}/{idValue}/{subIdValue}': {
+    '/participants/{idType}/{idValue}/{idSubValue}': {
         get: getParticipantsByTypeAndId,
     },
     '/parties/{idType}/{idValue}': {
         get: getPartiesByTypeAndId,
     },
-    '/parties/{idType}/{idValue}/{subIdValue}': {
+    '/parties/{idType}/{idValue}/{idSubValue}': {
         get: getPartiesByTypeAndId,
     },
     '/quoterequests': {

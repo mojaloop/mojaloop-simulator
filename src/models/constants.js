@@ -40,35 +40,35 @@ CREATE TABLE IF NOT EXISTS ${partyTable} (
     dateOfBirth TEXT,
     idType TEXT,
     idValue TEXT NOT NULL,
-    subIdValue TEXT,
+    idSubValue TEXT,
     CHECK(idValue <> '')
 )
 `;
 
 // below index is a workaround to avoid the duplicates since sqlite treats every null as a unique value
-// thus allowing to insert multiple records for same the idValue having subIdValue as NULL
+// thus allowing to insert multiple records for same the idValue having idSubValue as NULL
 const createPartyTableUniqueIndex = `
 CREATE UNIQUE INDEX IF NOT EXISTS idx_party_unique ON ${partyTable} (
     idValue,
-    IFNULL(subIdValue, '')
+    IFNULL(idSubValue, '')
 )
 `;
 
 const createPartyExtensionTable = `
 CREATE TABLE IF NOT EXISTS ${partyExtensionTable} (
     idValue TEXT NOT NULL,
-    subIdValue TEXT,
+    idSubValue TEXT,
     key TEXT NOT NULL,
     value TEXT NOT NULL
 )
 `;
 
 // below index is a workaround to avoid the duplicates since sqlite treats every null as a unique value
-// thus allowing to insert multiple records for same the idValue/key having subIdValue as NULL
+// thus allowing to insert multiple records for same the idValue/key having idSubValue as NULL
 const createPartyExtensionTableUniqueIndex = `
 CREATE UNIQUE INDEX IF NOT EXISTS idx_party_extension_unique ON ${partyExtensionTable} (
     idValue,
-    IFNULL(subIdValue, ''),
+    IFNULL(idSubValue, ''),
     key
 )
 `;
@@ -127,16 +127,16 @@ CREATE TABLE IF NOT EXISTS ${partyAccountsTable} (
     currency TEXT NOT NULL,
     description TEXT NOT NULL,
     idValue TEXT NOT NULL,
-    subIdValue TEXT
+    idSubValue TEXT
 )
 `;
 
 // below index is a workaround to avoid the duplicates since sqlite treats every null as a unique value
-// thus allowing to insert multiple records for same the idValue/key having subIdValue as NULL
+// thus allowing to insert multiple records for same the idValue/key having idSubValue as NULL
 const createAccountTableUniqueIndex = `
 CREATE UNIQUE INDEX IF NOT EXISTS idx_party_account_unique ON ${partyAccountsTable} (
     idValue,
-    IFNULL(subIdValue, ''),
+    IFNULL(idSubValue, ''),
     address
 )
 `;

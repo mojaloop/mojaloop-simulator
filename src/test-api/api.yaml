@@ -93,7 +93,7 @@ paths:
           schema:
             $ref: '#/components/schemas/idValue'
 
-  /repository/parties/{idType}/{idValue}/{subIdValue}:
+  /repository/parties/{idType}/{idValue}/{idSubValue}:
     put:
       description: Modifies a party (subId)
       requestBody:
@@ -119,11 +119,11 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/idValue'
-        - name: subIdValue
+        - name: idSubValue
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/subIdValue'
+            $ref: '#/components/schemas/idSubValue'
     get:
       description: Get an existing party
       responses:
@@ -147,11 +147,11 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/idValue'
-        - name: subIdValue
+        - name: idSubValue
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/subIdValue'
+            $ref: '#/components/schemas/idSubValue'
 
 components:
   schemas:
@@ -246,7 +246,7 @@ components:
           type: string
           minLength: 1
           maxLength: 128
-        subIdValue:
+        idSubValue:
           type: string
           minLength: 1
           maxLength: 128
@@ -313,7 +313,7 @@ components:
       type: string
       minLength: 1
       maxLength: 128
-    subIdValue:
+    idSubValue:
       type: string
       minLength: 1
       maxLength: 128
