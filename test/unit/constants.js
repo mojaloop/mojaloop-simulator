@@ -51,7 +51,7 @@ const party = {
     idValue,
 };
 
-const partyWithSubIdValue = {
+const partyWithIdSubValue = {
     displayName: randName,
     firstName: randName.split(' ')[0] || '',
     middleName: randName.split(' ')[1] || '',
@@ -94,7 +94,7 @@ const partyCreate = {
     ],
 };
 
-const partyCreateWithSubIdValue = {
+const partyCreateWithIdSubValue = {
     displayName: randName,
     firstName: randName.split(' ')[0] || '',
     middleName: randName.split(' ')[1] || '',
@@ -462,7 +462,7 @@ module.exports = {
     idValue,
     idSubValue,
     transferId,
-    partyWithSubIdValue,
-    partyCreateWithSubIdValue,
+    partyWithIdSubValue,
+    partyCreateWithIdSubValue,
     authorizationRequest,
 };
