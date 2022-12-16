@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.0.0](https://github.com/mojaloop/mojaloop-simulator/compare/v13.1.2...v14.0.0) (2022-12-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* update backend simulator api (#156)
+
+### Features
+
+* update backend simulator api ([#156](https://github.com/mojaloop/mojaloop-simulator/issues/156)) ([ff253a5](https://github.com/mojaloop/mojaloop-simulator/commit/ff253a5c9199de8aa1cdfa32740c08b64d348f35))
+
 ### [13.1.2](https://github.com/mojaloop/mojaloop-simulator/compare/v13.1.1...v13.1.2) (2022-11-26)
 
 
