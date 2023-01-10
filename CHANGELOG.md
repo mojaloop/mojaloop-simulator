@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [14.0.1](https://github.com/mojaloop/mojaloop-simulator/compare/v14.0.0...v14.0.1) (2023-01-10)
+
+
+### Chore
+
+* **mojaloop/#3053:** update sdk backend api ([#159](https://github.com/mojaloop/mojaloop-simulator/issues/159)) ([165e08a](https://github.com/mojaloop/mojaloop-simulator/commit/165e08ac10e5dbf119b917e443b628f9ace5279e)), closes [mojaloop/#3053](https://github.com/mojaloop/mojaloop-simulator/issues/3053) [mojaloop/#3053](https://github.com/mojaloop/mojaloop-simulator/issues/3053)
+
 ## [14.0.0](https://github.com/mojaloop/mojaloop-simulator/compare/v13.1.2...v14.0.0) (2022-12-16)
 
 
