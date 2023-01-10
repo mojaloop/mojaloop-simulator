@@ -1433,6 +1433,8 @@ components:
           $ref: '#/components/schemas/transactionId'
         transactionType:
           $ref: '#/components/schemas/transactionType'
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
       required:
         - quoteId
         - transactionId
@@ -1505,6 +1507,8 @@ components:
           $ref: '#/components/schemas/transferParty'
         transactionType:
           $ref: '#/components/schemas/transactionType'
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
         transferId:
           $ref: '#/components/schemas/transferId'
       required:
@@ -2668,6 +2672,8 @@ components:
         transactionType:
           $ref: '#/components/schemas/transactionType'
           description: Type of transaction for which the quote is requested.
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
       required:
         - quoteId
         - transactionId
@@ -2782,6 +2788,8 @@ components:
           $ref: '#/components/schemas/transferParty'
         transactionType:
           $ref: '#/components/schemas/transactionType'
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
         transferState:
           $ref: '#/components/schemas/transferState'
       required:
@@ -2827,6 +2835,8 @@ components:
           $ref: '#/components/schemas/transactionRequestId'
         transactionType:
           $ref: '#/components/schemas/transactionType'
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
       required:
         - transactionRequestId
         - to
@@ -2858,6 +2868,12 @@ components:
         - PENDING
         - ACCEPTED
         - REJECTED
+      type: string
+    transactionSubScenario:
+      description: Possible sub-scenario, defined locally within the scheme (UndefinedEnum Type). Based on FSPIOP TransactionSubScenario.
+      example: LOCALLY_DEFINED_SUBSCENARIO
+      pattern: ^[A-Z_]{1,32}$
+      title: transactionSubScenario
       type: string
     transactionType:
       enum:
@@ -2930,6 +2946,8 @@ components:
           $ref: '#/components/schemas/transferParty'
         transactionType:
           $ref: '#/components/schemas/transactionType'
+        subScenario:
+          $ref: '#/components/schemas/transactionSubScenario'
         transferId:
           $ref: '#/components/schemas/transferId'
       required:
