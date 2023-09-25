@@ -1,7 +1,5 @@
 {
   "reject": [
-    "eslint",
-    "node-fetch",
-    "ava"
+    
   ]
 }
