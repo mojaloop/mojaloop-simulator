@@ -157,6 +157,8 @@ executors:
 jobs:
   setup:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -176,6 +178,8 @@ jobs:
 
   test-unit:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -204,6 +208,8 @@ jobs:
 
   test-coverage:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -228,6 +234,8 @@ jobs:
 
   test-integration:
     executor: default-machine
+    environment:
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
@@ -259,6 +267,8 @@ jobs:
 
   test-dependencies:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -276,6 +286,8 @@ jobs:
 
   vulnerability-check:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - checkout
       - restore_cache:
@@ -300,6 +312,8 @@ jobs:
 
   audit-licenses:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - checkout
       - restore_cache:
@@ -318,6 +332,8 @@ jobs:
 
   release:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
@@ -352,6 +368,8 @@ jobs:
   github-release:
     executor: default-machine
     shell: "/bin/bash -eo pipefail"
+    environment:
+      <<: *defaults_environment
     steps:
       - run:
           name: Install git
@@ -394,6 +412,8 @@ jobs:
 
   build-local:
     executor: default-machine
+    environment:
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
@@ -470,6 +490,8 @@ jobs:
 
   license-scan:
     executor: default-machine
+    environment:
+      <<: *defaults_environment
     steps:
       - attach_workspace:
           at: /tmp
@@ -563,6 +585,8 @@ jobs:
   publish:
     executor: default-machine
     shell: "/bin/bash -eo pipefail"
+    environment:
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
@@ -621,6 +645,8 @@ jobs:
 
   publish-snapshot:
     executor: default-machine
+    environment:
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
