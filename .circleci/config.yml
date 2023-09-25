@@ -38,7 +38,7 @@ defaults_license_scanner: &defaults_license_scanner
 defaults_export_version_from_package: &defaults_export_version_from_package
   name: Format the changelog into the github release body and get release tag
   command: |
-    git diff --no-indent-heuristic master~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
+    git diff --no-indent-heuristic main~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
     echo 'export RELEASE_CHANGES=`cat /tmp/changes`' >> $BASH_ENV
     echo 'export RELEASE_TAG=`cat package-lock.json | jq -r .version`' >> $BASH_ENV
 
@@ -704,7 +704,6 @@ workflows:
               ignore: /.*/
             branches:
               ignore:
-                - master
                 - main
       - test-unit:
           context: org-global
@@ -798,7 +797,7 @@ workflows:
               ignore:
                 - /.*/
 
-      # New commits to master release automatically
+      # New commits to main release automatically
       - release:
           context: org-global
           requires:
@@ -813,7 +812,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /release\/v.*/
       - github-release:
           context: org-global
@@ -822,7 +821,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /release\/v.*/
       - publish:
           context: org-global
