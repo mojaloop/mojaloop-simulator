@@ -169,9 +169,6 @@ jobs:
       - run:
           name: Update NPM install (using `npm ci`)
           command: npm ci
-      - run:
-          name: Delete build dependencies
-          command: apk del build-dependencies
       - save_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -208,6 +205,12 @@ jobs:
   test-coverage:
     executor: default-docker
     steps:
+      - run:
+          name: Install general dependencies
+          command: *defaults_docker_Dependencies
+      - run:
+          name: Install AWS CLI dependencies
+          command: *defaults_awsCliDependencies
       - checkout
       - run:
           <<: *defaults_configure_nvm
@@ -215,13 +218,7 @@ jobs:
           <<: *defaults_display_versions
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          name: Install general dependencies
-          command: *defaults_docker_Dependencies
       - checkout
-      - run:
-          name: Install AWS CLI dependencies
-          command: *defaults_awsCliDependencies
       - run:
           name: Execute code coverage check
           command: npm -s run test:coverage-check
