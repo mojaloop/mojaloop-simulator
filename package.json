@@ -23,7 +23,7 @@
   },
   "bugs": "http://github.com/mojaloop/mojaloop-simulator/issues",
   "engines": {
-    "node": "=16.x"
+    "node": ">=18.x"
   },
   "imports": {
     "#src/*": "./src/*.js",
@@ -40,8 +40,8 @@
     "test:coverage-check": "CONFIG_OVERRIDE=./example.env nyc ava --serial './test/unit/**/*.test.js'",
     "test:integration": "CONFIG_OVERRIDE=./example.env jest --config './jest.integration.config.js' --testMatch '**/test/integration/**/*.(test|spec).js' --runInBand",
     "test:functional": "echo 'No test specified' && exit 1",
-    "audit:resolve": "resolve-audit --production",
-    "audit:check": "check-audit --production",
+    "audit:fix": "npm audit fix",
+    "audit:check": "npx audit-ci --config ./audit-ci.jsonc",
     "dep:check": "npx ncu -e 2",
     "dep:update": "npx ncu -u",
     "release": "standard-version --releaseCommitMessageFormat 'chore(release): {{currentTag}} [skip ci]'",
@@ -70,6 +70,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.2.5",
+    "audit-ci": "^6.6.1",
     "ava": "^3.15.0",
     "axios": "^1.2.2",
     "eslint": "^7.32.0",
@@ -80,7 +81,6 @@
     "husky": "8.0.3",
     "jest": "^29.3.1",
     "jest-junit": "^15.0.0",
-    "npm-audit-resolver": "^3.0.0-0",
     "npm-check-updates": "16.6.2",
     "npm-run-all": "4.1.5",
     "nyc": "15.1.0",
