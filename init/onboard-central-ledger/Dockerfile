@@ -1,4 +1,17 @@
-FROM node:12.18.2-alpine as builder
+# Arguments
+ARG NODE_VERSION=lts-alpine
+
+# NOTE: Ensure you set NODE_VERSION Build Argument as follows...
+#
+#  export NODE_VERSION="$(cat .nvmrc)-alpine" \
+#  docker build \
+#    --build-arg NODE_VERSION=$NODE_VERSION \
+#    -t mojaloop/onboard-central-ledger:local \
+#    . \
+#
+
+# Build Image
+FROM node:${NODE_VERSION} as builder
 
 ARG CREATED
 ARG SOURCE
@@ -20,7 +33,7 @@ COPY package* *.js /opt/onboard-central-ledger/
 
 RUN ["npm", "ci", "--production"]
 
-FROM node:12.18.2-alpine
+FROM node:${NODE_VERSION}
 WORKDIR /opt/onboard-central-ledger
 
 COPY --from=builder /opt/onboard-central-ledger .

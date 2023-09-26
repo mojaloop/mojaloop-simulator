@@ -1,5 +1,5 @@
 # mojaloop simulator
-[![Git Commit](https://img.shields.io/github/last-commit/mojaloop/mojaloop-simulator.svg?style=flat)](https://github.com/mojaloop/mojaloop-simulator/commits/master)
+[![Git Commit](https://img.shields.io/github/last-commit/mojaloop/mojaloop-simulator.svg?style=flat)](https://github.com/mojaloop/mojaloop-simulator/commits/main)
 [![Git Releases](https://img.shields.io/github/v/release/mojaloop/mojaloop-simulator?include_prereleases)](https://github.com/mojaloop/mojaloop-simulator/releases)
 [![Docker pulls](https://img.shields.io/docker/pulls/mojaloop/mojaloop-simulator.svg?style=flat)](https://hub.docker.com/r/mojaloop/mojaloop-simulator)
 [![CircleCI](https://circleci.com/gh/mojaloop/mojaloop-simulator.svg?style=svg)](https://circleci.com/gh/mojaloop/mojaloop-simulator)
@@ -16,9 +16,9 @@ A diagram showing the logical architecture of the simulator in a test scenario c
 
 ## Deploy with Helm and init containers (optional)
 Three init containers,
-- [onboard-hub-accounts](https://github.com/mojaloop/mojaloop-simulator/tree/master/init/onboard-hub-accounts)
-- [onboard-central-ledger](https://github.com/mojaloop/mojaloop-simulator/tree/master/init/onboard-central-ledger)
-- [onboard-msisdn-oracle](https://github.com/mojaloop/mojaloop-simulator/tree/master/init/onboard-msisdn-oracle)
+- [onboard-hub-accounts](https://github.com/mojaloop/mojaloop-simulator/tree/main/init/onboard-hub-accounts)
+- [onboard-central-ledger](https://github.com/mojaloop/mojaloop-simulator/tree/main/init/onboard-central-ledger)
+- [onboard-msisdn-oracle](https://github.com/mojaloop/mojaloop-simulator/tree/main/init/onboard-msisdn-oracle)
 
 are provided for optional use and may make an automated deployment via Helm chart easier than otherwise. Please see the [example](docs/values-sims.example.yaml) config.
 

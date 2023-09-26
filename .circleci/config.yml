@@ -7,27 +7,24 @@ version: 2.1
 # Orbs used in this pipeline
 ##
 orbs:
-  slack: circleci/slack@4.9.3 # Ref: https://github.com/mojaloop/ci-config/tree/master/slack-templates
+  slack: circleci/slack@4.12.5 # Ref: https://github.com/mojaloop/ci-config/tree/master/slack-templates
   pr-tools: mojaloop/pr-tools@0.1.10 # Ref: https://github.com/mojaloop/ci-config/
-  gh: circleci/github-cli@2.1.0
+  gh: circleci/github-cli@2.2.0
   anchore: anchore/anchore-engine@1.9.0
-  deploy-kube: mojaloop/deployment@0.1.6
 
 ##
 # defaults
 #
 # YAML defaults templates, in alphabetical order
 ##
-defaults_Dependencies: &defaults_Dependencies |
+defaults_docker_Dependencies: &defaults_docker_Dependencies |
   apk --no-cache add bash
   apk --no-cache add git
   apk --no-cache add ca-certificates
   apk --no-cache add curl
   apk --no-cache add openssh-client
-  apk add --no-cache -t build-dependencies make gcc g++ python3 libtool autoconf automake jq
-  apk add --no-cache -t openssl ncurses coreutils libgcc linux-headers grep util-linux binutils findutils
-  npm config set unsafe-perm true
-  npm install -g node-gyp
+  apk --no-cache add -t build-dependencies make gcc g++ python3 libtool autoconf automake jq
+  apk --no-cache add -t openssl ncurses coreutils libgcc linux-headers grep util-linux binutils findutils
 
 defaults_awsCliDependencies: &defaults_awsCliDependencies |
     apk --no-cache add aws-cli
@@ -41,7 +38,7 @@ defaults_license_scanner: &defaults_license_scanner
 defaults_export_version_from_package: &defaults_export_version_from_package
   name: Format the changelog into the github release body and get release tag
   command: |
-    git diff --no-indent-heuristic master~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
+    git diff --no-indent-heuristic main~1 HEAD CHANGELOG.md | sed -n '/^+[^+]/ s/^+//p' > /tmp/changes
     echo 'export RELEASE_CHANGES=`cat /tmp/changes`' >> $BASH_ENV
     echo 'export RELEASE_TAG=`cat package-lock.json | jq -r .version`' >> $BASH_ENV
 
@@ -51,17 +48,85 @@ defaults_configure_git: &defaults_configure_git
     git config user.email ${GIT_CI_EMAIL}
     git config user.name ${GIT_CI_USER}
 
+defaults_configure_nvmrc: &defaults_configure_nvmrc
+  name: Configure NVMRC
+  command: |
+    if [ -z "$NVMRC_VERSION" ]; then
+      echo "==> Configuring NVMRC_VERSION!"
+
+      export ENV_DOT_PROFILE=$HOME/.profile
+      touch $ENV_DOT_PROFILE
+
+      export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
+      echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $ENV_DOT_PROFILE
+    fi
+    echo "NVMRC_VERSION=$NVMRC_VERSION"
+
 defaults_configure_nvm: &defaults_configure_nvm
   name: Configure NVM
   command: |
-    touch $HOME/.profile
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    echo "Installing Node version: $(cat .nvmrc)"
-    nvm install $(cat .nvmrc)
-    nvm alias default $(cat .nvmrc)
-    nvm use $(cat .nvmrc)
+    cd $HOME
+    export ENV_DOT_PROFILE=$HOME/.profile
+    touch $ENV_DOT_PROFILE
+    echo "1. Check/Set NVM_DIR env variable"
+    if [ -z "$NVM_DIR" ]; then
+      export NVM_DIR="$HOME/.nvm"
+      echo "==> NVM_DIR has been exported - $NVM_DIR"
+    else
+      echo "==> NVM_DIR already exists - $NVM_DIR"
+    fi
+    echo "2. Check/Set NVMRC_VERSION env variable"
+    if [ -z "$NVMRC_VERSION" ]; then
+      echo "==> Configuring NVMRC_VERSION!"
+      export NVMRC_VERSION=$(cat $CIRCLE_WORKING_DIRECTORY/.nvmrc)
+      echo "export NVMRC_VERSION=$NVMRC_VERSION" >> $ENV_DOT_PROFILE
+    fi
+    echo "3. Configure NVM"
+    ## Lets check if an existing NVM_DIR exists, if it does lets skil
+    if [ -e "$NVM_DIR" ]; then
+      echo "==> $NVM_DIR exists. Skipping steps 3!"
+      # echo "5. Executing $NVM_DIR/nvm.sh"
+      # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    else
+      echo "==> $NVM_DIR does not exists. Executing steps 4-5!"
+      echo "4. Installing NVM"
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+      echo "5. Executing $NVM_DIR/nvm.sh"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    fi
+    ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
+    if [ ! -z "$NVM_ARCH_UNOFFICIAL_OVERRIDE" ]; then
+      echo "==> Handle NVM_ARCH_UNOFFICIAL_OVERRIDE=$NVM_ARCH_UNOFFICIAL_OVERRIDE!"
+      echo "nvm_get_arch() { nvm_echo \"${NVM_ARCH_UNOFFICIAL_OVERRIDE}\"; }" >> $ENV_DOT_PROFILE
+      echo "export NVM_NODEJS_ORG_MIRROR=https://unofficial-builds.nodejs.org/download/release" >> $ENV_DOT_PROFILE
+      source $ENV_DOT_PROFILE
+    fi
+    echo "6. Setup Node version"
+    if [ -n "$NVMRC_VERSION" ]; then
+      echo "==> Installing Node version: $NVMRC_VERSION"
+      nvm install $NVMRC_VERSION
+      nvm alias default $NVMRC_VERSION
+      nvm use $NVMRC_VERSION
+      cd $CIRCLE_WORKING_DIRECTORY
+    else
+      echo "==> ERROR - NVMRC_VERSION has not been set! - NVMRC_VERSION: $NVMRC_VERSION"
+      exit 1
+    fi
+
+defaults_display_versions: &defaults_display_versions
+  name: Display Versions
+  command: |
+    echo "What is the active version of Nodejs?"
+    echo "node: $(node --version)"
+    echo "yarn: $(yarn --version)"
+    echo "npm: $(npm --version)"
+    echo "nvm: $(nvm --version)"
+
+defaults_environment: &defaults_environment
+  ## env var for nx to set main branch
+  MAIN_BRANCH_NAME: main
+  ## Disable LIBRDKAFKA build since we install it via general dependencies
+  # BUILD_LIBRDKAFKA: 0
 
 ##
 # Executors
@@ -71,13 +136,18 @@ defaults_configure_nvm: &defaults_configure_nvm
 executors:
   default-docker:
     working_directory: &WORKING_DIR /home/circleci/project
+    shell: "/bin/sh -leo pipefail" ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+    environment:
+      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     docker:
-      - image: node:16.15.0-alpine # Ref: https://hub.docker.com/_/node?tab=tags&page=1&name=alpine
+      - image: node:lts-alpine # Ref: https://hub.docker.com/_/node?tab=tags&page=1&name=alpine
 
   default-machine:
     working_directory: *WORKING_DIR
+    shell: "/bin/bash -leo pipefail"
     machine:
-      image: ubuntu-2004:current # Ref: https://circleci.com/developer/machine/image/ubuntu-2004
+      image: ubuntu-2204:2023.04.2 # Ref: https://circleci.com/developer/machine/image/ubuntu-2204
 
 ##
 # Jobs
@@ -87,17 +157,20 @@ executors:
 jobs:
   setup:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - checkout
+      - run:
+          <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
       - run:
           name: Update NPM install (using `npm ci`)
           command: npm ci
-      - run:
-          name: Delete build dependencies
-          command: apk del build-dependencies
       - save_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -105,11 +178,17 @@ jobs:
 
   test-unit:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - checkout
+      - run:
+          <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
@@ -123,38 +202,46 @@ jobs:
           command: npm run test > ./test/results/results.txt
       - store_artifacts:
           path: ./test/results
-          prefix: test
+          destination: test
       - store_test_results:
           path: ./test/results
 
   test-coverage:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
-      - checkout
-      - restore_cache:
-          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
-      - checkout
+          command: *defaults_docker_Dependencies
       - run:
           name: Install AWS CLI dependencies
           command: *defaults_awsCliDependencies
+      - checkout
+      - run:
+          <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
+      - restore_cache:
+          key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
+      - checkout
       - run:
           name: Execute code coverage check
           command: npm -s run test:coverage-check
       - store_artifacts:
           path: ./coverage
-          prefix: test
-      - store_test_results:
-          path: ./coverage
+          destination: test
 
   test-integration:
     executor: default-machine
+    environment:
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
@@ -180,13 +267,17 @@ jobs:
 
   test-dependencies:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
@@ -195,13 +286,15 @@ jobs:
 
   vulnerability-check:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - run:
           name: Check for vulns in ./init by installing first
           command: >
@@ -212,20 +305,22 @@ jobs:
           command: mkdir -p ./audit/results
       - run:
           name: Check for new npm vulnerabilities
-          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
+          command: npm run audit:check -- -o json > ./audit/results/auditResults.json
       - store_artifacts:
           path: ./audit/results
-          prefix: audit
+          destination: audit
 
   audit-licenses:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - run:
           <<: *defaults_license_scanner
       - run:
@@ -233,17 +328,21 @@ jobs:
           command: cd /tmp/license-scanner && pathToRepo=$CIRCLE_WORKING_DIRECTORY make run
       - store_artifacts:
           path: /tmp/license-scanner/results
-          prefix: licenses
+          destination: licenses
 
   release:
     executor: default-docker
+    environment:
+      <<: *defaults_environment
     steps:
       - run:
           name: Install general dependencies
-          command: *defaults_Dependencies
+          command: *defaults_docker_Dependencies
       - checkout
       - run:
           <<: *defaults_configure_nvm
+      - run:
+          <<: *defaults_display_versions
       - restore_cache:
           key: dependency-cache-{{ .Environment.CIRCLE_SHA1 }}
       - run:
@@ -268,6 +367,9 @@ jobs:
 
   github-release:
     executor: default-machine
+    shell: "/bin/bash -eo pipefail"
+    environment:
+      <<: *defaults_environment
     steps:
       - run:
           name: Install git
@@ -308,66 +410,76 @@ jobs:
           event: fail
           template: SLACK_TEMP_RELEASE_FAILURE
 
-  build:
+  build-local:
     executor: default-machine
+    environment:
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
-          name: Build Docker $CIRCLE_TAG image
+          <<: *defaults_configure_nvmrc
+      - run:
+          <<: *defaults_display_versions
+      - run:
+          name: Build Docker local image
           command: >
-            echo "Building Docker image: $CIRCLE_TAG"
+            echo "Building Docker image: local"
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="$RELEASE_TAG"
             --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
             --build-arg REVISION="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG .
+            --build-arg NODE_VERSION="$DOCKER_NODE_VERSION"
+            -t ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local .
       - run:
           name: Save docker image to workspace
-          command: docker save -o /tmp/docker-image.tar $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
+          command: docker save -o /tmp/docker-image.tar ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local
       - run:
-          name: Build Docker onboard-hub-accounts $CIRCLE_TAG image
+          name: Build Docker onboard-hub-accounts local image
           command: >
-            echo "Building Docker image: onboard-hub-accounts $CIRCLE_TAG"
+            echo "Building Docker image: onboard-hub-accounts local"
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="$RELEASE_TAG"
             --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
             --build-arg REVISION="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG ./init/onboard-hub-accounts/
+            --build-arg NODE_VERSION="$DOCKER_NODE_VERSION"
+            -t ${DOCKER_ORG:-mojaloop}/onboard-hub-accounts:local ./init/onboard-hub-accounts/
       - run:
           name: Save docker image to workspace
-          command: docker save -o /tmp/docker-onboard-hub-accounts.tar $DOCKER_ORG/onboard-hub-accounts:$CIRCLE_TAG
+          command: docker save -o /tmp/docker-onboard-hub-accounts.tar ${DOCKER_ORG:-mojaloop}/onboard-hub-accounts:local
       - run:
-          name: Build Docker onboard-msisdn-oracle $CIRCLE_TAG image
+          name: Build Docker onboard-msisdn-oracle local image
           command: >
-            echo "Building Docker image: onboard-msisdn-oracle $CIRCLE_TAG"
+            echo "Building Docker image: onboard-msisdn-oracle local"
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="$RELEASE_TAG"
             --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
             --build-arg REVISION="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG ./init/onboard-msisdn-oracle/
+            --build-arg NODE_VERSION="$DOCKER_NODE_VERSION"
+            -t ${DOCKER_ORG:-mojaloop}/onboard-msisdn-oracle:local ./init/onboard-msisdn-oracle/
       - run:
           name: Save docker image to workspace
-          command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar $DOCKER_ORG/onboard-msisdn-oracle:$CIRCLE_TAG
+          command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar ${DOCKER_ORG:-mojaloop}/onboard-msisdn-oracle:local
       - run:
-          name: Build Docker onboard-central-ledger $CIRCLE_TAG image
+          name: Build Docker onboard-central-ledger local image
           command: >
-            echo "Building Docker image: onboard-central-ledger $CIRCLE_TAG"
+            echo "Building Docker image: onboard-central-ledger local"
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
             --build-arg VERSION="$RELEASE_TAG"
             --build-arg SOURCE="$CIRCLE_REPOSITORY_URL"
             --build-arg REVISION="$CIRCLE_SHA1"
-            -t $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG ./init/onboard-central-ledger/
+            --build-arg NODE_VERSION="$DOCKER_NODE_VERSION"
+            -t ${DOCKER_ORG:-mojaloop}/onboard-central-ledger:local ./init/onboard-central-ledger/
       - run:
           name: Save docker image to workspace
-          command: docker save -o /tmp/docker-onboard-central-ledger.tar $DOCKER_ORG/onboard-central-ledger:$CIRCLE_TAG
+          command: docker save -o /tmp/docker-onboard-central-ledger.tar ${DOCKER_ORG:-mojaloop}/onboard-central-ledger:local
       - persist_to_workspace:
           root: /tmp
           paths:
@@ -378,6 +490,8 @@ jobs:
 
   license-scan:
     executor: default-machine
+    environment:
+      <<: *defaults_environment
     steps:
       - attach_workspace:
           at: /tmp
@@ -388,13 +502,19 @@ jobs:
           <<: *defaults_license_scanner
       - run:
           name: Run the license-scanner
-          command: cd /tmp/license-scanner && mode=docker dockerImages=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG make run
+          command: cd /tmp/license-scanner && mode=docker dockerImages=${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local make run
       - store_artifacts:
           path: /tmp/license-scanner/results
-          prefix: licenses
+          destination: licenses
 
   image-scan:
     executor: anchore/anchore_engine
+    shell: /bin/sh -leo pipefail ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+    environment:
+      <<: *defaults_environment
+      BASH_ENV: /etc/profile ## Ref: https://circleci.com/docs/env-vars/#alpine-linux
+      ENV: ~/.profile
+      NVM_ARCH_UNOFFICIAL_OVERRIDE: x64-musl ## Ref: https://github.com/nvm-sh/nvm/issues/1102#issuecomment-550572252
     steps:
       - setup_remote_docker
       - checkout
@@ -406,7 +526,7 @@ jobs:
             echo "export SLACK_RELEASE_TAG='${RELEASE_TAG} on ${CIRCLE_BRANCH} branch'" >> $BASH_ENV
             echo "export SLACK_BUILD_ID=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
             echo "export SLACK_CI_URL=${CIRCLE_BUILD_URL}" >> $BASH_ENV
-            echo "export SLACK_CUSTOM_MSG='Anchore Image Scan failed for: \`${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}\`'" >> $BASH_ENV
+            echo "export SLACK_CUSTOM_MSG='Anchore Image Scan failed for: \`${DOCKER_ORG:-mojaloop}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}\`'" >> $BASH_ENV
       - run:
           name: Install docker dependencies for anchore
           command: |
@@ -419,8 +539,6 @@ jobs:
             apk --no-cache add curl
             apk --no-cache add openssh-client
             apk add --no-cache -t build-dependencies make gcc g++ python3 libtool autoconf automake
-            npm config set unsafe-perm true
-            npm install -g node-gyp
       - run:
           name: Install AWS CLI dependencies
           command: *defaults_awsCliDependencies
@@ -444,7 +562,7 @@ jobs:
       - anchore/analyze_local_image:
           # Force the older version, version 0.7.0 was just published, and is broken
           anchore_version: v0.6.1
-          image_name: "docker.io/node:16.15.0-alpine $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
+          image_name: "docker.io/node:${NVMRC_VERSION}-alpine ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local"
           policy_failure: false
           timeout: '500'
           # Note: if the generated policy is invalid, this will fallback to the default policy, which we don't want!
@@ -466,6 +584,9 @@ jobs:
 
   publish:
     executor: default-machine
+    shell: "/bin/bash -eo pipefail"
+    environment:
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
@@ -496,24 +617,25 @@ jobs:
       - run:
           name: Re-tag pre built image
           command: |
-            docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+            docker tag ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
+            docker tag ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
       - run:
           name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
           command: |
-            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
-            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
-            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
-            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+            echo "Publishing ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
+            docker push ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
+            echo "Publishing ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
+            docker push ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
       - run:
           name: Set Image Digest
           command: |
-            IMAGE_DIGEST=$(docker inspect $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:v${CIRCLE_TAG:1} | jq '.[0].RepoDigests | .[]')
+            IMAGE_DIGEST=$(docker inspect ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:v${CIRCLE_TAG:1} | jq '.[0].RepoDigests | .[]')
             echo "IMAGE_DIGEST=${IMAGE_DIGEST}"
             echo "export IMAGE_DIGEST=${IMAGE_DIGEST}" >> $BASH_ENV
       - run:
           name: Update Slack config
           command: |
-            echo "export SLACK_RELEASE_URL='https://hub.docker.com/layers/${CIRCLE_PROJECT_REPONAME}/${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}/v${CIRCLE_TAG:1}/images/${IMAGE_DIGEST}?context=explore'" | sed -r "s/${DOCKER_ORG}\/${CIRCLE_PROJECT_REPONAME}@sha256:/sha256-/g" >> $BASH_ENV
+            echo "export SLACK_RELEASE_URL='https://hub.docker.com/layers/${CIRCLE_PROJECT_REPONAME}/${DOCKER_ORG:-mojaloop}/${CIRCLE_PROJECT_REPONAME}/v${CIRCLE_TAG:1}/images/${IMAGE_DIGEST}?context=explore'" | sed -r "s/${DOCKER_ORG:-mojaloop}\/${CIRCLE_PROJECT_REPONAME}@sha256:/sha256-/g" >> $BASH_ENV
       - slack/notify:
           event: pass
           template: SLACK_TEMP_RELEASE_SUCCESS
@@ -523,6 +645,8 @@ jobs:
 
   publish-snapshot:
     executor: default-machine
+    environment:
+      <<: *defaults_environment
     steps:
       - checkout
       - run:
@@ -553,24 +677,25 @@ jobs:
       - run:
           name: Re-tag pre built image
           command: |
-            docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+            docker tag ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
+            docker tag ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
       - run:
           name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
           command: |
-            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
-            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
-            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
-            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+            echo "Publishing ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
+            docker push ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
+            echo "Publishing ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
+            docker push ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
       - run:
           name: Set Image Digest
           command: |
-            IMAGE_DIGEST=$(docker inspect $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:v${CIRCLE_TAG:1} | jq '.[0].RepoDigests | .[]')
+            IMAGE_DIGEST=$(docker inspect ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:v${CIRCLE_TAG:1} | jq '.[0].RepoDigests | .[]')
             echo "IMAGE_DIGEST=${IMAGE_DIGEST}"
             echo "export IMAGE_DIGEST=${IMAGE_DIGEST}" >> $BASH_ENV
       - run:
           name: Update Slack config
           command: |
-            echo "export SLACK_RELEASE_URL='https://hub.docker.com/layers/${CIRCLE_PROJECT_REPONAME}/${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}/v${CIRCLE_TAG:1}/images/${IMAGE_DIGEST}?context=explore'" | sed -r "s/${DOCKER_ORG}\/${CIRCLE_PROJECT_REPONAME}@sha256:/sha256-/g" >> $BASH_ENV
+            echo "export SLACK_RELEASE_URL='https://hub.docker.com/layers/${CIRCLE_PROJECT_REPONAME}/${DOCKER_ORG:-mojaloop}/${CIRCLE_PROJECT_REPONAME}/v${CIRCLE_TAG:1}/images/${IMAGE_DIGEST}?context=explore'" | sed -r "s/${DOCKER_ORG:-mojaloop}\/${CIRCLE_PROJECT_REPONAME}@sha256:/sha256-/g" >> $BASH_ENV
       - slack/notify:
           event: pass
           template: SLACK_TEMP_RELEASE_SUCCESS
@@ -583,7 +708,6 @@ jobs:
 # CircleCI Workflow config
 ##
 workflows:
-  version: 2
   build_and_test:
     jobs:
       - pr-tools/pr-title-check:
@@ -606,7 +730,6 @@ workflows:
               ignore: /.*/
             branches:
               ignore:
-                - master
                 - main
       - test-unit:
           context: org-global
@@ -663,7 +786,7 @@ workflows:
               ignore:
                 - /feature*/
                 - /bugfix*/
-      - build:
+      - build-local:
           context: org-global
           requires:
             - setup
@@ -682,7 +805,7 @@ workflows:
       - license-scan:
           context: org-global
           requires:
-            - build
+            - build-local
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
@@ -692,7 +815,7 @@ workflows:
       - image-scan:
           context: org-global
           requires:
-            - build
+            - build-local
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-snapshot(\.[0-9]+)?)?(\-hotfix(\.[0-9]+)?)?(\-perf(\.[0-9]+)?)?/
@@ -700,7 +823,7 @@ workflows:
               ignore:
                 - /.*/
 
-      # New commits to master release automatically
+      # New commits to main release automatically
       - release:
           context: org-global
           requires:
@@ -715,7 +838,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /release\/v.*/
       - github-release:
           context: org-global
@@ -724,7 +847,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /release\/v.*/
       - publish:
           context: org-global

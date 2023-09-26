@@ -22,7 +22,8 @@
  ******/
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = async (...args) => (await import('node-fetch')).default(...args);
+
 
 const { OUTBOUND_ENDPOINT } = process.env;
 
