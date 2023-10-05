@@ -303,7 +303,7 @@ jobs:
           command: *defaults_docker_Dependencies
       - run:
           name: Check for vulns in ./init by installing first
-          command: |
+          command: >
             cd init/onboard-hub-accounts && npm ci
             cd init/onboard-central-ledger && npm ci
       - run:
