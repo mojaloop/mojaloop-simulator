@@ -251,7 +251,7 @@ jobs:
             npm ci
       - run:
           name: Set NODE_VERSION env variable
-          command: >
+          command: |
             source ~/.profile
             export DOCKER_NODE_VERSION="$NVMRC_VERSION-alpine"
             echo "export DOCKER_NODE_VERSION=$NVMRC_VERSION-alpine" >> $BASH_ENV
@@ -427,13 +427,15 @@ jobs:
       - run:
           <<: *defaults_display_versions
       - run:
-          name: Build Docker local image
-          command: >
-            echo "Building Docker image: local"
-
+          name: Set NODE_VERSION env variable
+          command: |
             source ~/.profile
             export DOCKER_NODE_VERSION="$NVMRC_VERSION-alpine"
             echo "export DOCKER_NODE_VERSION=$NVMRC_VERSION-alpine" >> $BASH_ENV
+      - run:
+          name: Build Docker local image
+          command: |
+            echo "Building Docker image: local"
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
@@ -447,7 +449,7 @@ jobs:
           command: docker save -o /tmp/docker-image.tar ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local
       - run:
           name: Build Docker onboard-hub-accounts local image
-          command: >
+          command: |
             echo "Building Docker image: onboard-hub-accounts local"
 
             docker build
@@ -462,7 +464,7 @@ jobs:
           command: docker save -o /tmp/docker-onboard-hub-accounts.tar ${DOCKER_ORG:-mojaloop}/onboard-hub-accounts:local
       - run:
           name: Build Docker onboard-msisdn-oracle local image
-          command: >
+          command: |
             echo "Building Docker image: onboard-msisdn-oracle local"
 
             docker build
@@ -477,7 +479,7 @@ jobs:
           command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar ${DOCKER_ORG:-mojaloop}/onboard-msisdn-oracle:local
       - run:
           name: Build Docker onboard-central-ledger local image
-          command: >
+          command: |
             echo "Building Docker image: onboard-central-ledger local"
 
             docker build
