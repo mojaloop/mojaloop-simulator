@@ -421,6 +421,12 @@ jobs:
       - run:
           <<: *defaults_display_versions
       - run:
+          name: Set NODE_VERSION env variable
+          command: >
+            source ~/.profile
+            export DOCKER_NODE_VERSION="$NVMRC_VERSION-alpine"
+            echo "export DOCKER_NODE_VERSION=$NVMRC_VERSION-alpine" >> $BASH_ENV
+      - run:
           name: Build Docker local image
           command: >
             echo "Building Docker image: local"
