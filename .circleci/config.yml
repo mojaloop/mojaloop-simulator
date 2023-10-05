@@ -250,6 +250,12 @@ jobs:
             node --version
             npm ci
       - run:
+          name: Set NODE_VERSION env variable
+          command: >
+            source ~/.profile
+            export DOCKER_NODE_VERSION="$NVMRC_VERSION-alpine"
+            echo "export DOCKER_NODE_VERSION=$NVMRC_VERSION-alpine" >> $BASH_ENV
+      - run:
           name: Spin up core docker compose
           command: |
             docker-compose build --build-arg NODE_VERSION=$DOCKER_NODE_VERSION
