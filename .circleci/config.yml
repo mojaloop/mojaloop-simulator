@@ -435,7 +435,7 @@ jobs:
       - run:
           name: Build Docker local image
           command: >
-            echo "Building Docker image: local" &&
+            echo "Building Docker image: local"
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
@@ -450,7 +450,7 @@ jobs:
       - run:
           name: Build Docker onboard-hub-accounts local image
           command: >
-            echo "Building Docker image: onboard-hub-accounts local" && 
+            echo "Building Docker image: onboard-hub-accounts local"
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
@@ -465,7 +465,7 @@ jobs:
       - run:
           name: Build Docker onboard-msisdn-oracle local image
           command: >
-            echo "Building Docker image: onboard-msisdn-oracle local" && 
+            echo "Building Docker image: onboard-msisdn-oracle local"
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
@@ -480,7 +480,7 @@ jobs:
       - run:
           name: Build Docker onboard-central-ledger local image
           command: >
-            echo "Building Docker image: onboard-central-ledger local" && 
+            echo "Building Docker image: onboard-central-ledger local"
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
