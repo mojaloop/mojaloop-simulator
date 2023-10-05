@@ -303,7 +303,7 @@ jobs:
           command: *defaults_docker_Dependencies
       - run:
           name: Check for vulns in ./init by installing first
-          command: >
+          command: |
             cd init/onboard-hub-accounts && npm ci
             cd init/onboard-central-ledger && npm ci
       - run:
@@ -434,8 +434,8 @@ jobs:
             echo "export DOCKER_NODE_VERSION=$NVMRC_VERSION-alpine" >> $BASH_ENV
       - run:
           name: Build Docker local image
-          command: |
-            echo "Building Docker image: local"
+          command: >
+            echo "Building Docker image: local" &&
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
@@ -449,8 +449,8 @@ jobs:
           command: docker save -o /tmp/docker-image.tar ${DOCKER_ORG:-mojaloop}/$CIRCLE_PROJECT_REPONAME:local
       - run:
           name: Build Docker onboard-hub-accounts local image
-          command: |
-            echo "Building Docker image: onboard-hub-accounts local"
+          command: >
+            echo "Building Docker image: onboard-hub-accounts local" && 
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
@@ -464,8 +464,8 @@ jobs:
           command: docker save -o /tmp/docker-onboard-hub-accounts.tar ${DOCKER_ORG:-mojaloop}/onboard-hub-accounts:local
       - run:
           name: Build Docker onboard-msisdn-oracle local image
-          command: |
-            echo "Building Docker image: onboard-msisdn-oracle local"
+          command: >
+            echo "Building Docker image: onboard-msisdn-oracle local" && 
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
@@ -479,8 +479,8 @@ jobs:
           command: docker save -o /tmp/docker-onboard-msisdn-oracle.tar ${DOCKER_ORG:-mojaloop}/onboard-msisdn-oracle:local
       - run:
           name: Build Docker onboard-central-ledger local image
-          command: |
-            echo "Building Docker image: onboard-central-ledger local"
+          command: >
+            echo "Building Docker image: onboard-central-ledger local" && 
 
             docker build
             --build-arg CREATED="$(date -u --iso-8601=seconds)"
