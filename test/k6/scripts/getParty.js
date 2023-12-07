@@ -15,6 +15,6 @@ export function getParty() {
 
     // Lets send the GET /party request to the Simulator
     const res = http.get(`${__ENV.K6_SCRIPT_SIM_ENDPOINT_URL}/parties/MSISDN/${partyId}`);
-    check(res, { 'SIM_GET_PARTY_RESPONSE_IS_202' : (r) => r.status == 200 });
+    check(res, { 'SIM_GET_PARTY_RESPONSE_IS_200' : (r) => r.status == 200 });
   });
 }

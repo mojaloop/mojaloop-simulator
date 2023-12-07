@@ -1,5 +1,6 @@
 export { getPartyScenarios } from './scenarios/getParty.js';
 export { postQuotesScenarios } from './scenarios/postQuotes.js';
+export { postTransfersScenarios } from './scenarios/postTransfers.js';
 
 // export { fspiopTransfersScenarios } from './scenarios/fspiopTransfers.js';
 // export { fspiopTransfersNoCallbackScenarios } from './scenarios/fspiopTransfersNoCallback.js';
