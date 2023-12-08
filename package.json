@@ -33,7 +33,7 @@
   "scripts": {
     "postinstall": "husky install",
     "start": "node ./src/index.js",
-    "debug": "node --inspect-brk=0.0.0.0:9229 ./src/index.js",
+    "debug": "node --inspect=0.0.0.0:9229 ./src/index.js",
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
     "test": "npm run test:unit",

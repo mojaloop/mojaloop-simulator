@@ -39,5 +39,5 @@ USER app-user
 COPY --chown=app-user --from=builder /opt/app/ .
 RUN npm prune --production
 
-EXPOSE 3000 3001 3003
+EXPOSE 9229 3000 3001 3003 
 CMD ["npm", "run", "start"]
