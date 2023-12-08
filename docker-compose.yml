@@ -33,6 +33,11 @@ services:
       - "3000:3000"
       - "3001:3001"
       - "3003:3003"
+      - "9229:9229"
+    command:
+      - npm
+      - run
+      - debug
     # depends_on:
     #   - scheme-adapter
     user: root # Set Root so we can install Curl for Healthchecks
