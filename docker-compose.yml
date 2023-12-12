@@ -30,10 +30,9 @@ services:
     volumes:
        - ./rules/example.json:/opt/app/rules.json
     ports:
-      - "3000:3000"
-      - "3001:3001"
-      - "3003:3003"
-      - "9229:9229"
+      - "3000"
+      - "3001"
+      - "3003"
     command:
       - npm
       - run
