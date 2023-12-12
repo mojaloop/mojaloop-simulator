@@ -37,7 +37,7 @@ services:
     command:
       - npm
       - run
-      - debug
+      - start
     # depends_on:
     #   - scheme-adapter
     user: root # Set Root so we can install Curl for Healthchecks

@@ -31,8 +31,8 @@ services:
       - "6565:6565"
     environment:
       - K6_SCRIPT_CONFIG_FILE_NAME=${K6_SCRIPT_CONFIG_FILE_NAME:-test.json}
-      # - K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write # Ref: https://k6.io/docs/results-output/real-time/prometheus-remote-write/#options
-      # - K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true # Ref: https://k6.io/docs/results-output/real-time/prometheus-remote-write/#options
-      # - K6_OUT=experimental-prometheus-rw # Ref: https://k6.io/docs/results-output/real-time/prometheus-remote-write/
+      - K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write # Ref: https://k6.io/docs/results-output/real-time/prometheus-remote-write/#options
+      - K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true # Ref: https://k6.io/docs/results-output/real-time/prometheus-remote-write/#options
+      - K6_OUT=experimental-prometheus-rw # Ref: https://k6.io/docs/results-output/real-time/prometheus-remote-write/
     volumes:
       - ./test/k6:/scripts
