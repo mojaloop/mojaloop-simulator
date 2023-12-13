@@ -259,6 +259,7 @@ jobs:
           name: Spin up core docker compose
           command: |
             docker-compose build --build-arg NODE_VERSION=$DOCKER_NODE_VERSION
+            docker network create mojaloop-net
             docker-compose up -d
       - run:
           name: Wait for services to be running and report healthy
