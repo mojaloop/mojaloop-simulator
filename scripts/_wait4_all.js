@@ -11,7 +11,7 @@ const { execSync } = require('child_process');
 const expectedContainers = [
     'redis',
     'simulator',
-    'scheme-adapter'
+    // 'scheme-adapter'
 ];
 
 let retries = 40;
