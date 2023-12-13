@@ -1,16 +1,9 @@
 version: '3'
 
-networks:
-  mojaloop-net:
-    name: mojaloop-net
-    external: true
-
 services:
   redis:
     image: "redis:5.0.4-alpine"
     container_name: redis
-    networks:
-      - mojaloop-net
     ports:
       - "6379:6379"
     healthcheck:
@@ -22,8 +15,6 @@ services:
 
   sim:
     container_name: simulator
-    networks:
-      - mojaloop-net
     image: "mojaloop-simulator-backend"
     build: ./
     env_file: ./sim-backend.env
@@ -55,8 +46,6 @@ services:
   # Scheme adapter fails with default conf. Bug report here: https://github.com/mojaloop/project/issues/3681
   scheme-adapter:
     container_name: scheme-adapter
-    networks:
-      - mojaloop-net
     image: "mojaloop/sdk-scheme-adapter:latest"
     env_file: ./scheme-adapter.env
     ports:
