@@ -1,3 +1,6 @@
 {
-  "reject": []
+  "reject": [
+    "eslint-plugin-ava",
+    "eslint"
+  ]
 }
