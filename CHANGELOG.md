@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.1.0](https://github.com/mojaloop/mojaloop-simulator/compare/v15.0.0...v15.1.0) (2024-09-25)
+
+
+### Features
+
+* add ULID support ([#171](https://github.com/mojaloop/mojaloop-simulator/issues/171)) ([3bff8ce](https://github.com/mojaloop/mojaloop-simulator/commit/3bff8ceb633450d09deb730ce72a6430a92a4925))
+
 ## [15.0.0](https://github.com/mojaloop/mojaloop-simulator/compare/v14.0.2...v15.0.0) (2023-10-06)
 
 
