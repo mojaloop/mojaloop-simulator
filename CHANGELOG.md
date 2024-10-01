@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [15.1.1](https://github.com/mojaloop/mojaloop-simulator/compare/v15.1.0...v15.1.1) (2024-10-01)
+
+
+### Bug Fixes
+
+* uuid/ulid regex ([#172](https://github.com/mojaloop/mojaloop-simulator/issues/172)) ([b5f03bf](https://github.com/mojaloop/mojaloop-simulator/commit/b5f03bfc10b5f7aae01b655e67fbbd143be2fb4d))
+
 ## [15.1.0](https://github.com/mojaloop/mojaloop-simulator/compare/v15.0.0...v15.1.0) (2024-09-25)
 
 
