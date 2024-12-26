@@ -33,7 +33,7 @@ const objectStore = require('../lib/objectStore/objectStoreInterface');
 
 const getParticipantsByTypeAndId = async (ctx) => {
     try {
-        const { idValue, idType, idSubValue } = ctx.state.path.params;
+        const { idValue, idType, idSubValue, dfspId } = ctx.state.path.params;
         const res = await ctx.state.model.party.get(idType, idValue, idSubValue);
         if (!res) {
             ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
@@ -41,7 +41,7 @@ const getParticipantsByTypeAndId = async (ctx) => {
             return;
         }
         ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'getParticipantsByTypeAndId is returning body', body: res});
-        ctx.response.body = { fspId: process.env.DFSP_ID };
+        ctx.response.body = { fspId: dfspId ?? process.env.DFSP_ID };
         ctx.response.status = 200;
     } catch (err) {
         ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in getParticipantsByTypeAndId: ${getStackOrInspect(err)}`);

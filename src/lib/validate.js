@@ -142,7 +142,7 @@ class Validator {
     // apiDoc
     //   POJO representing apiDoc API spec. Example:
     //   const v = new Validator(require('./apiDoc.json'));
-    async initialise(apiDoc) {
+    async initialise(apiDoc, multiDfsp) {
     // Dereferencing the api doc makes it much easier to work with. Specifically, it allows us
     // to compile a validator for each path.
         const pojoApiDoc = await jsrp.dereference(apiDoc);
@@ -150,7 +150,7 @@ class Validator {
         this.apiDoc = transformApiDoc(pojoApiDoc);
         const pathParamMatch = /\{[^{}]+\}/g;
         this.paths = Object.entries(this.apiDoc.paths).map(([path, pathSpec]) => ({
-            pattern: path,
+            pattern: multiDfsp ? `/{dfspId}/${path}` : path,
             matcher: {
                 // If we were using node 10, instead of having this awkward params object, we could
                 // replace the path parameters with named regex matches corresponding to the path

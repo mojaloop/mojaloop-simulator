@@ -141,3 +141,5 @@ secrets
 
 # .env configs
 **/*.env
+
+.rush
