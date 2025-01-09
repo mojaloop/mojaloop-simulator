@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [15.1.2](https://github.com/mojaloop/mojaloop-simulator/compare/v15.1.1...v15.1.2) (2025-01-09)
+
+
+### Chore
+
+* update deps, clean audit-ci.jsonc ([#174](https://github.com/mojaloop/mojaloop-simulator/issues/174)) ([f5d9c35](https://github.com/mojaloop/mojaloop-simulator/commit/f5d9c35e37d8f085ef9dd32746e4596f5103f89c))
+
 ### [15.1.1](https://github.com/mojaloop/mojaloop-simulator/compare/v15.1.0...v15.1.1) (2024-10-01)
 
 
