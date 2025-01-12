@@ -150,13 +150,13 @@ class Validator {
         this.apiDoc = transformApiDoc(pojoApiDoc);
         const pathParamMatch = /\{[^{}]+\}/g;
         this.paths = Object.entries(this.apiDoc.paths).map(([path, pathSpec]) => ({
-            pattern: multiDfsp ? `/{dfspId}/${path}` : path,
+            pattern: multiDfsp ? `/{dfspId}${path}` : path,
             matcher: {
                 // If we were using node 10, instead of having this awkward params object, we could
                 // replace the path parameters with named regex matches corresponding to the path
                 // names.
-                regex: new RegExp(`^${path.replace(pathParamMatch, '([^{}/]+)')}$`),
-                params: (path.match(pathParamMatch) || []).map((s) => s.replace(/(^{|}$)/g, '')),
+                regex: new RegExp(`^${(multiDfsp ? `/{dfspId}${path}` : path).replace(pathParamMatch, '([^{}/]+)')}$`),
+                params: ((multiDfsp ? `/{dfspId}${path}` : path).match(pathParamMatch) || []).map((s) => s.replace(/(^{|}$)/g, '')),
             },
             methods: { ...pathSpec },
         }));
