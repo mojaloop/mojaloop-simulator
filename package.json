@@ -40,6 +40,7 @@
     "test:coverage-check": "CONFIG_OVERRIDE=./example.env nyc ava --serial './test/unit/**/*.test.js'",
     "test:integration": "CONFIG_OVERRIDE=./example.env jest --config './jest.integration.config.js' --testMatch '**/test/integration/**/*.(test|spec).js' --runInBand",
     "test:functional": "echo 'No test specified' && exit 1",
+    "docker:build": "docker build --build-arg NODE_VERSION=\"$(cat .nvmrc)-alpine\" -t mojaloop/mojaloop-simulator:local -f ./Dockerfile .",
     "audit:fix": "npm audit fix",
     "audit:check": "npx audit-ci --config ./audit-ci.jsonc",
     "dep:check": "npx ncu -e 2",

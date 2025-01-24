@@ -2638,7 +2638,7 @@ components:
           $ref: '#/components/schemas/timestamp'
           description: An optional deadline for responding to the quote request.
         extensionList:
-          $ref: '#/components/schemas/extensionList'
+          $ref: '#/components/schemas/ExtensionList'
         feesAmount:
           $ref: '#/components/schemas/money'
           description: The fees in the transaction. The fees element should be empty if fees should be non-disclosed. The fees element should be non-empty if fees should be disclosed.
