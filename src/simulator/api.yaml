@@ -1356,6 +1356,12 @@ components:
       minLength: 1
       title: ExtensionValue
       type: string
+    Extensions:
+      items:
+        $ref: '#/components/schemas/Extension'
+      maxItems: 16
+      minItems: 0
+      type: array
     FirstName:
       description: First name of the Party (Name Type).
       example: Henrik
@@ -2433,7 +2439,7 @@ components:
               description: Time and date when the transaction was completed.
               example: '2020-05-19T08:38:08.699-04:00'
             extensionList:
-              $ref: '#/components/schemas/ExtensionList'
+              $ref: '#/components/schemas/Extensions'
               description: Optional extension, specific to deployment.
             transferState:
               $ref: '#/components/schemas/transferState'
@@ -2911,7 +2917,7 @@ components:
         quote:
           $ref: '#/components/schemas/quoteResponse'
         quoteRequestExtensions:
-          $ref: '#/components/schemas/ExtensionList'
+          $ref: '#/components/schemas/Extensions'
         to:
           $ref: '#/components/schemas/transferParty'
         transactionType:
