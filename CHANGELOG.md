@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [15.1.3](https://github.com/mojaloop/mojaloop-simulator/compare/v15.1.2...v15.1.3) (2025-01-29)
+
+
+### Bug Fixes
+
+* **csi-1130:** extensionlist ([#175](https://github.com/mojaloop/mojaloop-simulator/issues/175)) ([d6cbd46](https://github.com/mojaloop/mojaloop-simulator/commit/d6cbd462987e2c0938fdb06fdcd8b9256836f6e6))
+
 ### [15.1.2](https://github.com/mojaloop/mojaloop-simulator/compare/v15.1.1...v15.1.2) (2025-01-09)
 
 
