@@ -1356,6 +1356,12 @@ components:
       minLength: 1
       title: ExtensionValue
       type: string
+    Extensions:
+      items:
+        $ref: '#/components/schemas/Extension'
+      maxItems: 16
+      minItems: 0
+      type: array
     FirstName:
       description: First name of the Party (Name Type).
       example: Henrik
@@ -1522,7 +1528,7 @@ components:
         errorResponse:
           $ref: '#/components/schemas/errorResponse'
         extensionList:
-          $ref: '#/components/schemas/extensionList'
+          $ref: '#/components/schemas/ExtensionList'
         transferId:
           $ref: '#/components/schemas/transferId'
       required:
@@ -2359,36 +2365,6 @@ components:
             Otherwise, a suitable generic FSPIOP will be used with the errorResponse in the FSPIOP error message.
           type: string
       type: object
-    extensionItem:
-      properties:
-        key:
-          maxLength: 32
-          minLength: 1
-          type: string
-        value:
-          maxLength: 128
-          minLength: 1
-          type: string
-      type: object
-    extensionList:
-      items:
-        $ref: '#/components/schemas/extensionItem'
-      maxItems: 16
-      minItems: 0
-      type: array
-    extensionListComplex:
-      description: Data model for the complex type ExtensionList.
-      properties:
-        extension:
-          description: Number of Extension elements.
-          items:
-            $ref: '#/components/schemas/extensionItem'
-          maxItems: 16
-          minItems: 1
-          type: array
-      required:
-        - extension
-      type: object
     transferError:
       type: object
       description: This object represents a Mojaloop API error received at any time during the transfer process.
@@ -2419,7 +2395,7 @@ components:
           $ref: '#/components/schemas/errorDescription'
           description: Error description string.
         extensionList:
-          $ref: '#/components/schemas/extensionListComplex'
+          $ref: '#/components/schemas/ExtensionList'
           description: 'Optional list of extensions, specific to deployment.'
       required:
         - errorCode
@@ -2463,7 +2439,7 @@ components:
               description: Time and date when the transaction was completed.
               example: '2020-05-19T08:38:08.699-04:00'
             extensionList:
-              $ref: '#/components/schemas/extensionList'
+              $ref: '#/components/schemas/Extensions'
               description: Optional extension, specific to deployment.
             transferState:
               $ref: '#/components/schemas/transferState'
@@ -2638,7 +2614,7 @@ components:
           $ref: '#/components/schemas/timestamp'
           description: An optional deadline for responding to the quote request.
         extensionList:
-          $ref: '#/components/schemas/extensionList'
+          $ref: '#/components/schemas/ExtensionList'
         feesAmount:
           $ref: '#/components/schemas/money'
           description: The fees in the transaction. The fees element should be empty if fees should be non-disclosed. The fees element should be non-empty if fees should be disclosed.
@@ -2693,7 +2669,7 @@ components:
           $ref: '#/components/schemas/timestamp'
           description: Timestamp specifying the validity period of the quotation.
         extensionList:
-          $ref: '#/components/schemas/extensionList'
+          $ref: '#/components/schemas/ExtensionList'
         geoCode:
           $ref: '#/components/schemas/geoCode'
           description: Longitude and Latitude of the Payee. Can be used to detect fraud.
@@ -2773,7 +2749,7 @@ components:
         currency:
           $ref: '#/components/schemas/currency'
         extensions:
-          $ref: '#/components/schemas/extensionList'
+          $ref: '#/components/schemas/ExtensionList'
         from:
           $ref: '#/components/schemas/transferParty'
         homeTransactionId:
@@ -2889,7 +2865,7 @@ components:
           description: Display name of the sender, if known.
           type: string
         extensionList:
-          $ref: '#/components/schemas/extensionList'
+          $ref: '#/components/schemas/ExtensionList'
         firstName:
           description: Party first name.
           type: string
@@ -2941,7 +2917,7 @@ components:
         quote:
           $ref: '#/components/schemas/quoteResponse'
         quoteRequestExtensions:
-          $ref: '#/components/schemas/extensionList'
+          $ref: '#/components/schemas/Extensions'
         to:
           $ref: '#/components/schemas/transferParty'
         transactionType:
