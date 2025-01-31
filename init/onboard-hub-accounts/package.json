@@ -4,20 +4,29 @@
   "description": "",
   "main": "onboard-hub-accounts.js",
   "dependencies": {
-    "@mojaloop/finance-portal-lib": "0.0.20-snapshot",
-    "node-fetch": "^2.6.1",
-    "uuid": "^8.2.0"
+    "@mojaloop/finance-portal-lib": "1.0.0",
+    "node-fetch": "3.3.2",
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
+    "audit-ci": "^7.1.0",
     "eslint": "^7.2.0",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.21.2"
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.31.0"
   },
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "start": "node onboard-hub-accounts.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dep:check": "npx ncu -e 2",
+    "dep:update": "npx ncu -u",
+    "audit:check": "npx audit-ci",
+    "audit:fix": "npm audit fix"
+  },
+  "overrides": {
+    "minimist": "1.2.8",
+    "node-fetch": "3.3.2"
   },
   "author": "Matt Kingston <matt.kingston@modusbox.com>",
   "license": "Apache-2.0"
