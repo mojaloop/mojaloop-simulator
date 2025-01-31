@@ -1,6 +1,6 @@
 {
   "name": "mojaloop-simulator",
-  "version": "15.1.3",
+  "version": "15.1.4",
   "description": "A canonical test example implementation of the parties, transfers and quotes resources of the Mojaloop FSP Interoperability API",
   "license": "Apache-2.0",
   "main": "src/index.js",
