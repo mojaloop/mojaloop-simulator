@@ -2748,7 +2748,7 @@ components:
         currency:
           $ref: '#/components/schemas/currency'
         extensions:
-          $ref: '#/components/schemas/ExtensionList'
+          $ref: '#/components/schemas/Extensions'
         from:
           $ref: '#/components/schemas/transferParty'
         homeTransactionId:
