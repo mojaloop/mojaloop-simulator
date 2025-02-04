@@ -1332,7 +1332,6 @@ components:
       type: object
     ExtensionKey:
       description: Extension key.
-      maxLength: 32
       minLength: 1
       title: ExtensionKey
       type: string
@@ -2614,7 +2613,7 @@ components:
           $ref: '#/components/schemas/timestamp'
           description: An optional deadline for responding to the quote request.
         extensionList:
-          $ref: '#/components/schemas/ExtensionList'
+          $ref: '#/components/schemas/Extensions'
         feesAmount:
           $ref: '#/components/schemas/money'
           description: The fees in the transaction. The fees element should be empty if fees should be non-disclosed. The fees element should be non-empty if fees should be disclosed.
@@ -2669,7 +2668,7 @@ components:
           $ref: '#/components/schemas/timestamp'
           description: Timestamp specifying the validity period of the quotation.
         extensionList:
-          $ref: '#/components/schemas/ExtensionList'
+          $ref: '#/components/schemas/Extensions'
         geoCode:
           $ref: '#/components/schemas/geoCode'
           description: Longitude and Latitude of the Payee. Can be used to detect fraud.
@@ -2865,7 +2864,7 @@ components:
           description: Display name of the sender, if known.
           type: string
         extensionList:
-          $ref: '#/components/schemas/ExtensionList'
+          $ref: '#/components/schemas/Extensions'
         firstName:
           description: Party first name.
           type: string
