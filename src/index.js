@@ -150,7 +150,7 @@ async function rewriteContentTypeHeader(ctx, next) {
     // Add validation and data model for each request
     const simValidator = new Validate();
 
-    simulator.use(async (ctx, next) => {
+    simulator.use(async function simValidationMiddleware (ctx, next) {
         try {
             if (ctx.path === '/' || ctx.path === '/health') {
                 ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg': 'Validating Request', request: ctx.request});
@@ -176,7 +176,7 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     const reportValidator = new Validate();
 
-    report.use(async (ctx, next) => {
+    report.use(async function reportValidationMiddleware (ctx, next) {
         try {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Validating Request', request: ctx.request});
             ctx.state.path = reportValidator.validateRequest(ctx, ctx.state.logger);
@@ -194,7 +194,7 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     const testApiValidator = new Validate();
 
-    testApi.use(async (ctx, next) => {
+    testApi.use(async function testApiValidationMiddleware (ctx, next) {
         try {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Validating Request', request: ctx.request});
             ctx.state.path = testApiValidator.validateRequest(ctx, ctx.state.logger);
@@ -212,13 +212,13 @@ async function rewriteContentTypeHeader(ctx, next) {
     });
 
     // Add rule engine evaluation for each simulator request
-    simulator.use(async (ctx, next) => {
+    simulator.use(async function ruleEvaluationMiddleware (ctx, next) {
         const facts = {
             path: ctx.path,
             body: ctx.request.body,
             method: ctx.request.method,
         };
-        if (ctx.path == '/' || ctx.path == '/health') {
+        if (ctx.path === '/' || ctx.path === '/health') {
             ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg':'Rules engine evaluating request against facts', facts});
         } else {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg':'Rules engine evaluating request against facts', facts});
