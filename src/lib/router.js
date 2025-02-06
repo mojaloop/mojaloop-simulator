@@ -22,7 +22,7 @@
  ******/
 'use strict';
 
-module.exports = (handlerMap) => async (ctx, next) => {
+module.exports = (handlerMap) => async function router (ctx, next) {
     const handlers = handlerMap[ctx.state.path.pattern];
     const handler = handlers ? handlers[ctx.method.toLowerCase()] : undefined;
     if (!handlers || !handler) {
@@ -31,7 +31,7 @@ module.exports = (handlerMap) => async (ctx, next) => {
         // TODO: response content according to API spec. Should probably actually be a 404 here.
         ctx.response.body = { statusCode: 404, message: 'Not found' };
     } else {
-        if (ctx.path == '/' || ctx.path == '/health') {
+        if (ctx.path === '/' || ctx.path === '/health') {
             ctx.state.logger.isDebugEnabled && ctx.state.logger.debug(`Found handler: ${handler}`);
         } else {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info(`Found handler: ${handler}`);
