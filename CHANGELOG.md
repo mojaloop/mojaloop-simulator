@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [15.1.6](https://github.com/mojaloop/mojaloop-simulator/compare/v15.1.5...v15.1.6) (2025-02-20)
+
+
+### Chore
+
+* maintenance updates ([#180](https://github.com/mojaloop/mojaloop-simulator/issues/180)) ([57263cd](https://github.com/mojaloop/mojaloop-simulator/commit/57263cd61c2e2ca7e301b2a782b9e1214e58591f))
+
 ### [15.1.5](https://github.com/mojaloop/mojaloop-simulator/compare/v15.1.4...v15.1.5) (2025-02-04)
 
 
