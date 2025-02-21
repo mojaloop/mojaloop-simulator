@@ -33,7 +33,6 @@
 
 const Koa = require('koa');
 const koaBody = require('koa-body').default;
-const { generateSlug } = require('random-word-slugs');
 const yaml = require('yamljs');
 const https = require('https');
 const cors = require('@koa/cors');
@@ -48,6 +47,7 @@ const Config = require('./lib/config');
 const simHandlers = require('./simulator/handlers');
 const reportHandlers = require('./reports/handlers');
 const testApiHandlers = require('./test-api/handlers');
+const middleware = require('./middleware');
 
 const { setConfig, getConfig } = require('./config');
 const Model = require('./models/model');
@@ -142,78 +142,9 @@ async function rewriteContentTypeHeader(ctx, next) {
     testApi.use(koaBody());
 
     // Add a log context for each request, log the receipt and handling thereof
-    simulator.use(async (ctx, next) => {
-        // Create new child for lifespan of request
-        ctx.state.logger = simLogger.child({
-            context: {
-                app: 'simulator',
-                request: {
-                    id: generateSlug(4),
-                    path: ctx.path,
-                    method: ctx.method,
-                }
-            }
-
-        });
-
-        if (ctx.path == '/' || ctx.path == '/health') {
-            ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg': 'Request received', body: ctx.request.body});
-
-            await next();
-
-            const { body, status } = ctx.response;
-            ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg': 'Request processed', body, status});
-        } else {
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request received', body: ctx.request.body});
-
-            await next();
-
-            const { body, status } = ctx.response;
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request processed', body, status});
-        }
-    });
-
-    report.use(async (ctx, next) => {
-        // Create new child for lifespan of request
-        ctx.state.logger = reportLogger.child({
-            context: {
-                app: 'report',
-                request: {
-                    id: generateSlug(4),
-                    path: ctx.path,
-                    method: ctx.method,
-                }
-            }
-
-        });
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request received', body: ctx.request.body});
-
-        await next();
-
-        const { body, status } = ctx.response;
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request processed', body, status});
-    });
-
-    testApi.use(async (ctx, next) => {
-        // Create new child for lifespan of request
-        ctx.state.logger = testApiLogger.child({
-            context: {
-                app: 'test-api',
-                request: {
-                    id: generateSlug(4),
-                    path: ctx.path,
-                    method: ctx.method,
-                }
-            }
-
-        });
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request received', body: ctx.request.body});
-
-        await next();
-
-        const { body, status } = ctx.response;
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request processed', body, status});
-    });
+    simulator.use(middleware.createRequestLoggingMiddleware(simLogger));
+    report.use(middleware.createReportLoggingMiddleware(reportLogger));
+    testApi.use(middleware.createTestApiLoggingMiddleware(testApiLogger));
 
     simulator.use(rewriteContentTypeHeader);
     testApi.use(cors());
@@ -221,9 +152,9 @@ async function rewriteContentTypeHeader(ctx, next) {
     // Add validation and data model for each request
     const simValidator = new Validate();
 
-    simulator.use(async (ctx, next) => {
+    simulator.use(async function simValidationMiddleware (ctx, next) {
         try {
-            if (ctx.path == '/' || ctx.path == '/health') {
+            if (ctx.path === '/' || ctx.path === '/health') {
                 ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg': 'Validating Request', request: ctx.request});
                 ctx.state.path = simValidator.validateRequest(ctx, ctx.state.logger);
                 ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg': 'Request passed validation', request: ctx.request});
@@ -247,7 +178,7 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     const reportValidator = new Validate();
 
-    report.use(async (ctx, next) => {
+    report.use(async function reportValidationMiddleware (ctx, next) {
         try {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Validating Request', request: ctx.request});
             ctx.state.path = reportValidator.validateRequest(ctx, ctx.state.logger);
@@ -265,7 +196,7 @@ async function rewriteContentTypeHeader(ctx, next) {
 
     const testApiValidator = new Validate();
 
-    testApi.use(async (ctx, next) => {
+    testApi.use(async function testApiValidationMiddleware (ctx, next) {
         try {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Validating Request', request: ctx.request});
             ctx.state.path = testApiValidator.validateRequest(ctx, ctx.state.logger);
@@ -283,13 +214,13 @@ async function rewriteContentTypeHeader(ctx, next) {
     });
 
     // Add rule engine evaluation for each simulator request
-    simulator.use(async (ctx, next) => {
+    simulator.use(async function ruleEvaluationMiddleware (ctx, next) {
         const facts = {
             path: ctx.path,
             body: ctx.request.body,
             method: ctx.request.method,
         };
-        if (ctx.path == '/' || ctx.path == '/health') {
+        if (ctx.path === '/' || ctx.path === '/health') {
             ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg':'Rules engine evaluating request against facts', facts});
         } else {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg':'Rules engine evaluating request against facts', facts});
