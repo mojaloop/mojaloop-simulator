@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.2.0](https://github.com/mojaloop/mojaloop-simulator/compare/v15.1.6...v15.2.0) (2025-02-21)
+
+
+### Features
+
+* **csi-1161:** move middlewares to a separate file ([#178](https://github.com/mojaloop/mojaloop-simulator/issues/178)) ([f6e4665](https://github.com/mojaloop/mojaloop-simulator/commit/f6e4665376d93dc08e83fc64e69b2fe6efc01b69))
+
 ### [15.1.6](https://github.com/mojaloop/mojaloop-simulator/compare/v15.1.5...v15.1.6) (2025-02-20)
 
 
