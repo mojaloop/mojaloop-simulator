@@ -41,7 +41,7 @@ const { quoteTable } = require('../models/constants');
 const parseQuotes = (quotes, ctx) => {
     try {
         const responses = [];
-        const { dfspId } = ctx.state.path.params;
+        const dfspId = ctx.state.path?.params?.dfspId;
         quotes.forEach((quote) => {
             const { request, created } = quote;
             const quoteReq = JSON.parse(request);
