@@ -1,10 +1,13 @@
 /*****
  License
  --------------
- Copyright © 2017 Bill & Melinda Gates Foundation
- The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+ Copyright © 2020-2025 Mojaloop Foundation
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License") and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+
  http://www.apache.org/licenses/LICENSE-2.0
+
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+
  Contributors
  --------------
  This is the official list of the Mojaloop project contributors for this file.
@@ -12,13 +15,12 @@
  should be listed with a '*' in the first column. People who have
  contributed from an organization can be listed under the organization
  that actually holds the copyright for their contributions (see the
- Gates Foundation organization for an example). Those individuals should have
+ Mojaloop Foundation for an example). Those individuals should have
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
- * Gates Foundation
 
- - Name Surname <name.surname@gatesfoundation.com>
- * Mowali
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
 
  * ModusBox <https://modusbox.com>
  - Steven Oderayi <steven.oderayi@modusbox.com>
@@ -31,7 +33,6 @@
 
 const Koa = require('koa');
 const koaBody = require('koa-body').default;
-const { generateSlug } = require('random-word-slugs');
 const yaml = require('yamljs');
 const https = require('https');
 const cors = require('@koa/cors');
@@ -46,6 +47,7 @@ const Config = require('./lib/config');
 const simHandlers = require('./simulator/handlers');
 const reportHandlers = require('./reports/handlers');
 const testApiHandlers = require('./test-api/handlers');
+const middleware = require('./middleware');
 
 const getConfig = require('./config');
 const Model = require('./models/model');
@@ -140,78 +142,9 @@ module.exports = async function start(config = process.env) {
     testApi.use(koaBody());
 
     // Add a log context for each request, log the receipt and handling thereof
-    simulator.use(async (ctx, next) => {
-        // Create new child for lifespan of request
-        ctx.state.logger = simLogger.child({
-            context: {
-                app: 'simulator',
-                request: {
-                    id: generateSlug(4),
-                    path: ctx.path,
-                    method: ctx.method,
-                }
-            }
-
-        });
-
-        if (ctx.path == '/' || ctx.path == '/health') {
-            ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg': 'Request received', body: ctx.request.body});
-
-            await next();
-
-            const { body, status } = ctx.response;
-            ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg': 'Request processed', body, status});
-        } else {
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request received', body: ctx.request.body});
-
-            await next();
-
-            const { body, status } = ctx.response;
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request processed', body, status});
-        }
-    });
-
-    report.use(async (ctx, next) => {
-        // Create new child for lifespan of request
-        ctx.state.logger = reportLogger.child({
-            context: {
-                app: 'report',
-                request: {
-                    id: generateSlug(4),
-                    path: ctx.path,
-                    method: ctx.method,
-                }
-            }
-
-        });
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request received', body: ctx.request.body});
-
-        await next();
-
-        const { body, status } = ctx.response;
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request processed', body, status});
-    });
-
-    testApi.use(async (ctx, next) => {
-        // Create new child for lifespan of request
-        ctx.state.logger = testApiLogger.child({
-            context: {
-                app: 'test-api',
-                request: {
-                    id: generateSlug(4),
-                    path: ctx.path,
-                    method: ctx.method,
-                }
-            }
-
-        });
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request received', body: ctx.request.body});
-
-        await next();
-
-        const { body, status } = ctx.response;
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request processed', body, status});
-    });
+    simulator.use(middleware.createRequestLoggingMiddleware(simLogger));
+    report.use(middleware.createReportLoggingMiddleware(reportLogger));
+    testApi.use(middleware.createTestApiLoggingMiddleware(testApiLogger));
 
     simulator.use(rewriteContentTypeHeader);
     testApi.use(cors());
@@ -219,9 +152,9 @@ module.exports = async function start(config = process.env) {
     // Add validation and data model for each request
     const simValidator = new Validate();
 
-    simulator.use(async (ctx, next) => {
+    simulator.use(async function simValidationMiddleware (ctx, next) {
         try {
-            if (ctx.path == '/' || ctx.path == '/health') {
+            if (ctx.path === '/' || ctx.path === '/health') {
                 ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg': 'Validating Request', request: ctx.request});
                 ctx.state.path = simValidator.validateRequest(ctx, ctx.state.logger);
                 ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg': 'Request passed validation', request: ctx.request});
@@ -245,7 +178,7 @@ module.exports = async function start(config = process.env) {
 
     const reportValidator = new Validate();
 
-    report.use(async (ctx, next) => {
+    report.use(async function reportValidationMiddleware (ctx, next) {
         try {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Validating Request', request: ctx.request});
             ctx.state.path = reportValidator.validateRequest(ctx, ctx.state.logger);
@@ -263,7 +196,7 @@ module.exports = async function start(config = process.env) {
 
     const testApiValidator = new Validate();
 
-    testApi.use(async (ctx, next) => {
+    testApi.use(async function testApiValidationMiddleware (ctx, next) {
         try {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Validating Request', request: ctx.request});
             ctx.state.path = testApiValidator.validateRequest(ctx, ctx.state.logger);
@@ -281,13 +214,13 @@ module.exports = async function start(config = process.env) {
     });
 
     // Add rule engine evaluation for each simulator request
-    simulator.use(async (ctx, next) => {
+    simulator.use(async function ruleEvaluationMiddleware (ctx, next) {
         const facts = {
             path: ctx.path,
             body: ctx.request.body,
             method: ctx.request.method,
         };
-        if (ctx.path == '/' || ctx.path == '/health') {
+        if (ctx.path === '/' || ctx.path === '/health') {
             ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg':'Rules engine evaluating request against facts', facts});
         } else {
             ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg':'Rules engine evaluating request against facts', facts});
