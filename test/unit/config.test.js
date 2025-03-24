@@ -34,7 +34,7 @@
 const Config = require('#src/lib/config');
 
 const test = require('ava');
-const { setConfig, getConfig } = require('#src/config');
+const getConfig = require('#src/config');
 const { party } = require('./constants');
 
 // Note: these were originally 3 different tests, which I had to combine into 1
@@ -69,8 +69,7 @@ test('Sets the basic config', async (t) => {
     };
 
     // Act
-    await setConfig(env);
-    const result = getConfig();
+    const result = await getConfig(env);
 
     // Assert
     t.deepEqual(result, expected, 'Values should match.');
@@ -84,7 +83,7 @@ test('Sets the basic config', async (t) => {
 
     // Act
     const error = await t.throwsAsync(async () => {
-        await setConfig(env2);
+        await getConfig(env2);
     });
 
     // Assert
@@ -102,7 +101,7 @@ test('Sets the basic config', async (t) => {
     };
 
     // Act
-    await setConfig(env3);
+    await getConfig(env3);
 
     // Assert
     t.pass();

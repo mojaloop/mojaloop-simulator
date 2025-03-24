@@ -49,12 +49,13 @@ const reportHandlers = require('./reports/handlers');
 const testApiHandlers = require('./test-api/handlers');
 const middleware = require('./middleware');
 
-const { setConfig, getConfig } = require('./config');
+const getConfig = require('./config');
 const Model = require('./models/model');
+const { join } = require('path');
 
-const simApiSpec = yaml.load('./src/simulator/api.yaml');
-const reportApiSpec = yaml.load('./src/reports/api.yaml');
-const testApiSpec = yaml.load('./src/test-api/api.yaml');
+const simApiSpec = yaml.load(join(__dirname, 'simulator/api.yaml'));
+const reportApiSpec = yaml.load(join(__dirname, 'reports/api.yaml'));
+const testApiSpec = yaml.load(join(__dirname, 'test-api/api.yaml'));
 
 const simulator = new Koa();
 const report = new Koa();
@@ -82,14 +83,13 @@ async function rewriteContentTypeHeader(ctx, next) {
     await next();
 }
 
-(async function start() {
+module.exports = async function start(config = process.env) {
     // Try overload config file
-    const configResult = await Config(process.env.CONFIG_OVERRIDE);
+    const configResult = await Config(config.CONFIG_OVERRIDE);
     // eslint-disable-next-line no-console
     console.log(configResult);
     // Set up the config from the environment
-    await setConfig(process.env);
-    const conf = getConfig();
+    const conf = await getConfig(config);
 
 
     // Set up a logger for each running server
@@ -112,14 +112,14 @@ async function rewriteContentTypeHeader(ctx, next) {
     const rulesEngine = new RulesEngine({ logger: simLogger });
 
     // parse rules file
-    const rules = require(process.env.RULES_FILE);
+    const rules = require(config.RULES_FILE);
 
     // load rules file into engine
     rulesEngine.loadRules(rules);
 
     // Initialise the model
     const model = new Model();
-    await model.init({ databaseFilepath: process.env.MODEL_DATABASE, parties: conf.parties });
+    await model.init({ databaseFilepath: config.MODEL_DATABASE, parties: conf.parties });
 
     // Log raw to console as a last resort- if the logging framework crashes
     const failSafe = async (ctx, next) => {
@@ -276,15 +276,21 @@ async function rewriteContentTypeHeader(ctx, next) {
         await next();
     });
 
+    function mount(routes) {
+        if (!config.MULTI_DFSP) return routes;
+        return Object.fromEntries(Object.entries(routes).map(([path, route]) => {
+            return [`/{dfspId}${path}`, route];
+        }));
+    }
     // Handle requests
-    simulator.use(router(simHandlers.map));
-    report.use(router(reportHandlers.map));
-    testApi.use(router(testApiHandlers.map));
+    simulator.use(router(mount(simHandlers.map)));
+    report.use(router(mount(reportHandlers.map)));
+    testApi.use(router(mount(testApiHandlers.map)));
 
     await Promise.all([
-        simValidator.initialise(simApiSpec),
-        reportValidator.initialise(reportApiSpec),
-        testApiValidator.initialise(testApiSpec),
+        simValidator.initialise(simApiSpec, config.MULTI_DFSP),
+        reportValidator.initialise(reportApiSpec, config.MULTI_DFSP),
+        testApiValidator.initialise(testApiSpec, config.MULTI_DFSP),
     ]);
 
     // If config specifies TLS, start an HTTPS server; otherwise HTTP
@@ -325,8 +331,12 @@ async function rewriteContentTypeHeader(ctx, next) {
         reportServer.close();
         testApiServer.close();
     });
-}()).catch((err) => {
-    // eslint-disable-next-line no-console
-    console.error(err);
-    process.exit(1);
-});
+};
+
+if (require.main === module) {
+    module.exports(process.env).catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        process.exit(1);
+    });
+}

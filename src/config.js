@@ -41,27 +41,28 @@ async function readFile(...args) {
     return p;
 }
 
-// TODO: implement toString, toJSON toAnythingElse methods on config so that secrets can't be
-// printed
-const config = {
-    tls: {
-        enabled: true,
-        mutualTLS: { enabled: false },
-        creds: { // copied directly into https opts; check usage before modifying
-            ca: null,
-            cert: null,
-            key: null,
-        },
-    },
-    ports: {
-        simulatorApi: 3000,
-        reportApi: 3002,
-        testApi: 3003,
-    },
-    parties: [],
-};
 
-const setConfig = async (cfg) => {
+const getConfig = async (cfg) => {
+    // TODO: implement toString, toJSON toAnythingElse methods on config so that secrets can't be
+    // printed
+    const config = {
+        tls: {
+            enabled: true,
+            mutualTLS: { enabled: false },
+            creds: { // copied directly into https opts; check usage before modifying
+                ca: null,
+                cert: null,
+                key: null,
+            },
+        },
+        ports: {
+            simulatorApi: 3000,
+            reportApi: 3002,
+            testApi: 3003,
+        },
+        parties: [],
+    };
+
     config.tls.mutualTLS.enabled = cfg.MUTUAL_TLS_ENABLED.toLowerCase() !== 'false';
     config.tls.enabled = cfg.HTTPS_ENABLED !== 'false';
     // Getting secrets from files instead of environment variables reduces the likelihood of
@@ -80,11 +81,7 @@ const setConfig = async (cfg) => {
     config.ports.reportApi = cfg.REPORT_API_LISTEN_PORT || config.ports.reportApi;
     config.ports.testApi = cfg.TEST_API_LISTEN_PORT || config.ports.testApi;
     config.parties = cfg.PARTIES ? JSON.parse(cfg.PARTIES) : config.parties;
+    return config;
 };
 
-const getConfig = () => config;
-
-module.exports = {
-    getConfig,
-    setConfig,
-};
+module.exports = getConfig;

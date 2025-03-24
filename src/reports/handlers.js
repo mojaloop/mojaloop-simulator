@@ -38,9 +38,10 @@ const { quoteTable } = require('../models/constants');
  *
  * @param {Array} quotes  Quotes aggregated from database.
  */
-const parseQuotes = (quotes) => {
+const parseQuotes = (quotes, ctx) => {
     try {
         const responses = [];
+        const dfspId = ctx.state.path?.params?.dfspId;
         quotes.forEach((quote) => {
             const { request, created } = quote;
             const quoteReq = JSON.parse(request);
@@ -54,8 +55,8 @@ const parseQuotes = (quotes) => {
             } = quoteReq;
 
             responses.push({
-                senderDFSPId: process.env.DFSP_ID,
-                senderDFSPName: process.env.DFSP_ID,
+                senderDFSPId: dfspId ?? process.env.DFSP_ID,
+                senderDFSPName: dfspId ?? process.env.DFSP_ID,
                 receiverDFSPId: '',
                 receiverDFSPName: '',
                 hubTxnID: transactionId,
@@ -105,7 +106,7 @@ const getReport = async (ctx) => {
             ctx.response.status = 404;
             return;
         }
-        const responses = await parseQuotes(quotes);
+        const responses = await parseQuotes(quotes, ctx);
         ctx.response.body = responses;
         ctx.response.status = 200;
     } catch (err) {
