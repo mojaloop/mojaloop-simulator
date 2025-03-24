@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.3.0](https://github.com/mojaloop/mojaloop-simulator/compare/v15.2.1...v15.3.0) (2025-03-24)
+
+
+### Features
+
+* support simulating multiple DFSPs with a single simulator ([#183](https://github.com/mojaloop/mojaloop-simulator/issues/183)) ([308bd42](https://github.com/mojaloop/mojaloop-simulator/commit/308bd42387d8269b7d995cb18873e1d09790375a))
+
 ### [15.2.1](https://github.com/mojaloop/mojaloop-simulator/compare/v15.2.0...v15.2.1) (2025-02-25)
 
 
