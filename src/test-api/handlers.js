@@ -53,7 +53,7 @@ const createParty = async (ctx) => {
         ctx.response.body = '';
         ctx.response.status = 204;
         return;
-    } catch (err) {
+    } catch {
         ctx.response.body = ApiErrorCodes.ID_NOT_UNIQUE;
         ctx.response.status = 500;
     }
@@ -69,7 +69,7 @@ const readParties = async (ctx) => {
         }
         ctx.response.body = res;
         ctx.response.status = 200;
-    } catch (err) {
+    } catch {
         ctx.response.body = '';
         ctx.response.status = 500;
     }
@@ -91,7 +91,7 @@ const readParty = async (ctx) => {
         }
         ctx.response.body = res;
         ctx.response.status = 200;
-    } catch (err) {
+    } catch {
         ctx.response.body = '';
         ctx.response.status = 500;
     }
@@ -110,7 +110,7 @@ const updateParty = async (ctx) => {
         await ctx.state.model.party.update(model, idType, idValue, idSubValue);
         ctx.response.status = 204;
         return;
-    } catch (err) {
+    } catch {
         ctx.response.body = ApiErrorCodes.ID_NOT_UNIQUE;
         ctx.response.status = 500;
     }
@@ -128,7 +128,7 @@ const deleteParty = async (ctx) => {
         await ctx.state.model.party.delete(idType, idValue, idSubValue);
         ctx.response.status = 204;
         return;
-    } catch (err) {
+    } catch {
         ctx.response.body = ApiErrorCodes.ID_NOT_UNIQUE;
         ctx.response.status = 500;
     }

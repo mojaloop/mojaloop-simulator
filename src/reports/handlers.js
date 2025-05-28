@@ -110,7 +110,7 @@ const getReport = async (ctx) => {
         ctx.response.body = responses;
         ctx.response.status = 200;
     } catch (err) {
-        // eslint-disable-next-line no-console
+    // eslint-disable-next-line no-console
         console.log(`Error generating report: ${getStackOrInspect(err)}`);
         ctx.response.body = ApiErrorCodes.REPORT_ERROR;
         ctx.response.status = 500;

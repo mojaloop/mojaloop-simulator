@@ -253,7 +253,7 @@ module.exports = async function start(config = process.env) {
                     .concat(extensionList.extension);
 
                 ctx.request.body = newBody;
-                // eslint-disable-next-line
+                 
                 return await next();
             }
 
@@ -263,7 +263,7 @@ module.exports = async function start(config = process.env) {
                 const newBody = { ...ctx.request.body };
                 newBody.extensionList = extensionList;
                 ctx.request.body = newBody;
-                // eslint-disable-next-line
+                 
                 return await next();
             }
 
@@ -335,7 +335,7 @@ module.exports = async function start(config = process.env) {
 
 if (require.main === module) {
     module.exports(process.env).catch((err) => {
-        // eslint-disable-next-line no-console
+    // eslint-disable-next-line no-console
         console.error(err);
         process.exit(1);
     });
