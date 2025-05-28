@@ -31,7 +31,6 @@
     "#rules/*": "./rules/*.json"
   },
   "scripts": {
-    "postinstall": "husky install",
     "start": "node ./src/index.js",
     "docker:build": "docker build --build-arg NODE_VERSION=\"$(cat .nvmrc)-alpine\" -t mojaloop/mojaloop-simulator:local -f ./Dockerfile .",
     "docker:up": "docker compose $npm_package_config_env_file up -d  &&  docker ps",
