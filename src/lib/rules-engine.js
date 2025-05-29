@@ -34,13 +34,13 @@ class RulesEngine {
         this.config = config;
         this.logger = config.logger || console;
         this.engine = new Engine();
-        // eslint-disable-next-line no-underscore-dangle
+     
         this._addCustomOperators();
     }
 
-    // eslint-disable-next-line no-underscore-dangle
+   
     _addCustomOperators() {
-        /* istanbul ignore next */
+    /* istanbul ignore next */
         this.engine.addOperator('numberStringLessThanInclusive', (a, b) => Number(a) <= b);
         /* istanbul ignore next */
         this.engine.addOperator('numberStringGreaterThanInclusive', (a, b) => Number(a) >= b);

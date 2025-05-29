@@ -131,7 +131,7 @@ module.exports = class Party {
         }
 
         const resultMap = {};
-        for (const row of res) { // eslint-disable-line no-eval
+        for (const row of res) {  
             let party;
             if (resultMap[row.idValue]) {
                 party = resultMap[row.idValue];
@@ -152,13 +152,13 @@ module.exports = class Party {
             }
 
             // lets check for Extensions
-            const partyExtensionsRes = await this.getPartyExtensions(row.idValue, row.idSubValue); // eslint-disable-line no-eval
+            const partyExtensionsRes = await this.getPartyExtensions(row.idValue, row.idSubValue);  
             if (partyExtensionsRes) {
                 party.extensionList = partyExtensionsRes;
             }
 
             // lets check for Accounts
-            const partyAccountsRes = await this.getPartyAccounts(row.idValue, row.idSubValue); // eslint-disable-line no-eval
+            const partyAccountsRes = await this.getPartyAccounts(row.idValue, row.idSubValue);  
             if (partyAccountsRes) {
                 party.accounts = partyAccountsRes;
             }
@@ -179,7 +179,7 @@ module.exports = class Party {
         const res = await this.db.all(`SELECT p.displayName, p.firstName, p.middleName, p.lastName, p.dateOfBirth, p.idType, p.idValue, p.idSubValue FROM ${partyTable} AS p`);
 
         const resultMap = {};
-        for (const row of res) { // eslint-disable-line no-eval
+        for (const row of res) {  
             let party;
             if (resultMap[`${row.idValue}-${row.idSubValue}`]) {
                 party = resultMap[`${row.idValue}-${row.idSubValue}`];
@@ -200,13 +200,13 @@ module.exports = class Party {
             }
 
             // lets check for Extensions
-            const partyExtensionsRes = await this.getPartyExtensions(row.idValue, row.idSubValue); // eslint-disable-line no-eval
+            const partyExtensionsRes = await this.getPartyExtensions(row.idValue, row.idSubValue);  
             if (partyExtensionsRes) {
                 party.extensionList = partyExtensionsRes;
             }
 
             // lets check for Accounts
-            const partyAccountsRes = await this.getPartyAccounts(row.idValue, row.idSubValue); // eslint-disable-line no-eval
+            const partyAccountsRes = await this.getPartyAccounts(row.idValue, row.idSubValue);  
             if (partyAccountsRes) {
                 party.accounts = partyAccountsRes;
             }
