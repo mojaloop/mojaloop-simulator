@@ -79,7 +79,7 @@
     "@types/jest": "30.0.0",
     "audit-ci": "7.1.0",
     "ava": "6.4.1",
-    "axios": "1.10.0",
+    "axios": "1.11.0",
     "eslint": "9.27.0",
     "eslint-plugin-ava": "14.0.0",
     "eslint-plugin-import": "2.32.0",
