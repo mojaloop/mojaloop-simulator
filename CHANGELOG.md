@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [15.4.2](https://github.com/mojaloop/mojaloop-simulator/compare/v15.4.1...v15.4.2) (2025-07-25)
+
+
+### Chore
+
+* fix vuls and update deps ([#189](https://github.com/mojaloop/mojaloop-simulator/issues/189)) ([a607851](https://github.com/mojaloop/mojaloop-simulator/commit/a6078515491f3eb578a2d40937d39130482ad4cf))
+* **sbom:** update sbom [skip ci] ([ff78d78](https://github.com/mojaloop/mojaloop-simulator/commit/ff78d78a34785d31d691baa08861f756158bf16e))
+
 ### [15.4.1](https://github.com/mojaloop/mojaloop-simulator/compare/v15.4.0...v15.4.1) (2025-07-17)
 
 
