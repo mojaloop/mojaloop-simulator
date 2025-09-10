@@ -30,7 +30,6 @@
 
 const crypto = require('crypto');
 
-const { getStackOrInspect } = require('../lib/log/log');
 const { ApiErrorCodes } = require('../models/errors');
 const objectStore = require('../lib/objectStore/objectStoreInterface');
 
@@ -43,11 +42,11 @@ const getParticipantsByTypeAndId = async (ctx) => {
             ctx.response.status = 404;
             return;
         }
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'getParticipantsByTypeAndId is returning body', body: res});
+        ctx.state.logger.info('getParticipantsByTypeAndId is returning body', { body: res });
         ctx.response.body = { fspId: dfspId ?? process.env.DFSP_ID };
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in getParticipantsByTypeAndId: ${getStackOrInspect(err)}`);
+        ctx.state.logger.error('Error in getParticipantsByTypeAndId: ', err);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -63,11 +62,11 @@ const getPartiesByTypeAndId = async (ctx) => {
             ctx.response.status = 404;
             return;
         }
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'getPartiesByTypeAndId is returning body', body: res});
+        ctx.state.logger.info('getPartiesByTypeAndId is returning body', { body: res });
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in getPartiesByTypeAndId: ${getStackOrInspect(err)}`);
+        ctx.state.logger.error('Error in getPartiesByTypeAndId: ', err);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -77,7 +76,7 @@ const getOTPById = async (ctx) => {
     const res = {
         otpValue: Math.floor(Math.random() * 90000) + 10000,
     };
-    ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'getOTPById is returning body', body: res});
+    ctx.state.logger.info('getOTPById is returning body', { body: res });
     ctx.response.body = res;
     ctx.response.status = 200;
 };
@@ -85,11 +84,11 @@ const getOTPById = async (ctx) => {
 const postTransfers = async (ctx) => {
     try {
         const res = await ctx.state.model.transfer.create(ctx.request.body);
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'postTransfers is returning body', body: res});
+        ctx.state.logger.info('postTransfers is returning body', { body: res });
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in postTransfers: ${getStackOrInspect(err)}`);
+        ctx.state.logger.error('Error in postTransfers: ', err);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -100,11 +99,11 @@ const putTransfersById = async (ctx) => {
         const res = await ctx.state.model.transfer.update(ctx.state.path.params.transferId, {
             ...ctx.request.body,
         });
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'TransfersById is returning body', body: res});
+        ctx.state.logger.info('TransfersById is returning body', { body: res });
         ctx.response.body = ctx.request.body;
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in putTransfersById: ${getStackOrInspect(err)}`);
+        ctx.state.logger.error('Error in putTransfersById: ', err);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -113,11 +112,11 @@ const putTransfersById = async (ctx) => {
 const postQuotes = async (ctx) => {
     try {
         const res = await ctx.state.model.quote.create(ctx.request.body);
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'Quotes is returning body', body: res});
+        ctx.state.logger.info('Quotes is returning body', { body: res });
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in postQuotes: ${getStackOrInspect(err)}`);
+        ctx.state.logger.error('Error in postQuotes: ', err);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -126,11 +125,11 @@ const postQuotes = async (ctx) => {
 const postBulkQuotes = async (ctx) => {
     try {
         const res = await ctx.state.model.bulkQuote.create(ctx.request.body);
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'BulkQuotes is returning body', body: res});
+        ctx.state.logger.info('BulkQuotes is returning body', { body: res });
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in postBulkQuotes: ${getStackOrInspect(err)}`);
+        ctx.state.logger.error('Error in postBulkQuotes: ', err);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -145,11 +144,11 @@ const getBulkQuoteById = async (ctx) => {
             ctx.response.status = 404;
             return;
         }
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'BulkQuoteById is returning body', body: res});
+        ctx.state.logger.info('BulkQuoteById is returning body', { body: res });
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in getBulkQuoteById: ${getStackOrInspect(err)}`);
+        ctx.state.logger.error('Error in getBulkQuoteById: ', err);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -158,11 +157,11 @@ const getBulkQuoteById = async (ctx) => {
 const postTransactionRequests = async (ctx) => {
     try {
         const res = await ctx.state.model.transactionrequest.create(ctx.request.body);
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'TransactionRequests is returning body', body: res});
+        ctx.state.logger.info('TransactionRequests is returning body', { body: res });
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in postTransactionRequests: ${getStackOrInspect(err)}`);
+        ctx.state.logger.error('Error in postTransactionRequests: ', err);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -171,11 +170,11 @@ const postTransactionRequests = async (ctx) => {
 const postBulkTransfers = async (ctx) => {
     try {
         const res = await ctx.state.model.bulkTransfer.create(ctx.request.body);
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'BulkTransfers is returning body', body: res});
+        ctx.state.logger.info('BulkTransfers is returning body', { body: res });
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in postBulkTransfers: ${getStackOrInspect(err)}`);
+        ctx.state.logger.error('Error in postBulkTransfers: ', err);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -190,11 +189,11 @@ const getBulkTransferById = async (ctx) => {
             ctx.response.status = 404;
             return;
         }
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'BulkTransferById is returning body', body: res});
+        ctx.state.logger.info('BulkTransferById is returning body', { body: res });
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in getBulkTransferById: ${getStackOrInspect(err)}`);
+        ctx.state.logger.error('Error in getBulkTransferById: ', err);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -209,12 +208,12 @@ const getAccountsByUserId = async (ctx) => {
     try {
         const { ID } = ctx.state.path.params;
         // if rules not configured, return ID not found error
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'AccountsByUserId rules not configured for ID', ID});
+        ctx.state.logger.info('AccountsByUserId rules not configured for ID', { ID });
         ctx.response.body = ApiErrorCodes.ID_NOT_FOUND;
         ctx.response.status = 404;
         return;
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in getAccountsByUserId: ${getStackOrInspect(err)}`);
+        ctx.state.logger.error('Error in getAccountsByUserId: ', err);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }
@@ -240,7 +239,7 @@ const getScopesById = async (ctx) => {
             },
         ],
     };
-    ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'ScopesById is returning body', body: res});
+    ctx.state.logger.info('ScopesById is returning body', { body: res });
     ctx.response.body = res;
     ctx.response.status = 200;
 };
@@ -251,14 +250,14 @@ const postValidateAuthToken = async (ctx) => {
     const res = {
         isValid: ctx.request.body.authToken % 2 === 0,
     };
-    ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'ValidateOTP is returning body', body: res});
+    ctx.state.logger.info('ValidateOTP is returning body', { body: res });
     ctx.response.body = res;
     ctx.response.status = 200;
 };
 
 const validateConsentRequests = async (ctx) => {
     const request = ctx.request.body;
-    ctx.state.logger.isInfoEnabled && ctx.state.logger.info({msg: 'validateConsentRequests request body', body: request});
+    ctx.state.logger.info('validateConsentRequests request body', { body: request });
     // default mock response, if rules not configured
     const res = {
         isValid: true,
@@ -267,20 +266,20 @@ const validateConsentRequests = async (ctx) => {
             authUri: `dfspa.com/authorize?consentRequestId=${request.id}`,
         },
     };
-    ctx.state.logger.isInfoEnabled && ctx.state.logger.info({msg: 'validateConsentRequests is returning body', body: res});
+    ctx.state.logger.info('validateConsentRequests is returning body', { body: res });
     ctx.response.body = res;
     ctx.response.status = 200;
 };
 
 const sendOTP = async (ctx) => {
     const request = ctx.request.body;
-    ctx.state.logger.isInfoEnabled && ctx.state.logger.info({msg: 'sendOTP request body', body: request});
+    ctx.state.logger.info('sendOTP request body', { body: request });
     // default mock reponse, if rules not configured
     const res = {
         otp: Math.floor(Math.random() * 90000) + 10000,
     };
     await objectStore.set(`${request.consentRequestId}-OTP`, res);
-    ctx.state.logger.isInfoEnabled && ctx.state.logger.info({msg: 'sendOTP is returning body', body: res});
+    ctx.state.logger.info('sendOTP is returning body', { body: res });
     ctx.response.body = res;
     ctx.response.status = 200;
 };
@@ -288,23 +287,23 @@ const sendOTP = async (ctx) => {
 const storeConsentRequest = async (ctx) => {
     const { ID } = ctx.state.path.params;
     const request = ctx.request.body;
-    ctx.state.logger.isInfoEnabled && ctx.state.logger.info({msg: 'storeConsentRequest request body', body: request});
+    ctx.state.logger.info('storeConsentRequest request body', { body: request });
     // default mock response, if rules not configured
     const res = {
         status: 'OK',
     };
     await objectStore.set(`${ID}-CR`, request);
-    ctx.state.logger.isInfoEnabled && ctx.state.logger.info({msg: 'sendOTP is returning body', body: res});
+    ctx.state.logger.info('sendOTP is returning body', { body: res });
     ctx.response.body = res;
     ctx.response.status = 200;
 };
 
 const getConsentRequest = async (ctx) => {
     const { ID } = ctx.state.path.params;
-    ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: `ConsentRequest : ${ID}`});
+    ctx.state.logger.info(`ConsentRequest : ${ID}`);
     // default mock response, if rules not configured
     const res = await objectStore.get(`${ID}-CR`);
-    ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: `ConsentRequest : ${ID} is returning body`, body: res});
+    ctx.state.logger.info(`ConsentRequest : ${ID} is returning body`, { body: res });
     ctx.response.body = res;
     ctx.response.status = 200;
 };
@@ -315,11 +314,11 @@ const getSignedChallenge = async (ctx) => {
             pinValue: crypto.randomBytes(256).toString('base64').slice(0, 64),
             counter: '1',
         };
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({ msg: 'SignedChallenge is returning body', body: res});
+        ctx.state.logger.info('SignedChallenge is returning body', { body: res });
         ctx.response.body = res;
         ctx.response.status = 200;
     } catch (err) {
-        ctx.state.logger.isErrorEnabled && ctx.state.logger.error(`Error in getSignedChallenge: ${getStackOrInspect(err)}`);
+        ctx.state.logger.error('Error in getSignedChallenge: ', err);
         ctx.response.body = ApiErrorCodes.SERVER_ERROR;
         ctx.response.status = 500;
     }

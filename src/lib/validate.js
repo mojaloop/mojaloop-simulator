@@ -183,9 +183,9 @@ class Validator {
             .map((m, i) => ({ [result.matcher.params[i]]: m })));
 
         if (path == '/' || path == '/health') {
-            logger.isDebugEnabled && logger.debug({'msg': 'Matched path', path, result});
+            logger.debug('Matched path', { path, result });
         } else {
-            logger.isInfoEnabled && logger.info({'msg': 'Matched path', path, result});
+            logger.info('Matched path', { path, result });
         }
         return result;
     }
