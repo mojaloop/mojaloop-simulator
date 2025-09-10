@@ -27,7 +27,6 @@
 'use strict';
 
 const { Engine } = require('json-rules-engine');
-const { getStackOrInspect } = require('./log/log');
 
 class RulesEngine {
     constructor(config) {
@@ -55,9 +54,9 @@ class RulesEngine {
     loadRules(rules) {
         try {
             rules.forEach((r) => { this.engine.addRule(r); });
-            this.logger.isInfoEnabled && this.logger.info({msg: 'Rules loaded', rules});
+            this.logger.info('Rules loaded', { rules });
         } catch (err) {
-            this.logger.isErrorEnabled && this.logger.error(`Error loading rules: ${getStackOrInspect(err)}`);
+            this.logger.error('Error loading rules: ', err);
             throw err;
         }
     }
@@ -72,18 +71,18 @@ class RulesEngine {
     async evaluate(facts) {
         return new Promise((resolve, reject) => {
             if (facts.path == '/' || facts.path == '/health') {
-                this.logger.isDebugEnabled && this.logger.debug({ msg: 'Rule engine evaluating facts', facts});
+                this.logger.debug('Rule engine evaluating facts', { facts });
             } else {
-                this.logger.isInfoEnabled && this.logger.info({ msg: 'Rule engine evaluating facts', facts});
+                this.logger.info('Rule engine evaluating facts', { facts });
             }
             this.engine
                 .run(facts)
                 .then((engineResult) => {
                     const { events } = engineResult;
                     if (facts.path == '/' || facts.path == '/health') {
-                        this.logger.isDebugEnabled && this.logger.debug({ msg: 'Rule engine returning events', engineResult});
+                        this.logger.debug('Rule engine returning events', { engineResult });
                     } else {
-                        this.logger.isInfoEnabled && this.logger.info({ msg: 'Rule engine returning events', engineResult});
+                        this.logger.info('Rule engine returning events', { engineResult });
                     }
                     // Events is always longer than 0 for istanbul
                     /* istanbul ignore next */

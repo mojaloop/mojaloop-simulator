@@ -38,8 +38,7 @@ const https = require('https');
 const cors = require('@koa/cors');
 const router = require('./lib/router');
 const Validate = require('./lib/validate');
-const { getStackOrInspect } = require('./lib/log/log');
-const Logger = require('@mojaloop/central-services-logger');
+const { logger } = require('./lib/logger');
 const RulesEngine = require('./lib/rules-engine');
 
 const Config = require('./lib/config');
@@ -86,28 +85,15 @@ async function rewriteContentTypeHeader(ctx, next) {
 module.exports = async function start(config = process.env) {
     // Try overload config file
     const configResult = await Config(config.CONFIG_OVERRIDE);
-    // eslint-disable-next-line no-console
-    console.log(configResult);
+    logger.info('configResult: ', { configResult });
     // Set up the config from the environment
     const conf = await getConfig(config);
 
 
     // Set up a logger for each running server
-    const simLogger = Logger.child({
-        context: {
-            app: 'simulator'
-        }
-    });
-    const reportLogger =  Logger.child({
-        context: {
-            app: 'report'
-        }
-    });
-    const testApiLogger =  Logger.child({
-        context: {
-            app: 'test-api'
-        }
-    });
+    const simLogger = logger.child({ component: 'simulator' });
+    const reportLogger =  logger.child({ component: 'report' });
+    const testApiLogger =  logger.child({ component: 'test-api' });
 
     const rulesEngine = new RulesEngine({ logger: simLogger });
 
@@ -126,10 +112,7 @@ module.exports = async function start(config = process.env) {
         try {
             await next();
         } catch (err) {
-            // eslint-disable-next-line no-console
-            console.log(JSON.stringify({
-                message: `Unhandled error in handler chain: ${getStackOrInspect(err, { depth: Infinity })}`,
-            }, null, 2));
+            logger.error('Unhandled error in handler chain: ', err);
         }
     };
 
@@ -142,9 +125,9 @@ module.exports = async function start(config = process.env) {
     testApi.use(koaBody());
 
     // Add a log context for each request, log the receipt and handling thereof
-    simulator.use(middleware.createRequestLoggingMiddleware(simLogger));
-    report.use(middleware.createReportLoggingMiddleware(reportLogger));
-    testApi.use(middleware.createTestApiLoggingMiddleware(testApiLogger));
+    simulator.use(middleware.createLoggingMiddleware(simLogger));
+    report.use(middleware.createLoggingMiddleware(reportLogger));
+    testApi.use(middleware.createLoggingMiddleware(testApiLogger));
 
     simulator.use(rewriteContentTypeHeader);
     testApi.use(cors());
@@ -155,19 +138,19 @@ module.exports = async function start(config = process.env) {
     simulator.use(async function simValidationMiddleware (ctx, next) {
         try {
             if (ctx.path === '/' || ctx.path === '/health') {
-                ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg': 'Validating Request', request: ctx.request});
+                ctx.state.logger.debug('Validating Request', { request: ctx.request });
                 ctx.state.path = simValidator.validateRequest(ctx, ctx.state.logger);
-                ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg': 'Request passed validation', request: ctx.request});
+                ctx.state.logger.debug('Request passed validation', { request: ctx.request });
                 ctx.state.model = model;
             } else {
-                ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Validating Request', request: ctx.request});
+                ctx.state.logger.info('Validating Request', { request: ctx.request });
                 ctx.state.path = simValidator.validateRequest(ctx, ctx.state.logger);
-                ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request passed validation', request: ctx.request});
+                ctx.state.logger.info('Request passed validation', { request: ctx.request });
                 ctx.state.model = model;
             }
             await next();
         } catch (error) {
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.error({'msg': 'Request passed validation', error});
+            ctx.state.logger.error('Request validation failed: ', error);
             ctx.response.status = 400;
             ctx.response.body = {
                 message: error.message,
@@ -180,12 +163,12 @@ module.exports = async function start(config = process.env) {
 
     report.use(async function reportValidationMiddleware (ctx, next) {
         try {
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Validating Request', request: ctx.request});
+            ctx.state.logger.info('Validating Request', { request: ctx.request });
             ctx.state.path = reportValidator.validateRequest(ctx, ctx.state.logger);
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request passed validation', request: ctx.request});
+            ctx.state.logger.info('Request passed validation', { request: ctx.request });
             await next();
         } catch (error) {
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.error({'msg': 'Request passed validation', error});
+            ctx.state.logger.error('Request validation failed: ', error);
             ctx.response.status = 400;
             ctx.response.body = {
                 message: error.message,
@@ -198,13 +181,13 @@ module.exports = async function start(config = process.env) {
 
     testApi.use(async function testApiValidationMiddleware (ctx, next) {
         try {
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Validating Request', request: ctx.request});
+            ctx.state.logger.info('Validating Request', { request: ctx.request });
             ctx.state.path = testApiValidator.validateRequest(ctx, ctx.state.logger);
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Request passed validation', request: ctx.request});
+            ctx.state.logger.info('Request passed validation', { request: ctx.request });
             ctx.state.model = model;
             await next();
         } catch (error) {
-            ctx.state.logger.isErrorEnabled && ctx.state.logger.error({'msg': 'Request passed validation', error});
+            ctx.state.logger.error('Request validation failed: ', error);
             ctx.response.status = 400;
             ctx.response.body = {
                 message: error.message,
@@ -221,9 +204,9 @@ module.exports = async function start(config = process.env) {
             method: ctx.request.method,
         };
         if (ctx.path === '/' || ctx.path === '/health') {
-            ctx.state.logger.isDebugEnabled && ctx.state.logger.debug({'msg':'Rules engine evaluating request against facts', facts});
+            ctx.state.logger.debug('Rules engine evaluating request against facts', { facts });
         } else {
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg':'Rules engine evaluating request against facts', facts});
+            ctx.state.logger.info('Rules engine evaluating request against facts', { facts });
         }
 
         const res = await rulesEngine.evaluate(facts);
@@ -236,7 +219,7 @@ module.exports = async function start(config = process.env) {
 
             if (evt.noResponse) {
                 // simulating no response
-                ctx.state.logger.isInfoEnabled && ctx.state.logger.info('Rule engine is triggering a no response scenario');
+                ctx.state.logger.info('Rule engine is triggering a no response scenario');
                 ctx.res.end();
                 return;
             }
@@ -253,7 +236,7 @@ module.exports = async function start(config = process.env) {
                     .concat(extensionList.extension);
 
                 ctx.request.body = newBody;
-                 
+
                 return await next();
             }
 
@@ -263,12 +246,12 @@ module.exports = async function start(config = process.env) {
                 const newBody = { ...ctx.request.body };
                 newBody.extensionList = extensionList;
                 ctx.request.body = newBody;
-                 
+
                 return await next();
             }
 
             const { body, statusCode } = res[0];
-            ctx.state.logger.isInfoEnabled && ctx.state.logger.info({'msg': 'Rules engine returned a response for request', res});
+            ctx.state.logger.info('Rules engine returned a response for request', { res });
             ctx.response.body = body;
             ctx.response.status = statusCode;
             return;
@@ -319,11 +302,11 @@ module.exports = async function start(config = process.env) {
     } else {
         simServer = simulator.listen(simulatorPort);
     }
-    simLogger.isInfoEnabled && simLogger.info(`Serving simulator on port ${simulatorPort}`);
+    simLogger.info(`Serving simulator on port ${simulatorPort}`);
     const reportServer = report.listen(reportPort);
-    reportLogger.isInfoEnabled && reportLogger.info(`Serving report API on port ${reportPort}`);
+    reportLogger.info(`Serving report API on port ${reportPort}`);
     const testApiServer = testApi.listen(testApiPort);
-    testApiLogger.isInfoEnabled && testApiLogger.info(`Serving test API on port ${testApiPort}`);
+    testApiLogger.info(`Serving test API on port ${testApiPort}`);
 
     // Gracefully handle shutdown. This should drain the servers.
     process.on('SIGTERM', () => {
@@ -335,8 +318,7 @@ module.exports = async function start(config = process.env) {
 
 if (require.main === module) {
     module.exports(process.env).catch((err) => {
-    // eslint-disable-next-line no-console
-        console.error(err);
+        logger.error('error in module.exports(process.env): ', err);
         process.exit(1);
     });
 }

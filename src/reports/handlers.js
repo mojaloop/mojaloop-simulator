@@ -29,7 +29,7 @@ const { parse } = require('querystring');
 const sqlite = require('sqlite');
 const sqlite3 = require('sqlite3');
 
-const { getStackOrInspect } = require('../lib/log/log');
+const { logger } = require('../lib/logger');
 const { ApiErrorCodes } = require('../models/errors');
 const { quoteTable } = require('../models/constants');
 
@@ -110,8 +110,7 @@ const getReport = async (ctx) => {
         ctx.response.body = responses;
         ctx.response.status = 200;
     } catch (err) {
-    // eslint-disable-next-line no-console
-        console.log(`Error generating report: ${getStackOrInspect(err)}`);
+        logger.error('Error generating report: ', err);
         ctx.response.body = ApiErrorCodes.REPORT_ERROR;
         ctx.response.status = 500;
     }

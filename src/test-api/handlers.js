@@ -193,7 +193,7 @@ const handleOps = async (logger, model, ops) => {
             acc[op.name] = { error };
         }
 
-        logger.isInfoEnabled && logger.info({msg: `Operation ${op.name} result`, result: acc[op.name]});
+        logger.info(`Operation ${op.name} result`, { result: acc[op.name] });
         return acc;
     }, Promise.resolve({}));
 
@@ -209,7 +209,7 @@ const handleScenarios = async (ctx) => {
             postBulkQuotes,
         }, ctx.request.body);
 
-        ctx.state.logger.isInfoEnabled && ctx.state.logger.info({msg: 'Scenario operations returned', res});
+        ctx.state.logger.info('Scenario operations returned', { res });
         if (res) {
             ctx.response.body = res;
             ctx.response.status = 200;

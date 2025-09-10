@@ -1,6 +1,7 @@
 {
   "reject": [
     "eslint-plugin-ava",
-    "eslint"
+    "eslint",
+    "uuid"
   ]
 }

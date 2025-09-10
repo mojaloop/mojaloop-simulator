@@ -58,6 +58,7 @@ const createSchema = (pathValue, methodValue) => {
         body: extractBody(methodValue.requestBody) || {},
     };
     // Make all header keys lower-case
+    // istanbul ignore next
     if ('headers' in properties && 'properties' in properties.headers) {
         properties.headers.properties = Object.assign(
             ...Object.entries(properties.headers.properties)
@@ -183,9 +184,9 @@ class Validator {
             .map((m, i) => ({ [result.matcher.params[i]]: m })));
 
         if (path == '/' || path == '/health') {
-            logger.isDebugEnabled && logger.debug({'msg': 'Matched path', path, result});
+            logger.debug('Matched path', { path, result });
         } else {
-            logger.isInfoEnabled && logger.info({'msg': 'Matched path', path, result});
+            logger.info('Matched path', { path, result });
         }
         return result;
     }
