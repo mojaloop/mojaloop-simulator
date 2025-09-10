@@ -40,6 +40,7 @@ test.beforeEach(async () => {
     sandbox.stub(Logger, 'info');
     sandbox.stub(Logger, 'error');
     sandbox.stub(Logger, 'debug');
+    sandbox.stub(Logger, 'warn');
     sandbox.stub(Logger, 'isInfoEnabled').value(true);
     sandbox.stub(Logger, 'isErrorEnabled').value(true);
     sandbox.stub(Logger, 'isDebugEnabled').value(true);
@@ -67,8 +68,10 @@ test('Handles when a route cannot be found with a 404', async (t) => {
     await router(handlerMap)(ctx, nextFunction);
 
     // Assert
+    const { status, body } = ctx.response;
+    console.log('status, body:', { status, body });
     t.is(ctx.response.status, 404, 'Router returned the wrong status');
-    t.truthy(Logger.info.calledWith('No handler found'));
+    t.truthy(Logger.warn.calledWith('No handler found'));
 });
 
 test('Handles when a route can be found', async (t) => {

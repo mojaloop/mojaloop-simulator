@@ -42,6 +42,7 @@
     "lint:fix": "eslint ./src/ --fix",
     "test": "npm run test:unit",
     "test:unit": "CONFIG_OVERRIDE=./example.env ava -c 1 --serial './test/unit/**/*.test.js'",
+    "test:unit:router": "CONFIG_OVERRIDE=./example.env ava -c 1 --serial './test/unit/lib/router/router.test.js'",
     "test:xunit": "npm run test:unit",
     "test:coverage-check": "CONFIG_OVERRIDE=./example.env nyc ava --serial './test/unit/**/*.test.js'",
     "test:int": "CONFIG_OVERRIDE=./example.env jest --config './jest.integration.config.js' --testMatch '**/test/integration/**/*.(test|spec).js' --runInBand",
