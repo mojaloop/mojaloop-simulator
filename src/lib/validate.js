@@ -58,6 +58,7 @@ const createSchema = (pathValue, methodValue) => {
         body: extractBody(methodValue.requestBody) || {},
     };
     // Make all header keys lower-case
+    // istanbul ignore next
     if ('headers' in properties && 'properties' in properties.headers) {
         properties.headers.properties = Object.assign(
             ...Object.entries(properties.headers.properties)

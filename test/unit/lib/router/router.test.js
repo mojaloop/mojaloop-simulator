@@ -70,7 +70,8 @@ test('Handles when a route cannot be found with a 404', async (t) => {
     // Assert
     const { status, body } = ctx.response;
     console.log('status, body:', { status, body });
-    t.is(ctx.response.status, 404, 'Router returned the wrong status');
+    t.is(status, 404, 'Router returned the 404 status');
+    t.is(body.message, 'Not found', 'Router returned correct body.message');
     t.truthy(Logger.warn.calledWith('No handler found'));
 });
 
