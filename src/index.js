@@ -38,8 +38,7 @@ const https = require('https');
 const cors = require('@koa/cors');
 const router = require('./lib/router');
 const Validate = require('./lib/validate');
-const { getStackOrInspect } = require('./lib/log/log');
-const Logger = require('@mojaloop/central-services-logger');
+const { logger } = require('./lib/logger');
 const RulesEngine = require('./lib/rules-engine');
 
 const Config = require('./lib/config');
@@ -86,28 +85,15 @@ async function rewriteContentTypeHeader(ctx, next) {
 module.exports = async function start(config = process.env) {
     // Try overload config file
     const configResult = await Config(config.CONFIG_OVERRIDE);
-    // eslint-disable-next-line no-console
-    console.log(configResult);
+    logger.info('configResult: ', { configResult });
     // Set up the config from the environment
     const conf = await getConfig(config);
 
 
     // Set up a logger for each running server
-    const simLogger = Logger.child({
-        context: {
-            app: 'simulator'
-        }
-    });
-    const reportLogger =  Logger.child({
-        context: {
-            app: 'report'
-        }
-    });
-    const testApiLogger =  Logger.child({
-        context: {
-            app: 'test-api'
-        }
-    });
+    const simLogger = logger.child({ component: 'simulator' });
+    const reportLogger =  logger.child({ component: 'report' });
+    const testApiLogger =  logger.child({ component: 'test-api' });
 
     const rulesEngine = new RulesEngine({ logger: simLogger });
 
@@ -126,10 +112,7 @@ module.exports = async function start(config = process.env) {
         try {
             await next();
         } catch (err) {
-            // eslint-disable-next-line no-console
-            console.log(JSON.stringify({
-                message: `Unhandled error in handler chain: ${getStackOrInspect(err, { depth: Infinity })}`,
-            }, null, 2));
+            logger.error('Unhandled error in handler chain: ', err);
         }
     };
 
@@ -142,9 +125,9 @@ module.exports = async function start(config = process.env) {
     testApi.use(koaBody());
 
     // Add a log context for each request, log the receipt and handling thereof
-    simulator.use(middleware.createRequestLoggingMiddleware(simLogger));
-    report.use(middleware.createReportLoggingMiddleware(reportLogger));
-    testApi.use(middleware.createTestApiLoggingMiddleware(testApiLogger));
+    simulator.use(middleware.createLoggingMiddleware(simLogger));
+    report.use(middleware.createLoggingMiddleware(reportLogger));
+    testApi.use(middleware.createLoggingMiddleware(testApiLogger));
 
     simulator.use(rewriteContentTypeHeader);
     testApi.use(cors());
@@ -253,7 +236,7 @@ module.exports = async function start(config = process.env) {
                     .concat(extensionList.extension);
 
                 ctx.request.body = newBody;
-                 
+
                 return await next();
             }
 
@@ -263,7 +246,7 @@ module.exports = async function start(config = process.env) {
                 const newBody = { ...ctx.request.body };
                 newBody.extensionList = extensionList;
                 ctx.request.body = newBody;
-                 
+
                 return await next();
             }
 
@@ -335,8 +318,7 @@ module.exports = async function start(config = process.env) {
 
 if (require.main === module) {
     module.exports(process.env).catch((err) => {
-    // eslint-disable-next-line no-console
-        console.error(err);
+        logger.error('error in module.exports(process.env): ', err);
         process.exit(1);
     });
 }
