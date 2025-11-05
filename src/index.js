@@ -31,15 +31,17 @@
 // Ignore this file in coverage checks since most of it can't be tested in unit tests
 /* istanbul ignore file */
 
+const { join } = require('node:path');
+const https = require('node:https');
 const Koa = require('koa');
 const koaBody = require('koa-body').default;
-const yaml = require('yamljs');
-const https = require('https');
 const cors = require('@koa/cors');
+const yaml = require('yamljs');
+
 const router = require('./lib/router');
 const Validate = require('./lib/validate');
-const { logger } = require('./lib/logger');
 const RulesEngine = require('./lib/rules-engine');
+const { logger } = require('./lib/logger');
 
 const Config = require('./lib/config');
 
@@ -50,7 +52,6 @@ const middleware = require('./middleware');
 
 const getConfig = require('./config');
 const Model = require('./models/model');
-const { join } = require('path');
 
 const simApiSpec = yaml.load(join(__dirname, 'simulator/api.yaml'));
 const reportApiSpec = yaml.load(join(__dirname, 'reports/api.yaml'));
@@ -74,10 +75,12 @@ const rewriteContentTypes = {
 // rewrite content-type header middleware
 async function rewriteContentTypeHeader(ctx, next) {
     const contentType = ctx.header['content-type'];
+    ctx.state.logger?.verbose('contentType: ', { contentType });
 
-    // rewrite only if contentType found in rewriteContentTypes
-    // elsewhere keep original value
-    ctx.header['content-type'] = rewriteContentTypes[contentType] || contentType;
+    // Only rewrite if content-type exists and needs rewriting
+    if (contentType && rewriteContentTypes[contentType]) {
+        ctx.header['content-type'] = rewriteContentTypes[contentType];
+    }
 
     await next();
 }
@@ -113,6 +116,14 @@ module.exports = async function start(config = process.env) {
             await next();
         } catch (err) {
             logger.error('Unhandled error in handler chain: ', err);
+
+            const statusCode = err?.statusCode || err?.status || 500;
+            ctx.status = statusCode;
+            ctx.body = {
+                statusCode,
+                message: err?.message || 'Internal Server Error'
+            };
+            ctx.app.emit('error', err, ctx);
         }
     };
 
