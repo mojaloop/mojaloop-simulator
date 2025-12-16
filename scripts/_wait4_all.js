@@ -8,10 +8,10 @@ const { execSync } = require('child_process');
  */
 
 // Define the docker-compose containers you want to monitor here
+// Note: scheme-adapter is not needed for integration tests (they only hit the simulator)
 const expectedContainers = [
     'redis',
-    'simulator',
-    'scheme-adapter'
+    'simulator'
 ];
 
 let retries = 40;
