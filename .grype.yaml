@@ -1,16 +1,11 @@
 ignore:
-  # Ignore cross-spawn vulnerabilities by CVE ID due to false positive
-  # as grype looks at package-lock.json where it shows versions with
-  # vulnerabilities, npm ls shows only 7.0.6 verion is used
-
-
-# Set output format defaults
+  - vulnerability: GHSA-5j98-mcp5-4vw2
+    include-aliases: true
+    reason: Fix available but specific version unknown for glob (GHSA enrichment may have failed)
 output:
-  - "table"
-  - "json"
-
-# Modify your CircleCI job to check critical count
+  - table
+  - json
 search:
-  scope: "squashed"
+  scope: squashed
 quiet: false
 check-for-app-update: false
