@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [15.5.1](https://github.com/mojaloop/mojaloop-simulator/compare/v15.5.0...v15.5.1) (2025-12-17)
+
+
+### Chore
+
+* **ci:** update CircleCI orb to 1.1.9 ([#202](https://github.com/mojaloop/mojaloop-simulator/issues/202)) ([d159a4d](https://github.com/mojaloop/mojaloop-simulator/commit/d159a4d4ca5a6d1fbab34068f88f24e9f72907b7))
+* **sbom:** update sbom [skip ci] ([be0f032](https://github.com/mojaloop/mojaloop-simulator/commit/be0f03240b37e7e3d874aea3210b218a02d5446c))
+
 ## [15.5.0](https://github.com/mojaloop/mojaloop-simulator/compare/v15.4.2...v15.5.0) (2025-09-10)
 
 
