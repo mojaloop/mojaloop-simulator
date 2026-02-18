@@ -5,7 +5,6 @@
   "moderate": true,
   "allowlist": [
     // NOTE: Please add as much information as possible to any items added to the allowList
-    "GHSA-2g4f-4pwh-qvx6", // ajv ReDoS with $data option - transitive via eslint, override breaks eslint internals
-    "GHSA-83g3-92jg-28cx" // tar arbitrary file overwrite - transitive via sqlite3>node-gyp, no fix available
+    "GHSA-2g4f-4pwh-qvx6" // ajv ReDoS with $data option - transitive via eslint 9's @eslint/eslintrc (uses ajv 6.x API, override to 8.x crashes eslint)
   ]
 }
