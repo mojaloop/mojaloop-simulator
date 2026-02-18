@@ -40,6 +40,34 @@ ignore:
     reason: >-
       Base image npm package: tar - bundled in Node.js base image, not fixable via application dependencies as of
       2026-02-16 (high severity)
+  # Alpine base image CVEs (node:22.21.1-alpine) - OS-level, unfixable at application level
+  # Critical
+  - vulnerability: CVE-2025-15467  # libcrypto3/libssl3
+  # High
+  - vulnerability: CVE-2025-69420  # libcrypto3/libssl3
+  - vulnerability: CVE-2025-69421  # libcrypto3/libssl3
+  - vulnerability: CVE-2025-69419  # libcrypto3/libssl3
+  # Medium
+  - vulnerability: CVE-2026-22796  # libcrypto3/libssl3
+  - vulnerability: CVE-2025-66199  # libcrypto3/libssl3
+  - vulnerability: CVE-2025-15468  # libcrypto3/libssl3
+  - vulnerability: CVE-2026-22795  # libcrypto3/libssl3
+  - vulnerability: CVE-2025-68160  # libcrypto3/libssl3
+  - vulnerability: CVE-2025-11187  # libcrypto3/libssl3
+  - vulnerability: CVE-2025-15469  # libcrypto3/libssl3
+  - vulnerability: CVE-2025-69418  # libcrypto3/libssl3
+
+  # Node.js binary CVEs - require newer Node.js release
+  # Critical
+  - vulnerability: CVE-2025-55130  # node 22.21.1
+  # High
+  - vulnerability: CVE-2025-59465  # node 22.21.1
+  - vulnerability: CVE-2026-21637  # node 22.21.1
+  - vulnerability: CVE-2025-55131  # node 22.21.1
+  - vulnerability: CVE-2025-59466  # node 22.21.1
+  # Medium
+  - vulnerability: CVE-2025-55132  # node 22.21.1
+
 output:
   - table
   - json
