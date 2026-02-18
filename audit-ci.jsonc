@@ -5,6 +5,6 @@
   "moderate": true,
   "allowlist": [
     // NOTE: Please add as much information as possible to any items added to the allowList
-    // Currently no fixes available for the following
+    "GHSA-2g4f-4pwh-qvx6" // ajv ReDoS with $data option - transitive via eslint 9's @eslint/eslintrc (uses ajv 6.x API, override to 8.x crashes eslint)
   ]
 }
