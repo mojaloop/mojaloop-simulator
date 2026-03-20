@@ -16,7 +16,7 @@
     "Miguel de Barros <miguel.debarros@modusbox.com>",
     "ModusBox",
     "Mowali",
-    "Paweł Marzec <pawel.marzec@modusbox.com>"
+    "Pawe\u0142 Marzec <pawel.marzec@modusbox.com>"
   ],
   "repository": {
     "type": "git",
@@ -117,7 +117,7 @@
     "jest-runtime": {
       "glob": "10.5.0"
     },
-    "tar": "7.5.8",
+    "tar": "7.5.12",
     "lodash": "4.17.23"
   },
   "pre-commit": [
