@@ -1,3 +1,4 @@
+scan-type: source
 ignore:
   # Base image npm packages (node:22.22.0-alpine3.23) - bundled with npm, not fixable via app dependencies
   - vulnerability: GHSA-83g3-92jg-28cx
