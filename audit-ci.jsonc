@@ -5,8 +5,5 @@
   "moderate": true,
   "allowlist": [
     // NOTE: Please add as much information as possible to any items added to the allowList
-    "GHSA-2g4f-4pwh-qvx6", // ajv ReDoS with $data option - transitive via eslint 9's @eslint/eslintrc (uses ajv 6.x API, override to 8.x crashes eslint)
-    "GHSA-vpq2-c234-7xj6", // @tootallnate/once - requires major version bump of http-proxy-agent, transitive dep
-    "GHSA-7gcc-r8m5-44qm" // koa Host Header Injection - requires koa@3.2+, breaking change
   ]
 }
