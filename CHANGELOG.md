@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [15.5.4](https://github.com/mojaloop/mojaloop-simulator/compare/v15.5.3...v15.5.4) (2026-03-23)
+
+
+### Chore
+
+* add private:true to prevent npm publish ([#4384](https://github.com/mojaloop/mojaloop-simulator/issues/4384)) ([#208](https://github.com/mojaloop/mojaloop-simulator/issues/208)) ([b0e1ab8](https://github.com/mojaloop/mojaloop-simulator/commit/b0e1ab8645c281acf0c37c6e4d2ce3235a4f96fa))
+
 ### [15.5.3](https://github.com/mojaloop/mojaloop-simulator/compare/v15.5.2...v15.5.3) (2026-02-18)
 
 

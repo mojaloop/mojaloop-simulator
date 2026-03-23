@@ -1,6 +1,6 @@
 {
   "name": "mojaloop-simulator",
-  "version": "15.5.3",
+  "version": "15.5.4",
   "private": true,
   "description": "A canonical test example implementation of the parties, transfers and quotes resources of the Mojaloop FSP Interoperability API",
   "license": "Apache-2.0",
@@ -16,7 +16,7 @@
     "Miguel de Barros <miguel.debarros@modusbox.com>",
     "ModusBox",
     "Mowali",
-    "Pawe\u0142 Marzec <pawel.marzec@modusbox.com>"
+    "Paweł Marzec <pawel.marzec@modusbox.com>"
   ],
   "repository": {
     "type": "git",
