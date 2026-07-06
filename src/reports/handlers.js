@@ -83,7 +83,7 @@ const parseQuotes = (quotes, ctx) => {
 
         return responses;
     } catch (err) {
-        throw new Error(err);
+        throw new Error(err, { cause: err });
     }
 };
 

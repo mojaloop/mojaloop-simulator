@@ -6,5 +6,11 @@
   "allowlist": [
     // NOTE: Please add as much information as possible to any items added to the allowList
     // Currently no fixes available for the following
+    // 2026-07-06: uuid <11.1.1 "Missing buffer bounds check in v3/v5/v6 when buf is provided" (moderate).
+    // Flagged copy is uuid@3.3.2 pinned by @mojaloop/finance-portal-lib@1.0.0 (latest release; no update available).
+    // Cannot override to the fixed 11.1.1: finance-portal-lib uses require('uuid/v4') deep import, removed in uuid >=8
+    // (ERR_PACKAGE_PATH_NOT_EXPORTED). Not exploitable here: the lib only calls uuidv4() without a buf argument.
+    // Direct uuid dep is bumped to ^11.1.1 (fixed).
+    "GHSA-w5hq-g745-h8pq"
   ]
 }

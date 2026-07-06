@@ -1,6 +1,21 @@
 scan-type: source
 ignore:
-  # Base image npm packages (node:22.22.0-alpine3.23) - bundled with npm, not fixable via app dependencies
+  # 2026-07-06: uuid 3.3.2 pinned by @mojaloop/finance-portal-lib@1.0.0 (latest release) in
+  # init/onboard-hub-accounts and init/onboard-central-ledger lockfiles. Fix only exists in
+  # uuid 11.1.1, but finance-portal-lib uses the require('uuid/v4') deep import removed in
+  # uuid >=8, so an override breaks the onboarding scripts at load time. Not exploitable:
+  # the lib only calls uuidv4() without a buf argument. Direct uuid deps bumped to ^11.1.1.
+  - vulnerability: GHSA-w5hq-g745-h8pq
+    include-aliases: true
+    package:
+      name: uuid
+      version: 3.3.2
+    reason: >-
+      uuid v3/v5/v6 buffer bounds check - only affected copy is uuid 3.3.2 pinned by
+      @mojaloop/finance-portal-lib 1.0.0 (no newer release); fixed 11.1.1 removes the
+      uuid/v4 deep import the lib requires, so no non-breaking fix exists
+
+  # Base image npm packages (node:24.18.0-alpine3.24) - bundled with npm, not fixable via app dependencies
   - vulnerability: GHSA-83g3-92jg-28cx
     include-aliases: true
     reason: >-
@@ -28,7 +43,7 @@ ignore:
     reason: >-
       glob 10.4.5 ReDoS - transitive dependency in Docker image, override not possible for this dep path
 
-  # Alpine base image CVEs (node:22.22.0-alpine3.23)
+  # Alpine base image CVEs (node base image)
   - vulnerability: CVE-2025-60876
     package:
       type: apk

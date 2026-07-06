@@ -1,7 +1,6 @@
 {
   "reject": [
-    "eslint-plugin-ava",
-    "eslint",
-    "uuid"
+    "(comment: ava >=8 is rejected empirically — verified on 8.0.1: ava 8 dropped CJS require interop, so `const test = require('ava')` yields a module namespace object and every suite fails at load with `TypeError: test.before is not a function`)",
+    "ava"
   ]
 }

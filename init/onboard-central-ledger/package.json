@@ -6,7 +6,7 @@
   "dependencies": {
     "@mojaloop/finance-portal-lib": "1.0.0",
     "node-fetch": "3.3.2",
-    "uuid": "^11.0.5"
+    "uuid": "^11.1.1"
   },
   "devDependencies": {
     "audit-ci": "7.1.0",
