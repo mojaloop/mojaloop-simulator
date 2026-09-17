@@ -96,9 +96,6 @@ ignore:
     reason: >-
       Base image npm package: undici - bundled in Node.js base image, not fixable via application dependencies as of
       2026-09-17 (moderate severity)
-  - vulnerability: GHSA-4mjr-xmp4-gh2g
-    include-aliases: true
-    reason: 'Unfixable npm transitive vulnerability: qs (moderate severity) as of 2026-09-17'
   - vulnerability: GHSA-w5hq-g745-h8pq
     include-aliases: true
     reason: 'Unfixable npm transitive vulnerability: unknown (unknown severity) as of 2026-09-17'

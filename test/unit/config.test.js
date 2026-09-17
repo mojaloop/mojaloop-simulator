@@ -33,7 +33,7 @@
 // Load config
 const Config = require('#src/lib/config');
 
-const test = require('ava');
+const test = require('ava').default;
 const getConfig = require('#src/config');
 const { party } = require('./constants');
 
