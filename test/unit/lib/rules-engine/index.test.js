@@ -28,7 +28,7 @@
  ******/
 'use strict';
 
-const test = require('ava');
+const test = require('ava').default;
 const Logger = require('@mojaloop/central-services-logger');
 const sinon = require('sinon');
 

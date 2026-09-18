@@ -30,7 +30,7 @@
 // Load config
 const Config = require('#src/lib/config');
 
-const test = require('ava');
+const test = require('ava').default;
 const { stringify } = require('querystring');
 const { v1: uuid } = require('uuid');
 

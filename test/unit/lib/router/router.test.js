@@ -27,7 +27,7 @@
  ******/
 'use strict';
 
-const test = require('ava');
+const test = require('ava').default;
 
 const router = require('#src/lib/router');
 const Logger = require('@mojaloop/central-services-logger');

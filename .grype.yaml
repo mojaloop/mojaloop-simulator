@@ -1,41 +1,104 @@
 scan-type: source
 ignore:
-  # Base image npm packages (node:22.22.0-alpine3.23) - bundled with npm, not fixable via app dependencies
   - vulnerability: GHSA-83g3-92jg-28cx
     include-aliases: true
     reason: >-
-      tar arbitrary file overwrite via symlink chain - base image tar 6.2.1/7.4.3,
-      requires Node.js release with updated npm
+      tar arbitrary file overwrite via symlink chain - base image tar 6.2.1/7.4.3, requires Node.js release with updated
+      npm
   - vulnerability: GHSA-34x7-hfp2-rc4v
     include-aliases: true
-    reason: >-
-      tar arbitrary file overwrite - base image tar 6.2.1/7.4.3,
-      requires Node.js release with updated npm
+    reason: tar arbitrary file overwrite - base image tar 6.2.1/7.4.3, requires Node.js release with updated npm
   - vulnerability: GHSA-r6q2-hw4h-h46w
     include-aliases: true
-    reason: >-
-      tar arbitrary file overwrite - base image tar 6.2.1/7.4.3,
-      requires Node.js release with updated npm
+    reason: tar arbitrary file overwrite - base image tar 6.2.1/7.4.3, requires Node.js release with updated npm
   - vulnerability: GHSA-8qq5-rm4j-mr97
     include-aliases: true
-    reason: >-
-      tar arbitrary file overwrite - base image tar 6.2.1/7.4.3,
-      requires Node.js release with updated npm
-
-  # glob in built Docker image - transitive dep, no override available for this path
+    reason: tar arbitrary file overwrite - base image tar 6.2.1/7.4.3, requires Node.js release with updated npm
   - vulnerability: GHSA-5j98-mcp5-4vw2
     include-aliases: true
-    reason: >-
-      glob 10.4.5 ReDoS - transitive dependency in Docker image, override not possible for this dep path
-
-  # Alpine base image CVEs (node:22.22.0-alpine3.23)
+    reason: glob 10.4.5 ReDoS - transitive dependency in Docker image, override not possible for this dep path
   - vulnerability: CVE-2025-60876
     package:
       type: apk
+    reason: busybox wget CRLF injection - no fix in Alpine 3.23 yet. Simulator does not fetch attacker-controlled URLs.
+  - vulnerability: CVE-2026-18798
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-09-17 (high severity)'
+  - vulnerability: CVE-2026-63076
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-09-17 (high severity)'
+  - vulnerability: CVE-2026-63073
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-09-17 (critical severity)'
+  - vulnerability: CVE-2026-14457
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-09-17 (high severity)'
+  - vulnerability: CVE-2026-14456
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-09-17 (high severity)'
+  - vulnerability: CVE-2026-63072
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-09-17 (high severity)'
+  - vulnerability: GHSA-mh99-v99m-4gvg
+    include-aliases: true
     reason: >-
-      busybox wget CRLF injection - no fix in Alpine 3.23 yet. Simulator does not
-      fetch attacker-controlled URLs.
-
+      Base image npm package: brace-expansion - bundled in Node.js base image, not fixable via application dependencies
+      as of 2026-09-17 (high severity)
+  - vulnerability: GHSA-rgw5-rvv9-x895
+    include-aliases: true
+    reason: >-
+      Base image npm package: brace-expansion - bundled in Node.js base image, not fixable via application dependencies
+      as of 2026-09-17 (high severity)
+  - vulnerability: CVE-2026-54874
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-09-17 (high severity)'
+  - vulnerability: CVE-2026-63075
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-09-17 (high severity)'
+  - vulnerability: GHSA-r292-9mhp-454m
+    include-aliases: true
+    reason: >-
+      Base image npm package: tar - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-09-17 (high severity)
+  - vulnerability: GHSA-mwp4-54f8-5fhr
+    include-aliases: true
+    reason: >-
+      Base image npm package: ip-address - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-09-17 (high severity)
+  - vulnerability: CVE-2026-63074
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-09-17 (moderate severity)'
+  - vulnerability: GHSA-4xrf-jv44-h6hh
+    include-aliases: true
+    reason: >-
+      Base image npm package: ip-address - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-09-17 (moderate severity)
+  - vulnerability: GHSA-22jq-vg5j-6vgg
+    include-aliases: true
+    reason: >-
+      Base image npm package: ip-address - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-09-17 (moderate severity)
+  - vulnerability: CVE-2026-75803
+    include-aliases: true
+    reason: 'Alpine base image package (apk): libcrypto3 - no npm fix available as of 2026-09-17 (critical severity)'
+  - vulnerability: GHSA-v3r7-h72x-cjcm
+    include-aliases: true
+    reason: >-
+      Base image npm package: undici - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-09-17 (moderate severity)
+  - vulnerability: GHSA-m8rv-5g2x-5cg5
+    include-aliases: true
+    reason: >-
+      Base image npm package: undici - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-09-17 (moderate severity)
+  - vulnerability: GHSA-8xcm-r25x-g524
+    include-aliases: true
+    reason: >-
+      Base image npm package: undici - bundled in Node.js base image, not fixable via application dependencies as of
+      2026-09-17 (moderate severity)
+  - vulnerability: GHSA-w5hq-g745-h8pq
+    include-aliases: true
+    reason: 'Unfixable npm transitive vulnerability: unknown (unknown severity) as of 2026-09-17'
 output:
   - table
   - json
