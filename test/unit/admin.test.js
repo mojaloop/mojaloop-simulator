@@ -28,7 +28,7 @@
 // Load config
 const Config = require('#src/lib/config');
 
-const test = require('ava');
+const test = require('ava').default;
 
 const Model = require('#src/models/model');
 const { map } = require('#src/test-api/handlers');
