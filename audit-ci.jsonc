@@ -3,7 +3,13 @@
   // audit-ci supports reading JSON, JSONC, and JSON5 config files.
   // Only use one of ["low": true, "moderate": true, "high": true, "critical": true]
   "moderate": true,
-  "allowlist": [ // NOTE: Please add as much information as possible to any items added to the allowList
-    "GHSA-w5hq-g745-h8pq"
+  "allowlist": [
+    // NOTE: Please add as much information as possible to any items added to the allowList
+    // GHSA-vfj7-8cjw-p6xm - braces: stack-exhaustion DoS through deeply nested patterns.
+    // No patched release exists: the advisory covers "<= 3.0.3" and 3.0.3 is the latest
+    // version published. Reached only through dev tooling, never at runtime:
+    // micromatch -> fast-glob -> globby and @typescript-eslint/typescript-estree.
+    // Remove this entry once braces 3.0.4 or later ships.
+    "GHSA-vfj7-8cjw-p6xm"
   ]
 }
