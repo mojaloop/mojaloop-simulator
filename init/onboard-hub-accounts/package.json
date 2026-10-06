@@ -25,7 +25,8 @@
   },
   "overrides": {
     "minimist": "1.2.8",
-    "node-fetch": "3.3.2"
+    "node-fetch": "3.3.2",
+    "brace-expansion": "1.1.21"
   },
   "author": "Matt Kingston <matt.kingston@modusbox.com>",
   "license": "Apache-2.0"

@@ -3,39 +3,26 @@
   // audit-ci supports reading JSON, JSONC, and JSON5 config files.
   // Only use one of ["low": true, "moderate": true, "high": true, "critical": true]
   "moderate": true,
-  "allowlist": [ // NOTE: Please add as much information as possible to any items added to the allowList
+  "allowlist": [
+    // NOTE: Please add as much information as possible to any items added to the allowList
+    //
+    // Both entries below are advisories with NO patched release published. Everything
+    // else is fixed with a real override in package.json rather than suppressed here.
+    //
+    // GHSA-vfj7-8cjw-p6xm - braces: stack-exhaustion DoS through deeply nested patterns.
+    // Advisory covers "<= 3.0.3" and 3.0.3 is the latest version published, so there is
+    // nothing to upgrade to. Dev-tooling only, never on a runtime path:
+    // micromatch -> fast-glob -> globby and @typescript-eslint/typescript-estree.
+    // Remove once braces 3.0.4 or later ships.
     "GHSA-vfj7-8cjw-p6xm",
-    "GHSA-hp3w-g68c-fv3c",
-    "GHSA-4mjr-xmp4-gh2g",
-    "GHSA-3w6x-2g7m-8v23",
-    "GHSA-q8qp-cvcw-x6jj",
-    "GHSA-hfxv-24rg-xrqf",
-    "GHSA-777c-7fjr-54vf",
-    "GHSA-p92q-9vqr-4j8v",
-    "GHSA-j5f8-grm9-p9fc",
-    "GHSA-3g43-6gmg-66jw",
-    "GHSA-35jp-ww65-95wh",
-    "GHSA-898c-q2cr-xwhg",
-    "GHSA-pjwm-pj3p-43mv",
-    "GHSA-mmx7-hfxf-jppx",
-    "GHSA-pmv8-rq9r-6j72",
-    "GHSA-mwf2-3pr3-8698",
-    "GHSA-7q8q-rj6j-mhjq",
-    "GHSA-jqh4-m9w3-8hp9",
-    "GHSA-f4gw-2p7v-4548",
-    "GHSA-42h9-826w-cgv3",
-    "GHSA-hcpx-6fm6-wx23",
-    "GHSA-vh66-26gq-q6x8",
-    "GHSA-9fr6-4gfg-395g",
-    "GHSA-mghh-pgcx-3jjj",
-    "GHSA-x97p-jq2g-jp4f",
-    "GHSA-3pq3-5fj3-cg6v",
-    "GHSA-542g-h47m-68v8",
-    "GHSA-j8rh-479h-cp32",
-    "GHSA-4hqw-qxg8-jxx2",
-    "GHSA-44g4-m2mj-wpvx",
-    "GHSA-6w3j-5fw6-r9vr",
-    "GHSA-wr44-6hxh-3jwq",
-    "GHSA-6h2x-m376-mqjq"
+    // GHSA-hp3w-g68c-fv3c - sprintf-js: DoS through unbounded precision specifiers.
+    // Advisory covers "<= 1.1.3" and 1.1.3 is the latest version published. Reached only
+    // via argparse 1.x, which is a dependency of js-yaml 3.x, itself required by dev
+    // tooling only: nyc/@istanbuljs/load-nyc-config, jest's babel-plugin-istanbul,
+    // ava's tap-parser, tap-xunit and yamljs. Not reachable at runtime.
+    // argparse 2.x dropped sprintf-js entirely, but js-yaml 3.x pins argparse ^1.0.7 and
+    // moving its consumers to js-yaml 4 is a breaking API change, so this waits upstream.
+    // Remove once sprintf-js 1.1.4 or later ships.
+    "GHSA-hp3w-g68c-fv3c"
   ]
 }
