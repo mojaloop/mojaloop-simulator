@@ -31,7 +31,7 @@
 // Load config
 const Config = require('#src/lib/config');
 
-const test = require('ava');
+const test = require('ava').default;
 const sinon = require('sinon');
 const { cloneDeep } = require('./TestUtils');
 const Model = require('#src/models/model');

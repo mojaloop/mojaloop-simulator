@@ -5,5 +5,24 @@
   "moderate": true,
   "allowlist": [
     // NOTE: Please add as much information as possible to any items added to the allowList
+    //
+    // Both entries below are advisories with NO patched release published. Everything
+    // else is fixed with a real override in package.json rather than suppressed here.
+    //
+    // GHSA-vfj7-8cjw-p6xm - braces: stack-exhaustion DoS through deeply nested patterns.
+    // Advisory covers "<= 3.0.3" and 3.0.3 is the latest version published, so there is
+    // nothing to upgrade to. Dev-tooling only, never on a runtime path:
+    // micromatch -> fast-glob -> globby and @typescript-eslint/typescript-estree.
+    // Remove once braces 3.0.4 or later ships.
+    "GHSA-vfj7-8cjw-p6xm",
+    // GHSA-hp3w-g68c-fv3c - sprintf-js: DoS through unbounded precision specifiers.
+    // Advisory covers "<= 1.1.3" and 1.1.3 is the latest version published. Reached only
+    // via argparse 1.x, which is a dependency of js-yaml 3.x, itself required by dev
+    // tooling only: nyc/@istanbuljs/load-nyc-config, jest's babel-plugin-istanbul,
+    // ava's tap-parser, tap-xunit and yamljs. Not reachable at runtime.
+    // argparse 2.x dropped sprintf-js entirely, but js-yaml 3.x pins argparse ^1.0.7 and
+    // moving its consumers to js-yaml 4 is a breaking API change, so this waits upstream.
+    // Remove once sprintf-js 1.1.4 or later ships.
+    "GHSA-hp3w-g68c-fv3c"
   ]
 }
