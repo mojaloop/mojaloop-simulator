@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [15.5.5](https://github.com/mojaloop/mojaloop-simulator/compare/v15.5.4...v15.5.5) (2026-10-16)
+
+
+### Bug Fixes
+
+* **security:** drop sprintf-js, patch handlebars and shell-quote ([#211](https://github.com/mojaloop/mojaloop-simulator/issues/211)) ([76c75e7](https://github.com/mojaloop/mojaloop-simulator/commit/76c75e783a0fef9b20e7fd5d7e699ec2c3b3020d))
+* **security:** patch vulnerabilities, scope overrides, Node 24 + orb 2.1.7 ([#209](https://github.com/mojaloop/mojaloop-simulator/issues/209)) ([bfb1838](https://github.com/mojaloop/mojaloop-simulator/commit/bfb18380ef79648549dd9cab6c6e6ad82f0e933c))
+
 ### [15.5.4](https://github.com/mojaloop/mojaloop-simulator/compare/v15.5.3...v15.5.4) (2026-03-23)
 
 
